@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="300">
+    <title>Bharat Edge — AI Trading Dashboard</title>
+    <style>
+        * {
+            margin     : 0;
+            padding    : 0;
+            box-sizing : border-box;
+        }
+        body {
+            font-family: 'Inter','Segoe UI',
+                         Tahoma,Geneva,Verdana,sans-serif;
+            background : #0a0e1a;
+            color      : #e2e8f0;
+            min-height : 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background     : #111827;
+            border-bottom  : 2px solid #00d4ff;
+            padding        : 16px 24px;
+            display        : flex;
+            justify-content: space-between;
+            align-items    : center;
+            position       : sticky;
+            top            : 0;
+            z-index        : 100;
+        }
+        .header h1 {
+            color         : #00d4ff;
+            font-size     : 28px;
+            font-weight   : 800;
+            letter-spacing: 3px;
+            margin        : 0;
+        }
+        .header .subtitle {
+            color     : #94a3b8;
+            font-size : 13px;
+            margin-top: 2px;
+        }
+        .live-time {
+            text-align: right;
+        }
+        .live-time .date {
+            color      : #e2e8f0;
+            font-weight: 600;
+            font-size  : 13px;
+        }
+        .live-time .time {
+            color      : #00d4ff;
+            font-size  : 18px;
+            font-weight: 700;
+        }
+
+        /* TABS */
+        .tabs {
+            display        : flex;
+            gap            : 4px;
+            padding        : 16px 24px 0;
+            max-width      : 1400px;
+            margin         : 0 auto;
+            border-bottom  : 1px solid #1e2d45;
+        }
+        .tab {
+            background   : #111827;
+            color        : #94a3b8;
+            border       : 1px solid #1e2d45;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding      : 10px 16px;
+            font-size    : 13px;
+            font-weight  : 500;
+            cursor       : pointer;
+            transition   : all 0.2s;
+            text-decoration: none;
+        }
+        .tab:hover {
+            color: #e2e8f0;
+        }
+        .tab.active {
+            background   : #1a2235;
+            color        : #00d4ff;
+            border       : 2px solid #00d4ff;
+            border-bottom: none;
+            font-weight  : 700;
+        }
+
+        /* CONTENT */
+        .content {
+            max-width: 1400px;
+            margin   : 0 auto;
+            padding  : 20px 24px;
+        }
+
+        /* CARDS */
+        .card {
+            background   : #111827;
+            border       : 1px solid #1e2d45;
+            border-radius: 12px;
+            padding      : 20px;
+            margin-bottom: 16px;
+        }
+        .card-header {
+            background    : #1a2235;
+            border        : 1px solid #1e2d45;
+            border-radius : 8px;
+            padding       : 8px 16px;
+            color         : #94a3b8;
+            font-size     : 12px;
+            margin-bottom : 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* METRICS ROW */
+        .metrics-row {
+            display  : flex;
+            gap      : 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        /* GRID */
+        .grid-2 {
+            display              : grid;
+            grid-template-columns: 2fr 1fr;
+            gap                  : 16px;
+            margin-bottom        : 16px;
+        }
+        .grid-equal {
+            display              : grid;
+            grid-template-columns: 1fr 1fr;
+            gap                  : 16px;
+            margin-bottom        : 16px;
+        }
+
+        /* TABLES */
+        table {
+            width          : 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background    : #1a2235;
+            color         : #94a3b8;
+            padding       : 12px 14px;
+            text-align    : left;
+            font-size     : 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border        : 1px solid #1e2d45;
+        }
+        td {
+            padding      : 12px 14px;
+            border-bottom: 1px solid #1e2d45;
+            font-size    : 13px;
+            border       : 1px solid #1e2d45;
+        }
+        tr:hover td {
+            background: #1a2235;
+        }
+
+        /* TAB PANELS */
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* LIVE BADGE */
+        .live-badge {
+            display      : inline-block;
+            background   : #d50000;
+            color        : white;
+            padding      : 2px 8px;
+            border-radius: 12px;
+            font-size    : 11px;
+            font-weight  : 700;
+            animation    : pulse 2s infinite;
+            margin-left  : 8px;
+        }
+        @keyframes pulse {
+            0%   { opacity: 1; }
+            50%  { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* NIFTY BANNER */
+        .nifty-banner {
+            background     : #1a2235;
+            border         : 1px solid #1e2d45;
+            border-radius  : 10px;
+            padding        : 20px;
+            display        : flex;
+            align-items    : center;
+            justify-content: space-between;
+            margin-bottom  : 16px;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align : center;
+            padding    : 20px;
+            margin-top : 40px;
+            border-top : 1px solid #1e2d45;
+            color      : #94a3b8;
+            font-size  : 11px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .grid-2, .grid-equal {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<div class="header">
+    <div>
+        <h1>🇮🇳 BHARAT EDGE
+            <span class="live-badge">● LIVE</span>
+        </h1>
+        <div class="subtitle">
+            AI-Powered Indian Market Intelligence
+        </div>
+    </div>
+    <div class="live-time">
+        <div class="date">Sunday, 19 April 2026</div>
+        <div class="time">10:06 IST</div>
+        <div style="color:#94a3b8;
+                    font-size:10px;margin-top:2px;">
+            Auto-refreshes every 5 min
+        </div>
+    </div>
+</div>
+
+<!-- ============ TABS ============ -->
+<div class="tabs">
+    <a class="tab active"
+       onclick="showTab('overview')"
+       href="#">Market Overview</a>
+    <a class="tab"
+       onclick="showTab('scanner')"
+       href="#">Signal Scanner</a>
+    <a class="tab"
+       onclick="showTab('history')"
+       href="#">Performance History</a>
+</div>
+
+<!-- ============ CONTENT ============ -->
+<div class="content">
+
+    <!-- ===== OVERVIEW TAB ===== -->
+    <div id="tab-overview" class="tab-panel active">
+
+        <!-- Market Metrics -->
+        <div class="metrics-row">
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#e2e8f0;">24,353</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">NIFTY 50</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#ffd700;">17.21</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">India VIX</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#ff4444;">₹-300Cr</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">FII Flow</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00ff88;">₹+0Cr</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">DII Flow</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00ff88;">+0.65%</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">SGX Gap</div>
+    </div>
+        </div>
+
+        <!-- VIX + Market Info -->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    MARKET RISK INDICATOR — INDIA VIX
+                </div>
+                
+    <div style="text-align:center;">
+        <div style="font-size:3rem;font-weight:800;
+                    color:#ffd700;">17.21</div>
+        <div style="color:#ffd700;font-weight:700;
+                    font-size:1rem;letter-spacing:2px;
+                    margin:4px 0;">CAUTIOUS</div>
+        <div style="background:#1e2d45;
+                    border-radius:8px;height:12px;
+                    margin:12px 0;overflow:hidden;">
+            <div style="background:linear-gradient(
+                            90deg,#00ff88,
+                            #ffd700,#ff4444);
+                        width:43%;height:100%;
+                        border-radius:8px;">
+            </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;
+                    font-size:10px;color:#94a3b8;">
+            <span>0</span>
+            <span>LOW</span>
+            <span>HIGH</span>
+            <span>40</span>
+        </div>
+    </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    MARKET CONTEXT
+                </div>
+                
+    <div style="display:flex;justify-content:space-between;
+                padding:8px 0;
+                border-bottom:1px solid #1e2d45;">
+        <span style="color:#94a3b8;
+                     font-size:12px;">VIX</span>
+        <span style="color:#ffd700;font-size:13px;
+                     font-weight:600;">17.21</span>
+    </div>
+                
+    <div style="display:flex;justify-content:space-between;
+                padding:8px 0;
+                border-bottom:1px solid #1e2d45;">
+        <span style="color:#94a3b8;
+                     font-size:12px;">VIX Change</span>
+        <span style="color:#00ff88;font-size:13px;
+                     font-weight:600;">-4.9%</span>
+    </div>
+                
+    <div style="display:flex;justify-content:space-between;
+                padding:8px 0;
+                border-bottom:1px solid #1e2d45;">
+        <span style="color:#94a3b8;
+                     font-size:12px;">FII Flow</span>
+        <span style="color:#ff4444;font-size:13px;
+                     font-weight:600;">₹-300 Cr (SELLING)</span>
+    </div>
+                
+    <div style="display:flex;justify-content:space-between;
+                padding:8px 0;
+                border-bottom:1px solid #1e2d45;">
+        <span style="color:#94a3b8;
+                     font-size:12px;">DII Flow</span>
+        <span style="color:#00ff88;font-size:13px;
+                     font-weight:600;">₹+0 Cr (BUYING)</span>
+    </div>
+                
+    <div style="display:flex;justify-content:space-between;
+                padding:8px 0;
+                border-bottom:1px solid #1e2d45;">
+        <span style="color:#94a3b8;
+                     font-size:12px;">SGX Nifty Gap</span>
+        <span style="color:#00ff88;font-size:13px;
+                     font-weight:600;">+0.65%</span>
+    </div>
+                
+    <div style="display:flex;justify-content:space-between;
+                padding:8px 0;
+                border-bottom:1px solid #1e2d45;">
+        <span style="color:#94a3b8;
+                     font-size:12px;">Last Updated</span>
+        <span style="color:#00d4ff;font-size:13px;
+                     font-weight:600;">10:06 IST</span>
+    </div>
+            </div>
+        </div>
+
+        <!-- Scan Summary -->
+        <div class="card">
+            <div class="card-header">TODAY'S SCAN SUMMARY</div>
+            <div class="metrics-row">
+                
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00d4ff;">5</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Total Signals</div>
+    </div>
+                
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00ff88;">5</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Strong Signals</div>
+    </div>
+                
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#3b82f6;">73.7%</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Avg Confidence</div>
+    </div>
+                
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#ff4444;">0.0%</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Win Rate</div>
+    </div>
+                
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#94a3b8;">2</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Total Tracked</div>
+    </div>
+                
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#94a3b8;">2</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Pending</div>
+    </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== SCANNER TAB ===== -->
+    <div id="tab-scanner" class="tab-panel">
+
+        <div class="metrics-row">
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00d4ff;">5</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Total Signals</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00ff88;">5</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Strong (≥65%)</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#3b82f6;">73.7%</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Avg Confidence</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#94a3b8;">54</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Scanned</div>
+    </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                SIGNAL SCANNER — TODAY'S RESULTS
+                (Sunday, 19 April 2026)
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Signal</th>
+                            <th>Confidence</th>
+                            <th>Votes</th>
+                            <th>Sector</th>
+                            <th>Sector Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td><b style="color:#00d4ff">
+                HINDALCO.NS</b></td>
+            <td style="color:#3b82f6;font-weight:700;">
+                🟢 BUY</td>
+            <td>
+                <div style="display:flex;
+                            align-items:center;gap:8px;">
+                    <div style="background:#1e2d45;
+                                border-radius:4px;height:8px;
+                                width:100px;display:inline-block;">
+                        <div style="background:#3b82f6;
+                                    width:79%;
+                                    height:100%;
+                                    border-radius:4px;">
+                        </div>
+                    </div>
+                    <span style="color:#3b82f6;
+                                 font-weight:600;">
+                        78.9%</span>
+                </div>
+            </td>
+            <td style="color:#e2e8f0;">
+                4/4</td>
+            <td style="color:#94a3b8;">
+                METAL</td>
+            <td style="color:#00ff88;font-weight:600;">
+                OVERWEIGHT</td>
+        </tr>
+        <tr>
+            <td><b style="color:#00d4ff">
+                COALINDIA.NS</b></td>
+            <td style="color:#3b82f6;font-weight:700;">
+                🟢 BUY</td>
+            <td>
+                <div style="display:flex;
+                            align-items:center;gap:8px;">
+                    <div style="background:#1e2d45;
+                                border-radius:4px;height:8px;
+                                width:100px;display:inline-block;">
+                        <div style="background:#3b82f6;
+                                    width:74%;
+                                    height:100%;
+                                    border-radius:4px;">
+                        </div>
+                    </div>
+                    <span style="color:#3b82f6;
+                                 font-weight:600;">
+                        74.3%</span>
+                </div>
+            </td>
+            <td style="color:#e2e8f0;">
+                4/4</td>
+            <td style="color:#94a3b8;">
+                METAL</td>
+            <td style="color:#00ff88;font-weight:600;">
+                OVERWEIGHT</td>
+        </tr>
+        <tr>
+            <td><b style="color:#00d4ff">
+                ASIANPAINT.NS</b></td>
+            <td style="color:#3b82f6;font-weight:700;">
+                🟢 BUY</td>
+            <td>
+                <div style="display:flex;
+                            align-items:center;gap:8px;">
+                    <div style="background:#1e2d45;
+                                border-radius:4px;height:8px;
+                                width:100px;display:inline-block;">
+                        <div style="background:#3b82f6;
+                                    width:72%;
+                                    height:100%;
+                                    border-radius:4px;">
+                        </div>
+                    </div>
+                    <span style="color:#3b82f6;
+                                 font-weight:600;">
+                        71.8%</span>
+                </div>
+            </td>
+            <td style="color:#e2e8f0;">
+                4/4</td>
+            <td style="color:#94a3b8;">
+                CONSUMER</td>
+            <td style="color:#00ff88;font-weight:600;">
+                OVERWEIGHT</td>
+        </tr>
+        <tr>
+            <td><b style="color:#00d4ff">
+                RELIANCE.NS</b></td>
+            <td style="color:#3b82f6;font-weight:700;">
+                🟢 BUY</td>
+            <td>
+                <div style="display:flex;
+                            align-items:center;gap:8px;">
+                    <div style="background:#1e2d45;
+                                border-radius:4px;height:8px;
+                                width:100px;display:inline-block;">
+                        <div style="background:#3b82f6;
+                                    width:72%;
+                                    height:100%;
+                                    border-radius:4px;">
+                        </div>
+                    </div>
+                    <span style="color:#3b82f6;
+                                 font-weight:600;">
+                        71.8%</span>
+                </div>
+            </td>
+            <td style="color:#e2e8f0;">
+                4/4</td>
+            <td style="color:#94a3b8;">
+                ENERGY</td>
+            <td style="color:#ffd700;font-weight:600;">
+                NEUTRAL</td>
+        </tr>
+        <tr>
+            <td><b style="color:#00d4ff">
+                INFY.NS</b></td>
+            <td style="color:#3b82f6;font-weight:700;">
+                🟢 BUY</td>
+            <td>
+                <div style="display:flex;
+                            align-items:center;gap:8px;">
+                    <div style="background:#1e2d45;
+                                border-radius:4px;height:8px;
+                                width:100px;display:inline-block;">
+                        <div style="background:#3b82f6;
+                                    width:72%;
+                                    height:100%;
+                                    border-radius:4px;">
+                        </div>
+                    </div>
+                    <span style="color:#3b82f6;
+                                 font-weight:600;">
+                        71.6%</span>
+                </div>
+            </td>
+            <td style="color:#e2e8f0;">
+                4/4</td>
+            <td style="color:#94a3b8;">
+                IT</td>
+            <td style="color:#ffd700;font-weight:600;">
+                NEUTRAL</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="padding:12px 20px;">
+            <span style="color:#94a3b8;
+                         font-size:12px;">
+                🟢🟢 STRONG BUY &nbsp;|&nbsp;
+                🟢 BUY &nbsp;|&nbsp;
+                🔵 WEAK BUY &nbsp;|&nbsp;
+                🔴🔴 STRONG SELL &nbsp;|&nbsp;
+                🔴 SELL &nbsp;|&nbsp;
+                ⚠️ Not financial advice. DYOR.
+            </span>
+        </div>
+
+    </div>
+
+    <!-- ===== HISTORY TAB ===== -->
+    <div id="tab-history" class="tab-panel">
+
+        <div class="metrics-row">
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00d4ff;">2</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Total Signals</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#00ff88;">0</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Wins</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#ff4444;">0</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Losses</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#ff4444;">0.0%</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Win Rate</div>
+    </div>
+            
+    <div style="background:#1a2235;
+                border:1px solid #1e2d45;
+                border-radius:10px;padding:20px;
+                text-align:center;flex:1;min-width:140px;
+                transition:transform 0.2s;"
+         onmouseover="this.style.transform='translateY(-3px)'"
+         onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.8rem;font-weight:700;
+                    color:#94a3b8;">2</div>
+        <div style="font-size:0.75rem;color:#94a3b8;
+                    margin-top:6px;text-transform:uppercase;
+                    letter-spacing:1px;">Pending</div>
+    </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                PERFORMANCE HISTORY (Last 20 Signals)
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Symbol</th>
+                            <th>Signal</th>
+                            <th>Confidence</th>
+                            <th>Result</th>
+                            <th>PnL %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td style="color:#94a3b8;">
+                2026-04-19</td>
+            <td><b style="color:#00d4ff;">
+                INFY.NS</b></td>
+            <td style="color:#00ff88;font-weight:700;">
+                STRONG_BUY</td>
+            <td style="color:#ffd700;">
+                71.6%</td>
+            <td style="color:#94a3b8;font-weight:700;">
+                ⏳ PENDING</td>
+            <td style="color:#00ff88;font-weight:600;">
+                +0.00%</td>
+        </tr>
+        <tr>
+            <td style="color:#94a3b8;">
+                2026-04-19</td>
+            <td><b style="color:#00d4ff;">
+                RELIANCE.NS</b></td>
+            <td style="color:#00ff88;font-weight:700;">
+                STRONG_BUY</td>
+            <td style="color:#ffd700;">
+                71.8%</td>
+            <td style="color:#94a3b8;font-weight:700;">
+                ⏳ PENDING</td>
+            <td style="color:#00ff88;font-weight:600;">
+                +0.00%</td>
+        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="padding:12px 20px;">
+            <span style="color:#94a3b8;
+                         font-size:12px;">
+                ✅ Correct &nbsp;|&nbsp;
+                ❌ Wrong &nbsp;|&nbsp;
+                ⏳ Pending (update manually in
+                performance_history.csv)
+            </span>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ============ FOOTER ============ -->
+<div class="footer">
+    <p>
+        🤖 Bharat Edge AI &nbsp;|&nbsp;
+        XGBoost + LightGBM + Random Forest + Extra Trees
+        &nbsp;|&nbsp;
+        Auto-updated daily by GitHub Actions
+    </p>
+    <p style="margin-top:6px;">
+        ⚠️ Not financial advice.
+        For educational purposes only. Always DYOR.
+    </p>
+</div>
+
+<!-- ============ TAB SCRIPT ============ -->
+<script>
+    function showTab(name) {
+        // Hide all panels
+        document.querySelectorAll('.tab-panel').forEach(p => {
+            p.classList.remove('active');
+        });
+        // Deactivate all tabs
+        document.querySelectorAll('.tab').forEach(t => {
+            t.classList.remove('active');
+        });
+        // Show selected panel
+        document.getElementById('tab-' + name)
+                .classList.add('active');
+        // Activate selected tab
+        event.target.classList.add('active');
+    }
+
+    // Live clock update
+    function updateClock() {
+        const now  = new Date();
+        const opts = {
+            weekday: 'long', day: '2-digit',
+            month: 'long', year: 'numeric'
+        };
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        const s = String(now.getSeconds()).padStart(2,'0');
+        document.querySelector('.live-time .time').textContent
+            = h + ':' + m + ':' + s + ' IST';
+    }
+    setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>

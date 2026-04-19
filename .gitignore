@@ -1,0 +1,12 @@
+venv/
+env/
+__pycache__/ 
+*.pyc 
+*.csv 
+daily_report.txt 
+backtest_output.txt 
+.env 
+config/secrets.env
+zerodha.txt
+*.txt
+.github/workflows/*.txt
