@@ -102,8 +102,13 @@ def load_nifty_data():
         ticker = yf.Ticker("^NSEI")
         df     = ticker.history(period="3mo")
         df.columns = [c.lower() for c in df.columns]
-        df.index   = df.index.tz_localize(None)
-        df         = df.tail(60)  # Last 60 days
+
+        # Fix timezone issue
+        if df.index.tz is not None:
+            df.index = df.index.tz_convert('Asia/Kolkata')
+            df.index = df.index.tz_localize(None)
+
+        df = df.tail(60)
 
         dates  = df.index.strftime('%Y-%m-%d').tolist()
         opens  = df['open'].round(2).tolist()
@@ -112,9 +117,10 @@ def load_nifty_data():
         closes = df['close'].round(2).tolist()
         vols   = df['volume'].tolist()
 
-        # EMA calculations
-        ema20 = df['close'].ewm(span=20).mean().round(2).tolist()
-        ema50 = df['close'].ewm(span=50).mean().round(2).tolist()
+        ema20  = df['close'].ewm(span=20).mean().round(2).tolist()
+        ema50  = df['close'].ewm(span=50).mean().round(2).tolist()
+
+        print(f"  ✅ Nifty data loaded: {len(dates)} candles")
 
         return {
             'dates' : dates,
