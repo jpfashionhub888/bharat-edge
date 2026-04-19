@@ -9,7 +9,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Lightweight Charts for Candlestick -->
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 
     <style>
         * { margin:0;padding:0;box-sizing:border-box; }
@@ -210,7 +210,7 @@
             Sunday, 19 April 2026
         </div>
         <div id="live-clock" style="color:#00d4ff;
-             font-size:20px;font-weight:700;">10:55 IST</div>
+             font-size:20px;font-weight:700;">11:05 IST</div>
         <div style="color:#94a3b8;font-size:10px;margin-top:2px;">
             Auto-refreshes every 5 min
         </div>
@@ -350,7 +350,7 @@
     <div style="display:flex;justify-content:space-between;
                 padding:8px 0;border-bottom:1px solid #1e2d45;">
         <span style="color:#94a3b8;font-size:12px;">Updated</span>
-        <span style="color:#00d4ff;font-size:13px;font-weight:600;">10:55 IST</span>
+        <span style="color:#00d4ff;font-size:13px;font-weight:600;">11:05 IST</span>
     </div>
         </div>
     </div>
@@ -876,91 +876,124 @@ setInterval(updateClock, 1000);
 // ---- NIFTY CANDLESTICK CHART ----
 const niftyData = {"dates": ["2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-03-02", "2026-03-04", "2026-03-05", "2026-03-06", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-20", "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-27", "2026-03-30", "2026-04-01", "2026-04-02", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-13", "2026-04-15", "2026-04-16", "2026-04-17"], "opens": [25653.1, 25580.3, 25141.0, 25344.15, 25344.6, 25063.35, 25258.85, 25345.0, 25247.55, 24796.5, 26308.05, 25675.05, 25755.9, 25605.8, 25888.7, 25922.65, 25997.45, 25906.7, 25571.15, 25423.6, 25637.95, 25752.65, 25873.35, 25406.55, 25678.4, 25641.8, 25512.6, 25556.3, 25459.85, 24659.25, 24388.8, 24615.95, 24656.4, 23868.05, 24280.8, 24231.85, 23674.85, 23462.5, 23116.1, 23493.2, 23632.9, 23197.75, 23110.15, 22824.35, 22878.45, 23064.4, 23173.55, 22549.65, 22899.0, 22383.4, 22780.3, 22838.7, 23855.15, 23909.05, 23880.55, 23589.6, 24163.8, 24385.2, 24165.9], "highs": [25653.3, 25585.0, 25300.95, 25435.75, 25347.95, 25246.65, 25372.1, 25458.15, 25370.7, 25108.1, 26341.2, 25818.55, 25757.65, 25703.95, 25922.25, 25989.45, 26009.4, 25906.7, 25630.35, 25697.0, 25764.4, 25828.05, 25885.3, 25663.55, 25771.45, 25641.8, 25652.6, 25572.95, 25476.4, 24989.35, 24602.45, 24854.2, 24700.9, 24078.15, 24303.8, 24299.0, 23833.15, 23492.4, 23502.0, 23656.8, 23862.25, 23378.7, 23345.15, 22851.7, 23057.3, 23465.35, 23186.1, 22714.1, 22941.3, 22782.3, 22998.35, 23153.85, 24025.15, 23990.75, 24074.05, 23907.4, 24280.9, 24400.95, 24371.9], "lows": [25494.35, 25171.35, 24919.8, 25168.5, 25025.3, 24932.55, 25187.65, 25159.8, 25213.65, 24679.4, 25641.3, 25563.95, 25579.5, 25491.9, 25780.9, 25870.45, 25899.8, 25752.4, 25444.3, 25372.7, 25570.3, 25645.15, 25388.75, 25379.75, 25609.35, 25327.6, 25428.2, 25400.95, 25141.3, 24603.5, 24305.4, 24529.4, 24415.75, 23697.8, 24079.95, 23834.3, 23556.3, 23112.0, 22955.25, 23346.6, 23618.45, 22930.35, 23067.6, 22471.25, 22624.2, 23063.2, 22804.55, 22283.85, 22618.6, 22182.55, 22542.95, 22719.3, 23828.5, 23682.8, 23856.35, 23555.6, 24145.8, 24102.8, 24096.05], "closes": [25585.5, 25232.5, 25157.5, 25289.9, 25048.65, 25175.4, 25342.75, 25418.9, 25320.65, 25088.4, 25727.55, 25776.0, 25642.8, 25693.7, 25867.3, 25935.15, 25953.85, 25807.2, 25471.1, 25682.75, 25725.4, 25819.35, 25454.35, 25571.25, 25713.0, 25424.65, 25482.5, 25496.55, 25178.65, 24865.7, 24480.5, 24765.9, 24450.45, 24028.05, 24261.6, 23866.85, 23639.15, 23151.1, 23408.8, 23581.15, 23777.8, 23002.15, 23114.5, 22512.65, 22912.4, 23306.45, 22819.6, 22331.4, 22679.4, 22713.1, 22968.25, 23123.65, 23997.35, 23775.1, 24050.6, 23842.65, 24231.3, 24196.75, 24353.55], "vols": [443100, 409800, 395600, 486400, 393900, 618700, 574900, 582400, 508400, 449200, 637300, 429800, 343800, 375500, 359400, 460900, 331400, 419400, 453500, 275800, 344100, 310200, 298200, 296600, 313700, 439100, 414200, 405200, 438900, 519200, 599000, 504300, 433400, 526900, 444300, 407400, 501000, 519800, 540300, 458800, 382900, 550100, 663300, 550300, 538100, 505400, 612600, 698600, 518000, 495100, 426400, 477000, 639300, 466600, 481300, 488800, 460300, 508000, 498600], "ema20": [25585.5, 25400.18, 25311.07, 25304.96, 25242.96, 25228.71, 25250.27, 25279.42, 25286.03, 25256.27, 25323.52, 25385.16, 25418.88, 25453.6, 25504.3, 25555.7, 25602.08, 25625.47, 25608.19, 25616.4, 25628.23, 25648.69, 25628.13, 25622.17, 25631.59, 25610.31, 25597.26, 25587.05, 25545.89, 25477.73, 25378.29, 25317.49, 25231.76, 25113.18, 25029.56, 24915.72, 24791.07, 24631.32, 24512.49, 24422.14, 24359.75, 24228.49, 24120.94, 23965.88, 23864.42, 23810.74, 23715.49, 23582.58, 23495.92, 23420.86, 23377.49, 23353.18, 23414.84, 23449.3, 23506.8, 23538.91, 23605.07, 23661.59, 23727.67], "ema50": [25585.5, 25405.47, 25319.49, 25311.64, 25254.75, 25240.17, 25256.64, 25279.87, 25285.16, 25261.76, 25313.07, 25360.69, 25387.97, 25415.93, 25455.15, 25494.97, 25531.44, 25552.51, 25546.51, 25556.21, 25567.89, 25584.74, 25576.24, 25575.92, 25584.42, 25574.73, 25569.26, 25565.02, 25542.96, 25504.95, 25448.42, 25411.35, 25359.93, 25289.67, 25236.16, 25165.8, 25088.29, 24991.06, 24912.51, 24847.09, 24795.07, 24708.66, 24632.51, 24532.11, 24456.02, 24402.43, 24329.18, 24237.38, 24166.27, 24100.37, 24049.34, 24007.85, 24007.39, 23997.09, 23999.45, 23992.57, 24003.0, 24011.42, 24026.24]};
 
-if (niftyData && niftyData.dates && niftyData.dates.length > 0) {
-    const chart = LightweightCharts.createChart(
-        document.getElementById('nifty-chart'), {
-        width : document.getElementById(
-                    'nifty-chart').offsetWidth,
-        height: 380,
-        layout: {
-            background: { color: '#111827' },
-            textColor : '#94a3b8',
-        },
-        grid: {
-            vertLines  : { color: '#1e2d45' },
-            horzLines  : { color: '#1e2d45' },
-        },
-        crosshair: { mode: 1 },
-        rightPriceScale: {
-            borderColor: '#1e2d45',
-        },
-        timeScale: {
-            borderColor    : '#1e2d45',
-            timeVisible    : true,
-            secondsVisible : false,
-        },
-    });
+function renderNiftyChart() {
+    const container = document.getElementById('nifty-chart');
+    if (!container) return;
 
-    const candleSeries = chart.addCandlestickSeries({
-        upColor       : '#00ff88',
-        downColor     : '#ff4444',
-        borderUpColor : '#00ff88',
-        borderDownColor: '#ff4444',
-        wickUpColor   : '#00ff88',
-        wickDownColor : '#ff4444',
-    });
+    if (!niftyData || !niftyData.dates ||
+        niftyData.dates.length === 0) {
+        container.innerHTML =
+            '<div style="display:flex;align-items:center;' +
+            'justify-content:center;height:380px;' +
+            'color:#94a3b8;">No chart data available</div>';
+        return;
+    }
 
-    const candleData = niftyData.dates.map((d, i) => ({
-        time : d,
-        open : niftyData.opens[i],
-        high : niftyData.highs[i],
-        low  : niftyData.lows[i],
-        close: niftyData.closes[i],
-    }));
-    candleSeries.setData(candleData);
-
-    // EMA 20
-    const ema20Series = chart.addLineSeries({
-        color    : '#ffd700',
-        lineWidth: 2,
-        title    : 'EMA 20',
-    });
-    ema20Series.setData(
-        niftyData.dates.map((d,i) => ({
-            time: d, value: niftyData.ema20[i]
-        }))
-    );
-
-    // EMA 50
-    const ema50Series = chart.addLineSeries({
-        color    : '#3b82f6',
-        lineWidth: 2,
-        title    : 'EMA 50',
-    });
-    ema50Series.setData(
-        niftyData.dates.map((d,i) => ({
-            time: d, value: niftyData.ema50[i]
-        }))
-    );
-
-    chart.timeScale().fitContent();
-
-    // Resize on window resize
-    window.addEventListener('resize', () => {
-        chart.applyOptions({
-            width: document.getElementById(
-                       'nifty-chart').offsetWidth,
+    try {
+        const chart = LightweightCharts.createChart(
+            container, {
+            width : container.offsetWidth || 600,
+            height: 380,
+            layout: {
+                background: { type: 'solid',
+                               color: '#111827' },
+                textColor : '#94a3b8',
+            },
+            grid: {
+                vertLines: {
+                    color  : '#1e2d45',
+                    visible: true,
+                },
+                horzLines: {
+                    color  : '#1e2d45',
+                    visible: true,
+                },
+            },
+            crosshair : { mode: 1 },
+            rightPriceScale: {
+                borderColor: '#1e2d45',
+            },
+            timeScale: {
+                borderColor    : '#1e2d45',
+                timeVisible    : true,
+                secondsVisible : false,
+            },
         });
-    });
 
-} else {
-    document.getElementById('nifty-chart').innerHTML =
-        '<div style="display:flex;align-items:center;' +
-        'justify-content:center;height:380px;' +
-        'color:#94a3b8;">' +
-        'Chart data unavailable</div>';
+        const candleSeries = chart.addCandlestickSeries({
+            upColor        : '#00ff88',
+            downColor      : '#ff4444',
+            borderUpColor  : '#00ff88',
+            borderDownColor: '#ff4444',
+            wickUpColor    : '#00ff88',
+            wickDownColor  : '#ff4444',
+        });
+
+        const candleData = niftyData.dates.map((d, i) => ({
+            time : d,
+            open : niftyData.opens[i],
+            high : niftyData.highs[i],
+            low  : niftyData.lows[i],
+            close: niftyData.closes[i],
+        }));
+
+        candleSeries.setData(candleData);
+
+        // EMA 20
+        const ema20Series = chart.addLineSeries({
+            color    : '#ffd700',
+            lineWidth: 2,
+            title    : 'EMA20',
+        });
+        ema20Series.setData(
+            niftyData.dates.map((d, i) => ({
+                time : d,
+                value: niftyData.ema20[i],
+            }))
+        );
+
+        // EMA 50
+        const ema50Series = chart.addLineSeries({
+            color    : '#3b82f6',
+            lineWidth: 2,
+            title    : 'EMA50',
+        });
+        ema50Series.setData(
+            niftyData.dates.map((d, i) => ({
+                time : d,
+                value: niftyData.ema50[i],
+            }))
+        );
+
+        chart.timeScale().fitContent();
+
+        window.addEventListener('resize', () => {
+            chart.applyOptions({
+                width: container.offsetWidth || 600,
+            });
+        });
+
+        console.log('✅ Nifty chart rendered with ' +
+                    candleData.length + ' candles');
+
+    } catch(e) {
+        console.error('Chart error:', e);
+        container.innerHTML =
+            '<div style="display:flex;align-items:center;' +
+            'justify-content:center;height:380px;' +
+            'color:#ff4444;">Chart error: ' + e.message +
+            '</div>';
+    }
 }
 
+// Wait for library to load then render
+if (typeof LightweightCharts !== 'undefined') {
+    renderNiftyChart();
+} else {
+    document.addEventListener('DOMContentLoaded',
+        renderNiftyChart);
+    setTimeout(renderNiftyChart, 2000);
+}
 // ---- SIGNAL CONFIDENCE CHART (Chart.js) ----
 const sigLabels = ["HINDALCO.NS", "COALINDIA.NS", "ASIANPAINT.NS", "RELIANCE.NS", "INFY.NS"];
 const sigConfs  = [78.9, 74.3, 71.8, 71.8, 71.6];

@@ -406,7 +406,7 @@ def generate_dashboard():
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Lightweight Charts for Candlestick -->
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 
     <style>
         * {{ margin:0;padding:0;box-sizing:border-box; }}
@@ -909,91 +909,124 @@ setInterval(updateClock, 1000);
 // ---- NIFTY CANDLESTICK CHART ----
 const niftyData = {nifty_json};
 
-if (niftyData && niftyData.dates && niftyData.dates.length > 0) {{
-    const chart = LightweightCharts.createChart(
-        document.getElementById('nifty-chart'), {{
-        width : document.getElementById(
-                    'nifty-chart').offsetWidth,
-        height: 380,
-        layout: {{
-            background: {{ color: '{COLORS['card']}' }},
-            textColor : '{COLORS['text_dim']}',
-        }},
-        grid: {{
-            vertLines  : {{ color: '{COLORS['border']}' }},
-            horzLines  : {{ color: '{COLORS['border']}' }},
-        }},
-        crosshair: {{ mode: 1 }},
-        rightPriceScale: {{
-            borderColor: '{COLORS['border']}',
-        }},
-        timeScale: {{
-            borderColor    : '{COLORS['border']}',
-            timeVisible    : true,
-            secondsVisible : false,
-        }},
-    }});
+function renderNiftyChart() {{
+    const container = document.getElementById('nifty-chart');
+    if (!container) return;
 
-    const candleSeries = chart.addCandlestickSeries({{
-        upColor       : '{COLORS['green']}',
-        downColor     : '{COLORS['red']}',
-        borderUpColor : '{COLORS['green']}',
-        borderDownColor: '{COLORS['red']}',
-        wickUpColor   : '{COLORS['green']}',
-        wickDownColor : '{COLORS['red']}',
-    }});
+    if (!niftyData || !niftyData.dates ||
+        niftyData.dates.length === 0) {{
+        container.innerHTML =
+            '<div style="display:flex;align-items:center;' +
+            'justify-content:center;height:380px;' +
+            'color:#94a3b8;">No chart data available</div>';
+        return;
+    }}
 
-    const candleData = niftyData.dates.map((d, i) => ({{
-        time : d,
-        open : niftyData.opens[i],
-        high : niftyData.highs[i],
-        low  : niftyData.lows[i],
-        close: niftyData.closes[i],
-    }}));
-    candleSeries.setData(candleData);
-
-    // EMA 20
-    const ema20Series = chart.addLineSeries({{
-        color    : '{COLORS['yellow']}',
-        lineWidth: 2,
-        title    : 'EMA 20',
-    }});
-    ema20Series.setData(
-        niftyData.dates.map((d,i) => ({{
-            time: d, value: niftyData.ema20[i]
-        }}))
-    );
-
-    // EMA 50
-    const ema50Series = chart.addLineSeries({{
-        color    : '{COLORS['blue']}',
-        lineWidth: 2,
-        title    : 'EMA 50',
-    }});
-    ema50Series.setData(
-        niftyData.dates.map((d,i) => ({{
-            time: d, value: niftyData.ema50[i]
-        }}))
-    );
-
-    chart.timeScale().fitContent();
-
-    // Resize on window resize
-    window.addEventListener('resize', () => {{
-        chart.applyOptions({{
-            width: document.getElementById(
-                       'nifty-chart').offsetWidth,
+    try {{
+        const chart = LightweightCharts.createChart(
+            container, {{
+            width : container.offsetWidth || 600,
+            height: 380,
+            layout: {{
+                background: {{ type: 'solid',
+                               color: '{COLORS['card']}' }},
+                textColor : '{COLORS['text_dim']}',
+            }},
+            grid: {{
+                vertLines: {{
+                    color  : '{COLORS['border']}',
+                    visible: true,
+                }},
+                horzLines: {{
+                    color  : '{COLORS['border']}',
+                    visible: true,
+                }},
+            }},
+            crosshair : {{ mode: 1 }},
+            rightPriceScale: {{
+                borderColor: '{COLORS['border']}',
+            }},
+            timeScale: {{
+                borderColor    : '{COLORS['border']}',
+                timeVisible    : true,
+                secondsVisible : false,
+            }},
         }});
-    }});
 
-}} else {{
-    document.getElementById('nifty-chart').innerHTML =
-        '<div style="display:flex;align-items:center;' +
-        'justify-content:center;height:380px;' +
-        'color:{COLORS["text_dim"]};">' +
-        'Chart data unavailable</div>';
+        const candleSeries = chart.addCandlestickSeries({{
+            upColor        : '{COLORS['green']}',
+            downColor      : '{COLORS['red']}',
+            borderUpColor  : '{COLORS['green']}',
+            borderDownColor: '{COLORS['red']}',
+            wickUpColor    : '{COLORS['green']}',
+            wickDownColor  : '{COLORS['red']}',
+        }});
+
+        const candleData = niftyData.dates.map((d, i) => ({{
+            time : d,
+            open : niftyData.opens[i],
+            high : niftyData.highs[i],
+            low  : niftyData.lows[i],
+            close: niftyData.closes[i],
+        }}));
+
+        candleSeries.setData(candleData);
+
+        // EMA 20
+        const ema20Series = chart.addLineSeries({{
+            color    : '{COLORS['yellow']}',
+            lineWidth: 2,
+            title    : 'EMA20',
+        }});
+        ema20Series.setData(
+            niftyData.dates.map((d, i) => ({{
+                time : d,
+                value: niftyData.ema20[i],
+            }}))
+        );
+
+        // EMA 50
+        const ema50Series = chart.addLineSeries({{
+            color    : '{COLORS['blue']}',
+            lineWidth: 2,
+            title    : 'EMA50',
+        }});
+        ema50Series.setData(
+            niftyData.dates.map((d, i) => ({{
+                time : d,
+                value: niftyData.ema50[i],
+            }}))
+        );
+
+        chart.timeScale().fitContent();
+
+        window.addEventListener('resize', () => {{
+            chart.applyOptions({{
+                width: container.offsetWidth || 600,
+            }});
+        }});
+
+        console.log('✅ Nifty chart rendered with ' +
+                    candleData.length + ' candles');
+
+    }} catch(e) {{
+        console.error('Chart error:', e);
+        container.innerHTML =
+            '<div style="display:flex;align-items:center;' +
+            'justify-content:center;height:380px;' +
+            'color:#ff4444;">Chart error: ' + e.message +
+            '</div>';
+    }}
 }}
 
+// Wait for library to load then render
+if (typeof LightweightCharts !== 'undefined') {{
+    renderNiftyChart();
+}} else {{
+    document.addEventListener('DOMContentLoaded',
+        renderNiftyChart);
+    setTimeout(renderNiftyChart, 2000);
+}}
 // ---- SIGNAL CONFIDENCE CHART (Chart.js) ----
 const sigLabels = {sig_labels};
 const sigConfs  = {sig_confs};
