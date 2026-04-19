@@ -406,7 +406,9 @@ def generate_dashboard():
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Lightweight Charts for Candlestick -->
-    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
 
     <style>
         * {{ margin:0;padding:0;box-sizing:border-box; }}
@@ -923,111 +925,112 @@ function renderNiftyChart() {{
     }}
 
     try {{
-        const chart = LightweightCharts.createChart(
-            container, {{
-            width : container.offsetWidth || 600,
-            height: 380,
-            layout: {{
-                background: {{ type: 'solid',
-                               color: '{COLORS['card']}' }},
-                textColor : '{COLORS['text_dim']}',
-            }},
-            grid: {{
-                vertLines: {{
-                    color  : '{COLORS['border']}',
-                    visible: true,
-                }},
-                horzLines: {{
-                    color  : '{COLORS['border']}',
-                    visible: true,
-                }},
-            }},
-            crosshair : {{ mode: 1 }},
-            rightPriceScale: {{
-                borderColor: '{COLORS['border']}',
-            }},
-            timeScale: {{
-                borderColor    : '{COLORS['border']}',
-                timeVisible    : true,
-                secondsVisible : false,
-            }},
-        }});
+        // Build canvas inside container
+        container.innerHTML =
+            '<canvas id="nifty-canvas"></canvas>';
+        const ctx = document.getElementById(
+            'nifty-canvas').getContext('2d');
 
-        const candleSeries = chart.addCandlestickSeries({{
-            upColor        : '{COLORS['green']}',
-            downColor      : '{COLORS['red']}',
-            borderUpColor  : '{COLORS['green']}',
-            borderDownColor: '{COLORS['red']}',
-            wickUpColor    : '{COLORS['green']}',
-            wickDownColor  : '{COLORS['red']}',
-        }});
-
-        const candleData = niftyData.dates.map((d, i) => ({{
-            time : d,
-            open : niftyData.opens[i],
-            high : niftyData.highs[i],
-            low  : niftyData.lows[i],
-            close: niftyData.closes[i],
+        // Build OHLC data for candlestick
+        const ohlcData = niftyData.dates.map((d, i) => ({{
+            x    : new Date(d).getTime(),
+            o    : niftyData.opens[i],
+            h    : niftyData.highs[i],
+            l    : niftyData.lows[i],
+            c    : niftyData.closes[i],
         }}));
 
-        candleSeries.setData(candleData);
+        // EMA line data
+        const ema20Data = niftyData.dates.map((d, i) => ({{
+            x: new Date(d).getTime(),
+            y: niftyData.ema20[i],
+        }}));
+        const ema50Data = niftyData.dates.map((d, i) => ({{
+            x: new Date(d).getTime(),
+            y: niftyData.ema50[i],
+        }}));
 
-        // EMA 20
-        const ema20Series = chart.addLineSeries({{
-            color    : '{COLORS['yellow']}',
-            lineWidth: 2,
-            title    : 'EMA20',
+        new Chart(ctx, {{
+            type: 'candlestick',
+            data: {{
+                datasets: [
+                    {{
+                        label          : 'NIFTY 50',
+                        data           : ohlcData,
+                        color          : {{
+                            up  : '{COLORS['green']}',
+                            down: '{COLORS['red']}',
+                            unchanged: '{COLORS['yellow']}',
+                        }},
+                    }},
+                    {{
+                        type     : 'line',
+                        label    : 'EMA 20',
+                        data     : ema20Data,
+                        borderColor    : '{COLORS['yellow']}',
+                        borderWidth    : 2,
+                        pointRadius    : 0,
+                        tension        : 0.1,
+                    }},
+                    {{
+                        type     : 'line',
+                        label    : 'EMA 50',
+                        data     : ema50Data,
+                        borderColor    : '{COLORS['blue']}',
+                        borderWidth    : 2,
+                        pointRadius    : 0,
+                        tension        : 0.1,
+                    }},
+                ],
+            }},
+            options: {{
+                responsive         : true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{
+                        display: true,
+                        labels : {{
+                            color: '{COLORS['text_dim']}',
+                        }},
+                    }},
+                    tooltip: {{ mode: 'index' }},
+                }},
+                scales: {{
+                    x: {{
+                        type : 'timeseries',
+                        time : {{
+                            unit           : 'day',
+                            tooltipFormat  : 'dd MMM yyyy',
+                            displayFormats : {{
+                                day: 'dd MMM',
+                            }},
+                        }},
+                        grid : {{ color: '{COLORS['border']}' }},
+                        ticks: {{ color: '{COLORS['text_dim']}',
+                                  maxTicksLimit: 10 }},
+                    }},
+                    y: {{
+                        grid : {{ color: '{COLORS['border']}' }},
+                        ticks: {{ color: '{COLORS['text_dim']}' }},
+                    }},
+                }},
+            }},
         }});
-        ema20Series.setData(
-            niftyData.dates.map((d, i) => ({{
-                time : d,
-                value: niftyData.ema20[i],
-            }}))
-        );
 
-        // EMA 50
-        const ema50Series = chart.addLineSeries({{
-            color    : '{COLORS['blue']}',
-            lineWidth: 2,
-            title    : 'EMA50',
-        }});
-        ema50Series.setData(
-            niftyData.dates.map((d, i) => ({{
-                time : d,
-                value: niftyData.ema50[i],
-            }}))
-        );
-
-        chart.timeScale().fitContent();
-
-        window.addEventListener('resize', () => {{
-            chart.applyOptions({{
-                width: container.offsetWidth || 600,
-            }});
-        }});
-
-        console.log('✅ Nifty chart rendered with ' +
-                    candleData.length + ' candles');
+        console.log('✅ Nifty chart rendered: ' +
+                    ohlcData.length + ' candles');
 
     }} catch(e) {{
         console.error('Chart error:', e);
         container.innerHTML =
             '<div style="display:flex;align-items:center;' +
             'justify-content:center;height:380px;' +
-            'color:#ff4444;">Chart error: ' + e.message +
-            '</div>';
+            'color:#ff4444;">Chart error: ' +
+            e.message + '</div>';
     }}
 }}
 
-// Wait for library to load then render
-if (typeof LightweightCharts !== 'undefined') {{
-    renderNiftyChart();
-}} else {{
-    document.addEventListener('DOMContentLoaded',
-        renderNiftyChart);
-    setTimeout(renderNiftyChart, 2000);
-}}
-// ---- SIGNAL CONFIDENCE CHART (Chart.js) ----
+window.addEventListener('load', renderNiftyChart);// ---- SIGNAL CONFIDENCE CHART (Chart.js) ----
 const sigLabels = {sig_labels};
 const sigConfs  = {sig_confs};
 const sigColors = {sig_colors};
