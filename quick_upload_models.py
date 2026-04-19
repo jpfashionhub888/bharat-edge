@@ -7,6 +7,13 @@ import base64
 import requests
 from datetime import datetime
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("  ✅ .env loaded")
+except Exception:
+    print("  ⚠️ Could not load .env")
+
 # ============================================================
 # YOUR GITHUB CREDENTIALS
 # ============================================================
