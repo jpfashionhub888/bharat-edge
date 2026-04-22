@@ -1,0 +1,13 @@
+yfinance
+pandas
+numpy
+scikit-learn
+xgboost
+lightgbm
+requests
+beautifulsoup4
+ta
+plotly
+dash
+transformers
+feedparser
