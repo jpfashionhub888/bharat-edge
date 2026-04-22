@@ -10,3 +10,7 @@ config/secrets.env
 zerodha.txt
 *.txt
 .github/workflows/*.txt
+
+# Allow logs folder for trade persistence
+!logs/
+!logs/*.json
