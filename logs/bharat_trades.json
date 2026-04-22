@@ -1,0 +1,104 @@
+{
+  "capital": 60864.450103759766,
+  "starting_capital": 100000.0,
+  "positions": {
+    "COALINDIA.NS": {
+      "shares": 25,
+      "entry_price": 443.1499938964844,
+      "entry_date": "2026-04-22T23:17:25.693147",
+      "highest_price": 443.1499938964844,
+      "signal": 0.746,
+      "cost": 11078.74984741211,
+      "reason": "METAL",
+      "current_price": 443.1499938964844
+    },
+    "ASIANPAINT.NS": {
+      "shares": 3,
+      "entry_price": 2543.60009765625,
+      "entry_date": "2026-04-22T23:17:26.346253",
+      "highest_price": 2543.60009765625,
+      "signal": 0.74,
+      "cost": 7630.80029296875,
+      "reason": "CONSUMER",
+      "current_price": 2543.60009765625
+    },
+    "INDUSTOWER.NS": {
+      "shares": 20,
+      "entry_price": 414.75,
+      "entry_date": "2026-04-22T23:17:26.950529",
+      "highest_price": 414.75,
+      "signal": 0.7070000000000001,
+      "cost": 8295.0,
+      "reason": "TELECOM",
+      "current_price": 414.75
+    },
+    "INFY.NS": {
+      "shares": 5,
+      "entry_price": 1313.199951171875,
+      "entry_date": "2026-04-22T23:17:27.545459",
+      "highest_price": 1313.199951171875,
+      "signal": 0.703,
+      "cost": 6565.999755859375,
+      "reason": "IT",
+      "current_price": 1313.199951171875
+    },
+    "BHARTIARTL.NS": {
+      "shares": 3,
+      "entry_price": 1855.0,
+      "entry_date": "2026-04-22T23:17:28.178574",
+      "highest_price": 1855.0,
+      "signal": 0.6890000000000001,
+      "cost": 5565.0,
+      "reason": "TELECOM",
+      "current_price": 1855.0
+    }
+  },
+  "trade_history": [
+    {
+      "action": "BUY",
+      "symbol": "COALINDIA.NS",
+      "shares": 25,
+      "price": 443.1499938964844,
+      "cost": 11078.74984741211,
+      "date": "2026-04-22T23:17:25.693152",
+      "reason": "METAL"
+    },
+    {
+      "action": "BUY",
+      "symbol": "ASIANPAINT.NS",
+      "shares": 3,
+      "price": 2543.60009765625,
+      "cost": 7630.80029296875,
+      "date": "2026-04-22T23:17:26.346266",
+      "reason": "CONSUMER"
+    },
+    {
+      "action": "BUY",
+      "symbol": "INDUSTOWER.NS",
+      "shares": 20,
+      "price": 414.75,
+      "cost": 8295.0,
+      "date": "2026-04-22T23:17:26.950542",
+      "reason": "TELECOM"
+    },
+    {
+      "action": "BUY",
+      "symbol": "INFY.NS",
+      "shares": 5,
+      "price": 1313.199951171875,
+      "cost": 6565.999755859375,
+      "date": "2026-04-22T23:17:27.545473",
+      "reason": "IT"
+    },
+    {
+      "action": "BUY",
+      "symbol": "BHARTIARTL.NS",
+      "shares": 3,
+      "price": 1855.0,
+      "cost": 5565.0,
+      "date": "2026-04-22T23:17:28.178586",
+      "reason": "TELECOM"
+    }
+  ],
+  "saved_at": "2026-04-22T23:17:28.774567"
+}
