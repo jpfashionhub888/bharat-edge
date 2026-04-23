@@ -2,196 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="300">
-    <title>Bharat Edge — AI Trading Dashboard</title>
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- Lightweight Charts for Candlestick -->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
-
+    <title>BharatEdge Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
     <style>
-        * { margin:0;padding:0;box-sizing:border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family:'Inter','Segoe UI',sans-serif;
             background:#0a0e1a;
             color:#e2e8f0;
+            font-family:'Segoe UI',Arial,sans-serif;
+            padding:20px;
             min-height:100vh;
         }
-
-        /* HEADER */
         .header {
-            background:#111827;
-            border-bottom:2px solid #00d4ff;
-            padding:16px 24px;
+            background:#1a2235;
+            border:1px solid #1e2d45;
+            border-radius:16px;
+            padding:24px 32px;
+            margin-bottom:24px;
             display:flex;
             justify-content:space-between;
             align-items:center;
-            position:sticky;top:0;z-index:100;
         }
         .header h1 {
             color:#00d4ff;
-            font-size:26px;font-weight:800;
-            letter-spacing:3px;margin:0;
+            font-size:26px;
+            font-weight:700;
+            letter-spacing:1px;
         }
-        .live-badge {
-            display:inline-block;background:#d50000;
-            color:white;padding:2px 8px;
-            border-radius:12px;font-size:11px;
-            font-weight:700;animation:pulse 2s infinite;
-            margin-left:8px;
+        .header p {
+            color:#94a3b8;
+            font-size:13px;
+            margin-top:4px;
+        }
+        .live-dot {
+            width:10px;height:10px;
+            border-radius:50%;
+            background:#00ff88;
+            display:inline-block;
+            margin-right:6px;
+            animation:pulse 2s infinite;
         }
         @keyframes pulse {
-            0%,100%{opacity:1} 50%{opacity:0.4}
+            0%,100% { opacity:1; }
+            50% { opacity:0.3; }
         }
-
-        /* TABS */
-        .tabs {
-            display:flex;gap:4px;
-            padding:16px 24px 0;
-            max-width:1400px;margin:0 auto;
-            border-bottom:1px solid #1e2d45;
-            flex-wrap:wrap;
+        .cards {
+            display:grid;
+            grid-template-columns:repeat(6,1fr);
+            gap:16px;
+            margin-bottom:24px;
         }
-        .tab {
-            background:#111827;
-            color:#94a3b8;
-            border:1px solid #1e2d45;
-            border-bottom:none;
-            border-radius:8px 8px 0 0;
-            padding:10px 16px;font-size:13px;
-            font-weight:500;cursor:pointer;
-            transition:all 0.2s;
-            text-decoration:none;
-        }
-        .tab:hover { color:#e2e8f0; }
-        .tab.active {
-            background:#1a2235;
-            color:#00d4ff;
-            border:2px solid #00d4ff;
-            border-bottom:2px solid #1a2235;
-            font-weight:700;
-        }
-
-        /* CONTENT */
-        .content {
-            max-width:1400px;
-            margin:0 auto;
-            padding:20px 24px;
-        }
-
-        /* CARDS */
         .card {
             background:#111827;
             border:1px solid #1e2d45;
             border-radius:12px;
-            padding:20px;margin-bottom:16px;
+            padding:16px;
         }
-        .card-header {
-            background:#1a2235;
-            border:1px solid #1e2d45;
-            border-radius:8px;padding:8px 16px;
-            color:#94a3b8;font-size:11px;
-            margin-bottom:14px;letter-spacing:1px;
-            text-transform:uppercase;font-weight:600;
+        .card-label {
+            color:#94a3b8;
+            font-size:10px;
+            letter-spacing:1px;
+            text-transform:uppercase;
+            margin-bottom:8px;
         }
-
-        /* METRICS */
-        .metrics-row {
-            display:flex;gap:12px;
-            flex-wrap:wrap;margin-bottom:16px;
+        .card-value {
+            font-size:20px;
+            font-weight:700;
+            margin-bottom:4px;
         }
-        .metric-card {
-            background:#1a2235;
-            border:1px solid #1e2d45;
-            border-radius:10px;padding:18px;
-            text-align:center;flex:1;min-width:130px;
-            transition:all 0.2s;cursor:default;
+        .card-sub {
+            color:#94a3b8;
+            font-size:11px;
         }
-
-        /* GRIDS */
-        .grid-2-1 {
+        .charts-row {
             display:grid;
             grid-template-columns:2fr 1fr;
-            gap:16px;margin-bottom:16px;
+            gap:16px;
+            margin-bottom:24px;
         }
-        .grid-2 {
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:16px;margin-bottom:16px;
+        .panel {
+            background:#111827;
+            border:1px solid #1e2d45;
+            border-radius:12px;
+            padding:20px;
+            margin-bottom:20px;
         }
-
-        /* TABLES */
-        .table-wrap { overflow-x:auto; }
-        table { width:100%;border-collapse:collapse; }
+        .panel h3 {
+            color:#00d4ff;
+            font-size:15px;
+            font-weight:600;
+            letter-spacing:1px;
+            margin-bottom:16px;
+            padding-bottom:10px;
+            border-bottom:1px solid #1e2d45;
+        }
+        table {
+            width:100%;
+            border-collapse:collapse;
+            font-size:13px;
+        }
         th {
             background:#1a2235;
             color:#94a3b8;
-            padding:12px 14px;text-align:left;
-            font-size:11px;text-transform:uppercase;
+            padding:10px;
+            text-align:center;
+            font-size:11px;
             letter-spacing:1px;
+            text-transform:uppercase;
             border:1px solid #1e2d45;
         }
         td {
-            padding:11px 14px;
+            padding:10px;
+            text-align:center;
             border:1px solid #1e2d45;
-            font-size:13px;
+            color:#e2e8f0;
         }
-        tr:hover td { background:#1a2235; }
-
-        /* TAB PANELS */
-        .tab-panel { display:none; }
-        .tab-panel.active { display:block; }
-
-        /* VIX GAUGE */
-        .vix-gauge {
-            text-align:center;padding:10px 0;
+        tr:hover td {
+            background:#1a2235;
         }
-        .vix-value {
-            font-size:3.5rem;font-weight:800;
-        }
-        .vix-label {
-            font-size:1rem;font-weight:700;
-            letter-spacing:2px;margin:4px 0;
-        }
-        .gauge-bar {
-            background:linear-gradient(90deg,
-                #00ff88,#ffd700,
-                #f97316,#ff4444);
-            border-radius:8px;height:14px;
-            margin:14px 0 6px;overflow:hidden;
-            position:relative;
-        }
-        .gauge-needle {
-            position:absolute;top:-3px;
-            width:4px;height:20px;
-            background:white;border-radius:2px;
-            transform:translateX(-50%);
-        }
-
-        /* CHART CONTAINERS */
-        .chart-container {
-            position:relative;
-            width:100%;
-        }
-
-        /* FOOTER */
         .footer {
-            text-align:center;padding:20px;
-            margin-top:40px;
+            text-align:center;
+            color:#94a3b8;
+            font-size:12px;
+            padding:20px;
             border-top:1px solid #1e2d45;
-            color:#94a3b8;font-size:11px;
+            margin-top:20px;
         }
-
-        /* RESPONSIVE */
         @media(max-width:768px) {
-            .grid-2-1,.grid-2 {
+            .cards {
+                grid-template-columns:repeat(2,1fr);
+            }
+            .charts-row {
                 grid-template-columns:1fr;
             }
-            .header h1 { font-size:20px; }
+            .header {
+                flex-direction:column;
+                gap:10px;
+            }
         }
     </style>
 </head>
@@ -200,949 +151,425 @@
 <!-- HEADER -->
 <div class="header">
     <div>
-        <h1>🇮🇳 BHARAT EDGE
-            <span class="live-badge">● LIVE</span>
-        </h1>
-        <div style="color:#94a3b8;font-size:13px;margin-top:2px;">
-            AI-Powered Indian Market Intelligence
-        </div>
+        <h1>BharatEdge Trading Dashboard</h1>
+        <p>AI-Powered Indian Stock Trading System (NSE)</p>
     </div>
-    <div style="text-align:right;">
-        <div style="color:#e2e8f0;font-weight:600;font-size:13px;">
-            Sunday, 19 April 2026
+    <div style="text-align:right">
+        <div>
+            <span class="live-dot"></span>
+            <span style="color:#00ff88;
+            font-weight:600;font-size:13px">LIVE</span>
         </div>
-        <div id="live-clock" style="color:#00d4ff;
-             font-size:20px;font-weight:700;">11:13 IST</div>
-        <div style="color:#94a3b8;font-size:10px;margin-top:2px;">
-            Auto-refreshes every 5 min
-        </div>
+        <p style="color:#94a3b8;
+        font-size:11px;margin-top:4px">
+            Updated: 2026-04-23 01:26 UTC
+        </p>
+        <p style="color:#94a3b8;font-size:11px">
+            Last scan: 2026-04-23T01:26
+        </p>
+        <p style="color:#94a3b8;font-size:11px">
+            Auto-refresh: 5 min
+        </p>
     </div>
 </div>
 
-<!-- TABS -->
-<div class="tabs">
-    <a class="tab active" onclick="showTab('overview',this)" href="#">
-        📊 Market Overview</a>
-    <a class="tab" onclick="showTab('scanner',this)" href="#">
-        📡 Signal Scanner</a>
-    <a class="tab" onclick="showTab('sector',this)" href="#">
-        🔄 Sector Rotation</a>
-    <a class="tab" onclick="showTab('history',this)" href="#">
-        📈 Performance</a>
+<!-- SUMMARY CARDS -->
+<div class="cards">
+    <div class="card"
+    style="border-top:3px solid #00d4ff">
+        <div class="card-label">Total Value</div>
+        <div class="card-value"
+        style="color:#00d4ff">
+            Rs100,057.90
+        </div>
+        <div class="card-sub">
+            Started: Rs100,000.00
+        </div>
+    </div>
+    <div class="card"
+    style="border-top:3px solid #3b82f6">
+        <div class="card-label">Cash Available</div>
+        <div class="card-value"
+        style="color:#3b82f6">
+            Rs60,864.45
+        </div>
+        <div class="card-sub">
+            60.8% of portfolio
+        </div>
+    </div>
+    <div class="card"
+    style="border-top:3px solid #00ff88">
+        <div class="card-label">Total P&L</div>
+        <div class="card-value"
+        style="color:#00ff88">
+            +Rs57.90
+        </div>
+        <div class="card-sub">
+            +0.06% overall
+        </div>
+    </div>
+    <div class="card"
+    style="border-top:3px solid #00ff88">
+        <div class="card-label">Realized P&L</div>
+        <div class="card-value"
+        style="color:#00ff88">
+            +Rs0.00
+        </div>
+        <div class="card-sub">
+            From 0 closed trades
+        </div>
+    </div>
+    <div class="card"
+    style="border-top:3px solid #ffd700">
+        <div class="card-label">Open Positions</div>
+        <div class="card-value"
+        style="color:#ffd700">
+            5
+        </div>
+        <div class="card-sub">Max 5 allowed</div>
+    </div>
+    <div class="card"
+    style="border-top:3px solid #ff4444">
+        <div class="card-label">Win Rate</div>
+        <div class="card-value"
+        style="color:#ff4444">
+            0%
+        </div>
+        <div class="card-sub">0W / 0L</div>
+    </div>
 </div>
 
-<div class="content">
-
-<!-- ==================== OVERVIEW TAB ==================== -->
-<div id="tab-overview" class="tab-panel active">
-
-    <!-- Top Metrics -->
-    <div class="metrics-row">
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#e2e8f0'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#e2e8f0;">24,353</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">NIFTY 50</div>
-        <div style="color:#94a3b8;font-size:11px;margin-top:4px;">Live Index</div>
+<!-- CHARTS ROW -->
+<div class="charts-row">
+    <div class="panel">
+        <h3>Portfolio Performance (INR)</h3>
+        <canvas id="portfolio-chart" height="120"></canvas>
     </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#ffd700'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#ffd700;">17.21</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">India VIX</div>
-        <div style="color:#94a3b8;font-size:11px;margin-top:4px;">CAUTIOUS</div>
+    <div class="panel">
+        <h3>Portfolio Allocation</h3>
+        <canvas id="alloc-chart" height="120"></canvas>
     </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#ff4444'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#ff4444;">₹-300Cr</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">FII Flow</div>
-        <div style="color:#94a3b8;font-size:11px;margin-top:4px;">SELLING</div>
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00ff88'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00ff88;">₹+0Cr</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">DII Flow</div>
-        <div style="color:#94a3b8;font-size:11px;margin-top:4px;">BUYING</div>
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00ff88'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00ff88;">+0.65%</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">SGX Gap</div>
-        <div style="color:#94a3b8;font-size:11px;margin-top:4px;">Pre-Market</div>
-    </div>
-    </div>
-
-    <!-- Nifty Chart + VIX Panel -->
-    <div class="grid-2-1">
-        <div class="card">
-            <div class="card-header">
-                📈 NIFTY 50 — 3 Month Candlestick Chart
-            </div>
-            <div id="nifty-chart"
-                 style="width:100%;height:380px;">
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header">⚡ MARKET RISK GAUGE</div>
-            <div class="vix-gauge">
-                <div class="vix-value"
-                     style="color:#ffd700;">17.21</div>
-                <div class="vix-label"
-                     style="color:#ffd700;">CAUTIOUS</div>
-                <div class="gauge-bar">
-                    <div class="gauge-needle"
-                         style="left:43.0%;">
-                    </div>
-                </div>
-                <div style="display:flex;
-                            justify-content:space-between;
-                            font-size:10px;
-                            color:#94a3b8;">
-                    <span>0 Safe</span>
-                    <span>20 Caution</span>
-                    <span>40 Danger</span>
-                </div>
-            </div>
-            <hr style="border-color:#1e2d45;
-                       margin:16px 0;">
-            
-    <div style="display:flex;justify-content:space-between;
-                padding:8px 0;border-bottom:1px solid #1e2d45;">
-        <span style="color:#94a3b8;font-size:12px;">VIX</span>
-        <span style="color:#ffd700;font-size:13px;font-weight:600;">17.21</span>
-    </div>
-            
-    <div style="display:flex;justify-content:space-between;
-                padding:8px 0;border-bottom:1px solid #1e2d45;">
-        <span style="color:#94a3b8;font-size:12px;">VIX Change</span>
-        <span style="color:#00ff88;font-size:13px;font-weight:600;">-4.9%</span>
-    </div>
-            
-    <div style="display:flex;justify-content:space-between;
-                padding:8px 0;border-bottom:1px solid #1e2d45;">
-        <span style="color:#94a3b8;font-size:12px;">FII Flow</span>
-        <span style="color:#ff4444;font-size:13px;font-weight:600;">₹-300 Cr</span>
-    </div>
-            
-    <div style="display:flex;justify-content:space-between;
-                padding:8px 0;border-bottom:1px solid #1e2d45;">
-        <span style="color:#94a3b8;font-size:12px;">DII Flow</span>
-        <span style="color:#00ff88;font-size:13px;font-weight:600;">₹+0 Cr</span>
-    </div>
-            
-    <div style="display:flex;justify-content:space-between;
-                padding:8px 0;border-bottom:1px solid #1e2d45;">
-        <span style="color:#94a3b8;font-size:12px;">SGX Gap</span>
-        <span style="color:#00ff88;font-size:13px;font-weight:600;">+0.65%</span>
-    </div>
-            
-    <div style="display:flex;justify-content:space-between;
-                padding:8px 0;border-bottom:1px solid #1e2d45;">
-        <span style="color:#94a3b8;font-size:12px;">Updated</span>
-        <span style="color:#00d4ff;font-size:13px;font-weight:600;">11:13 IST</span>
-    </div>
-        </div>
-    </div>
-
-    <!-- Scan Summary -->
-    <div class="card">
-        <div class="card-header">🎯 TODAY'S SCAN SUMMARY</div>
-        <div class="metrics-row">
-            
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00d4ff'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00d4ff;">5</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Total Signals</div>
-        
-    </div>
-            
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00ff88'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00ff88;">5</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Strong (≥65%)</div>
-        
-    </div>
-            
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#3b82f6'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#3b82f6;">73.7%</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Avg Confidence</div>
-        
-    </div>
-            
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#ff4444'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#ff4444;">0.0%</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Win Rate</div>
-        
-    </div>
-            
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00ff88'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00ff88;">0</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Wins</div>
-        
-    </div>
-            
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#ff4444'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#ff4444;">0</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Losses</div>
-        
-    </div>
-            
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#94a3b8'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#94a3b8;">2</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Pending</div>
-        
-    </div>
-        </div>
-    </div>
-
 </div>
 
-<!-- ==================== SCANNER TAB ==================== -->
-<div id="tab-scanner" class="tab-panel">
+<!-- OPEN POSITIONS -->
+<div class="panel">
+    <h3>Open Positions</h3>
+    <div style="overflow-x:auto">
+        <table>
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Shares</th>
+                    <th>Entry Price</th>
+                    <th>Current Price</th>
+                    <th>Cost</th>
+                    <th>P&L</th>
+                    <th>P&L %</th>
+                    <th>Entry Date</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">COALINDIA.NS</td>
+                <td>25</td>
+                <td>Rs443.15</td>
+                <td>Rs443.15</td>
+                <td>Rs11078.75</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-04-22
+                </td>
+                <td style="color:#ffd700">
+                    METAL
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">ASIANPAINT.NS</td>
+                <td>3</td>
+                <td>Rs2543.60</td>
+                <td>Rs2562.90</td>
+                <td>Rs7630.80</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs57.90
+                </td>
+                <td style="color:#00ff88">
+                    +0.76%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-04-22
+                </td>
+                <td style="color:#ffd700">
+                    CONSUMER
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">INDUSTOWER.NS</td>
+                <td>20</td>
+                <td>Rs414.75</td>
+                <td>Rs414.75</td>
+                <td>Rs8295.00</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-04-22
+                </td>
+                <td style="color:#ffd700">
+                    TELECOM
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">INFY.NS</td>
+                <td>5</td>
+                <td>Rs1313.20</td>
+                <td>Rs1313.20</td>
+                <td>Rs6566.00</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-04-22
+                </td>
+                <td style="color:#ffd700">
+                    IT
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">BHARTIARTL.NS</td>
+                <td>3</td>
+                <td>Rs1855.00</td>
+                <td>Rs1855.00</td>
+                <td>Rs5565.00</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-04-22
+                </td>
+                <td style="color:#ffd700">
+                    TELECOM
+                </td>
+            </tr></tbody>
+        </table>
+    </div>
+</div>
 
-    <div class="metrics-row">
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00d4ff'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00d4ff;">5</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Total Signals</div>
-        
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00ff88'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00ff88;">5</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Strong (≥65%)</div>
-        
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#3b82f6'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#3b82f6;">73.7%</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Avg Confidence</div>
-        
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#94a3b8'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#94a3b8;">4</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Models</div>
-        <div style="color:#94a3b8;font-size:11px;margin-top:4px;">XGB+LGB+RF+ET</div>
-    </div>
-    </div>
-
-    <div class="grid-2">
-        <!-- Signal Confidence Chart -->
-        <div class="card">
-            <div class="card-header">
-                📊 SIGNAL CONFIDENCE RANKING
-            </div>
-            <div class="chart-container" style="height:320px;">
-                <canvas id="signal-chart"></canvas>
-            </div>
-        </div>
-
-        <!-- Signal Table -->
-        <div class="card">
-            <div class="card-header">
-                📋 SIGNAL DETAILS TABLE — Sunday, 19 April 2026
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>Signal</th>
-                            <th>Confidence</th>
-                            <th>Votes</th>
-                            <th>Sector</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+<!-- TRADE HISTORY -->
+<div class="panel">
+    <h3>Trade History (Last 30)</h3>
+    <div style="overflow-x:auto">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Symbol</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>P&L</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
         <tr>
-            <td><b style="color:#00d4ff">HINDALCO.NS</b></td>
-            <td style="color:#3b82f6;font-weight:700;">🟢 BUY</td>
-            <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <div style="background:#1e2d45;border-radius:4px;
-                                height:8px;width:100px;display:inline-block;overflow:hidden;">
-                        <div style="background:#3b82f6;width:79%;
-                                    height:100%;border-radius:4px;"></div>
-                    </div>
-                    <span style="color:#3b82f6;font-weight:600;">78.9%</span>
-                </div>
+            <td style="color:#94a3b8">
+                2026-04-22T23:17
             </td>
-            <td style="color:#e2e8f0;">4/4</td>
-            <td style="color:#94a3b8;">METAL</td>
-            <td style="color:#00ff88;font-weight:600;">OVERWEIGHT</td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                BHARTIARTL.NS
+            </td>
+            <td>3</td>
+            <td>Rs1855.00</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                TELECOM
+            </td>
         </tr>
         <tr>
-            <td><b style="color:#00d4ff">COALINDIA.NS</b></td>
-            <td style="color:#3b82f6;font-weight:700;">🟢 BUY</td>
-            <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <div style="background:#1e2d45;border-radius:4px;
-                                height:8px;width:100px;display:inline-block;overflow:hidden;">
-                        <div style="background:#3b82f6;width:74%;
-                                    height:100%;border-radius:4px;"></div>
-                    </div>
-                    <span style="color:#3b82f6;font-weight:600;">74.3%</span>
-                </div>
+            <td style="color:#94a3b8">
+                2026-04-22T23:17
             </td>
-            <td style="color:#e2e8f0;">4/4</td>
-            <td style="color:#94a3b8;">METAL</td>
-            <td style="color:#00ff88;font-weight:600;">OVERWEIGHT</td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                INFY.NS
+            </td>
+            <td>5</td>
+            <td>Rs1313.20</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                IT
+            </td>
         </tr>
         <tr>
-            <td><b style="color:#00d4ff">ASIANPAINT.NS</b></td>
-            <td style="color:#3b82f6;font-weight:700;">🟢 BUY</td>
-            <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <div style="background:#1e2d45;border-radius:4px;
-                                height:8px;width:100px;display:inline-block;overflow:hidden;">
-                        <div style="background:#3b82f6;width:72%;
-                                    height:100%;border-radius:4px;"></div>
-                    </div>
-                    <span style="color:#3b82f6;font-weight:600;">71.8%</span>
-                </div>
+            <td style="color:#94a3b8">
+                2026-04-22T23:17
             </td>
-            <td style="color:#e2e8f0;">4/4</td>
-            <td style="color:#94a3b8;">CONSUMER</td>
-            <td style="color:#00ff88;font-weight:600;">OVERWEIGHT</td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                INDUSTOWER.NS
+            </td>
+            <td>20</td>
+            <td>Rs414.75</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                TELECOM
+            </td>
         </tr>
         <tr>
-            <td><b style="color:#00d4ff">RELIANCE.NS</b></td>
-            <td style="color:#3b82f6;font-weight:700;">🟢 BUY</td>
-            <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <div style="background:#1e2d45;border-radius:4px;
-                                height:8px;width:100px;display:inline-block;overflow:hidden;">
-                        <div style="background:#3b82f6;width:72%;
-                                    height:100%;border-radius:4px;"></div>
-                    </div>
-                    <span style="color:#3b82f6;font-weight:600;">71.8%</span>
-                </div>
+            <td style="color:#94a3b8">
+                2026-04-22T23:17
             </td>
-            <td style="color:#e2e8f0;">4/4</td>
-            <td style="color:#94a3b8;">ENERGY</td>
-            <td style="color:#ffd700;font-weight:600;">NEUTRAL</td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                ASIANPAINT.NS
+            </td>
+            <td>3</td>
+            <td>Rs2543.60</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                CONSUMER
+            </td>
         </tr>
         <tr>
-            <td><b style="color:#00d4ff">INFY.NS</b></td>
-            <td style="color:#3b82f6;font-weight:700;">🟢 BUY</td>
-            <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <div style="background:#1e2d45;border-radius:4px;
-                                height:8px;width:100px;display:inline-block;overflow:hidden;">
-                        <div style="background:#3b82f6;width:72%;
-                                    height:100%;border-radius:4px;"></div>
-                    </div>
-                    <span style="color:#3b82f6;font-weight:600;">71.6%</span>
-                </div>
+            <td style="color:#94a3b8">
+                2026-04-22T23:17
             </td>
-            <td style="color:#e2e8f0;">4/4</td>
-            <td style="color:#94a3b8;">IT</td>
-            <td style="color:#ffd700;font-weight:600;">NEUTRAL</td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                COALINDIA.NS
+            </td>
+            <td>25</td>
+            <td>Rs443.15</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                METAL
+            </td>
         </tr></tbody>
-                </table>
-            </div>
-        </div>
+        </table>
     </div>
-
-    <div class="card" style="padding:12px 20px;">
-        <span style="color:#94a3b8;font-size:12px;">
-            🟢🟢 STRONG BUY &nbsp;|&nbsp;
-            🟢 BUY &nbsp;|&nbsp;
-            🔵 WEAK BUY &nbsp;|&nbsp;
-            🔴🔴 STRONG SELL &nbsp;|&nbsp;
-            🔴 SELL &nbsp;|&nbsp;
-            ⚠️ Not financial advice. DYOR.
-        </span>
-    </div>
-
 </div>
-
-<!-- ==================== SECTOR TAB ==================== -->
-<div id="tab-sector" class="tab-panel">
-
-    <div class="card">
-        <div class="card-header">
-            🔄 SECTOR ROTATION SCORES (LIVE)
-        </div>
-        <div class="chart-container" style="height:320px;">
-            <canvas id="sector-chart"></canvas>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">📋 SECTOR DETAILS TABLE</div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sector</th>
-                        <th>Score</th>
-                        <th>1M Mom</th>
-                        <th>3M Mom</th>
-                        <th>RS vs Nifty</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-        <tr>
-            <td><b style="color:#00d4ff;">METAL</b></td>
-            <td style="color:#ffd700;font-weight:700;">81.2</td>
-            <td style="color:#00ff88;font-weight:600;">+8.5%</td>
-            <td style="color:#00ff88;font-weight:600;">+12.7%</td>
-            <td style="color:#00ff88;font-weight:600;">+10.3%</td>
-            <td style="color:#00ff88;font-weight:700;">OVERWEIGHT (1.5x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">CONSUMER</b></td>
-            <td style="color:#ffd700;font-weight:700;">78.3</td>
-            <td style="color:#00ff88;font-weight:600;">+10.6%</td>
-            <td style="color:#00ff88;font-weight:600;">+7.8%</td>
-            <td style="color:#00ff88;font-weight:600;">+9.6%</td>
-            <td style="color:#00ff88;font-weight:700;">OVERWEIGHT (1.5x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">INFRA</b></td>
-            <td style="color:#ffd700;font-weight:700;">76.6</td>
-            <td style="color:#00ff88;font-weight:600;">+15.6%</td>
-            <td style="color:#00ff88;font-weight:600;">+6.2%</td>
-            <td style="color:#00ff88;font-weight:600;">+12.0%</td>
-            <td style="color:#00ff88;font-weight:700;">OVERWEIGHT (1.5x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">FMCG</b></td>
-            <td style="color:#ffd700;font-weight:700;">71.8</td>
-            <td style="color:#00ff88;font-weight:600;">+3.8%</td>
-            <td style="color:#ff4444;font-weight:600;">-5.1%</td>
-            <td style="color:#00ff88;font-weight:600;">+0.4%</td>
-            <td style="color:#ffd700;font-weight:700;">NEUTRAL (1.0x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">TELECOM</b></td>
-            <td style="color:#ffd700;font-weight:700;">68.0</td>
-            <td style="color:#00ff88;font-weight:600;">+1.1%</td>
-            <td style="color:#ff4444;font-weight:600;">-8.4%</td>
-            <td style="color:#ff4444;font-weight:600;">-2.6%</td>
-            <td style="color:#ffd700;font-weight:700;">NEUTRAL (1.0x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">IT</b></td>
-            <td style="color:#ffd700;font-weight:700;">66.8</td>
-            <td style="color:#00ff88;font-weight:600;">+7.9%</td>
-            <td style="color:#ff4444;font-weight:600;">-19.5%</td>
-            <td style="color:#ff4444;font-weight:600;">-2.9%</td>
-            <td style="color:#ffd700;font-weight:700;">NEUTRAL (1.0x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">ENERGY</b></td>
-            <td style="color:#ffd700;font-weight:700;">66.3</td>
-            <td style="color:#ff4444;font-weight:600;">-2.3%</td>
-            <td style="color:#ff4444;font-weight:600;">-6.4%</td>
-            <td style="color:#ff4444;font-weight:600;">-3.8%</td>
-            <td style="color:#ffd700;font-weight:700;">NEUTRAL (1.0x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">NBFC</b></td>
-            <td style="color:#ffd700;font-weight:700;">65.9</td>
-            <td style="color:#00ff88;font-weight:600;">+4.6%</td>
-            <td style="color:#ff4444;font-weight:600;">-4.4%</td>
-            <td style="color:#00ff88;font-weight:600;">+1.1%</td>
-            <td style="color:#ff4444;font-weight:700;">UNDERWEIGHT (0.3x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">AUTO</b></td>
-            <td style="color:#ffd700;font-weight:700;">65.0</td>
-            <td style="color:#00ff88;font-weight:600;">+3.7%</td>
-            <td style="color:#ff4444;font-weight:600;">-15.2%</td>
-            <td style="color:#ff4444;font-weight:600;">-3.7%</td>
-            <td style="color:#ff4444;font-weight:700;">UNDERWEIGHT (0.3x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">PHARMA</b></td>
-            <td style="color:#ffd700;font-weight:700;">63.5</td>
-            <td style="color:#ff4444;font-weight:600;">-6.6%</td>
-            <td style="color:#00ff88;font-weight:600;">+1.1%</td>
-            <td style="color:#ff4444;font-weight:600;">-3.4%</td>
-            <td style="color:#ff4444;font-weight:700;">UNDERWEIGHT (0.3x)</td>
-        </tr>
-        <tr>
-            <td><b style="color:#00d4ff;">BANKING</b></td>
-            <td style="color:#ffd700;font-weight:700;">62.7</td>
-            <td style="color:#ff4444;font-weight:600;">-5.4%</td>
-            <td style="color:#ff4444;font-weight:600;">-14.1%</td>
-            <td style="color:#ff4444;font-weight:600;">-8.7%</td>
-            <td style="color:#ff4444;font-weight:700;">UNDERWEIGHT (0.3x)</td>
-        </tr></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card" style="padding:12px 20px;">
-        <span style="color:#94a3b8;font-size:12px;">
-            🟢 OVERWEIGHT (1.5x) &nbsp;|&nbsp;
-            🟡 NEUTRAL (1.0x) &nbsp;|&nbsp;
-            🔴 UNDERWEIGHT (0.3x) &nbsp;|&nbsp;
-            Score &gt; 75 = Overweight &nbsp;|&nbsp;
-            Score &lt; 65 = Underweight
-        </span>
-    </div>
-
-</div>
-
-<!-- ==================== HISTORY TAB ==================== -->
-<div id="tab-history" class="tab-panel">
-
-    <div class="metrics-row">
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00d4ff'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00d4ff;">2</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Total Tracked</div>
-        
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#00ff88'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#00ff88;">0</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Wins</div>
-        
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#ff4444'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#ff4444;">0</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Losses</div>
-        
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#ff4444'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#ff4444;">0.0%</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Win Rate</div>
-        
-    </div>
-        
-    <div class="metric-card"
-         onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='#94a3b8'"
-         onmouseout="this.style.transform='translateY(0)';this.style.borderColor='#1e2d45'">
-        <div style="font-size:1.8rem;font-weight:700;color:#94a3b8;">2</div>
-        <div style="font-size:0.72rem;color:#94a3b8;margin-top:6px;
-                    text-transform:uppercase;letter-spacing:1px;">Pending</div>
-        
-    </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            📈 PERFORMANCE HISTORY (Last 20 Signals)
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Symbol</th>
-                        <th>Signal</th>
-                        <th>Confidence</th>
-                        <th>Result</th>
-                        <th>PnL %</th>
-                    </tr>
-                </thead>
-                <tbody>
-        <tr>
-            <td style="color:#94a3b8;">2026-04-19</td>
-            <td><b style="color:#00d4ff;">INFY.NS</b></td>
-            <td style="color:#00ff88;font-weight:700;">STRONG_BUY</td>
-            <td style="color:#ffd700;">71.6%</td>
-            <td style="color:#94a3b8;font-weight:700;">⏳ PENDING</td>
-            <td style="color:#00ff88;font-weight:600;">+0.00%</td>
-        </tr>
-        <tr>
-            <td style="color:#94a3b8;">2026-04-19</td>
-            <td><b style="color:#00d4ff;">RELIANCE.NS</b></td>
-            <td style="color:#00ff88;font-weight:700;">STRONG_BUY</td>
-            <td style="color:#ffd700;">71.8%</td>
-            <td style="color:#94a3b8;font-weight:700;">⏳ PENDING</td>
-            <td style="color:#00ff88;font-weight:600;">+0.00%</td>
-        </tr></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card" style="padding:12px 20px;">
-        <span style="color:#94a3b8;font-size:12px;">
-            ✅ Correct &nbsp;|&nbsp;
-            ❌ Wrong &nbsp;|&nbsp;
-            ⏳ Pending — Update results manually in
-            <b>performance_history.csv</b>
-        </span>
-    </div>
-
-</div>
-
-</div><!-- end content -->
 
 <!-- FOOTER -->
 <div class="footer">
     <p>
-        🤖 Bharat Edge AI &nbsp;|&nbsp;
-        XGBoost + LightGBM + Random Forest + Extra Trees
-        &nbsp;|&nbsp;
-        Auto-updated daily by GitHub Actions
-    </p>
-    <p style="margin-top:6px;">
-        ⚠️ Not financial advice.
-        For educational purposes only. Always DYOR.
+        BharatEdge V2 | ML Ensemble Models |
+        NSE Indian Stocks | Sector Rotation |
+        Cloud Automated | GitHub Actions FREE
     </p>
 </div>
 
-<!-- ==================== SCRIPTS ==================== -->
+<!-- CHARTS JS -->
 <script>
+const pCtx = document.getElementById(
+    'portfolio-chart').getContext('2d');
+const pData = [100000.0, 100057.8994140625];
+const pLabels = ['Start', 'Now'];
+const pColor = pData[pData.length-1] >= pData[0]
+    ? '#00ff88' : '#ff4444';
 
-// ---- TAB SWITCHING ----
-function showTab(name, el) {
-    document.querySelectorAll('.tab-panel').forEach(
-        p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(
-        t => t.classList.remove('active'));
-    document.getElementById('tab-' + name)
-            .classList.add('active');
-    if (el) el.classList.add('active');
-    return false;
-}
-
-// ---- LIVE CLOCK ----
-function updateClock() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    const s = String(now.getSeconds()).padStart(2,'0');
-    const el = document.getElementById('live-clock');
-    if (el) el.textContent = h+':'+m+':'+s+' IST';
-}
-setInterval(updateClock, 1000);
-
-// ---- NIFTY CANDLESTICK CHART ----
-const niftyData = {"dates": ["2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-03-02", "2026-03-04", "2026-03-05", "2026-03-06", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-20", "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-27", "2026-03-30", "2026-04-01", "2026-04-02", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-13", "2026-04-15", "2026-04-16", "2026-04-17"], "opens": [25653.1, 25580.3, 25141.0, 25344.15, 25344.6, 25063.35, 25258.85, 25345.0, 25247.55, 24796.5, 26308.05, 25675.05, 25755.9, 25605.8, 25888.7, 25922.65, 25997.45, 25906.7, 25571.15, 25423.6, 25637.95, 25752.65, 25873.35, 25406.55, 25678.4, 25641.8, 25512.6, 25556.3, 25459.85, 24659.25, 24388.8, 24615.95, 24656.4, 23868.05, 24280.8, 24231.85, 23674.85, 23462.5, 23116.1, 23493.2, 23632.9, 23197.75, 23110.15, 22824.35, 22878.45, 23064.4, 23173.55, 22549.65, 22899.0, 22383.4, 22780.3, 22838.7, 23855.15, 23909.05, 23880.55, 23589.6, 24163.8, 24385.2, 24165.9], "highs": [25653.3, 25585.0, 25300.95, 25435.75, 25347.95, 25246.65, 25372.1, 25458.15, 25370.7, 25108.1, 26341.2, 25818.55, 25757.65, 25703.95, 25922.25, 25989.45, 26009.4, 25906.7, 25630.35, 25697.0, 25764.4, 25828.05, 25885.3, 25663.55, 25771.45, 25641.8, 25652.6, 25572.95, 25476.4, 24989.35, 24602.45, 24854.2, 24700.9, 24078.15, 24303.8, 24299.0, 23833.15, 23492.4, 23502.0, 23656.8, 23862.25, 23378.7, 23345.15, 22851.7, 23057.3, 23465.35, 23186.1, 22714.1, 22941.3, 22782.3, 22998.35, 23153.85, 24025.15, 23990.75, 24074.05, 23907.4, 24280.9, 24400.95, 24371.9], "lows": [25494.35, 25171.35, 24919.8, 25168.5, 25025.3, 24932.55, 25187.65, 25159.8, 25213.65, 24679.4, 25641.3, 25563.95, 25579.5, 25491.9, 25780.9, 25870.45, 25899.8, 25752.4, 25444.3, 25372.7, 25570.3, 25645.15, 25388.75, 25379.75, 25609.35, 25327.6, 25428.2, 25400.95, 25141.3, 24603.5, 24305.4, 24529.4, 24415.75, 23697.8, 24079.95, 23834.3, 23556.3, 23112.0, 22955.25, 23346.6, 23618.45, 22930.35, 23067.6, 22471.25, 22624.2, 23063.2, 22804.55, 22283.85, 22618.6, 22182.55, 22542.95, 22719.3, 23828.5, 23682.8, 23856.35, 23555.6, 24145.8, 24102.8, 24096.05], "closes": [25585.5, 25232.5, 25157.5, 25289.9, 25048.65, 25175.4, 25342.75, 25418.9, 25320.65, 25088.4, 25727.55, 25776.0, 25642.8, 25693.7, 25867.3, 25935.15, 25953.85, 25807.2, 25471.1, 25682.75, 25725.4, 25819.35, 25454.35, 25571.25, 25713.0, 25424.65, 25482.5, 25496.55, 25178.65, 24865.7, 24480.5, 24765.9, 24450.45, 24028.05, 24261.6, 23866.85, 23639.15, 23151.1, 23408.8, 23581.15, 23777.8, 23002.15, 23114.5, 22512.65, 22912.4, 23306.45, 22819.6, 22331.4, 22679.4, 22713.1, 22968.25, 23123.65, 23997.35, 23775.1, 24050.6, 23842.65, 24231.3, 24196.75, 24353.55], "vols": [443100, 409800, 395600, 486400, 393900, 618700, 574900, 582400, 508400, 449200, 637300, 429800, 343800, 375500, 359400, 460900, 331400, 419400, 453500, 275800, 344100, 310200, 298200, 296600, 313700, 439100, 414200, 405200, 438900, 519200, 599000, 504300, 433400, 526900, 444300, 407400, 501000, 519800, 540300, 458800, 382900, 550100, 663300, 550300, 538100, 505400, 612600, 698600, 518000, 495100, 426400, 477000, 639300, 466600, 481300, 488800, 460300, 508000, 498600], "ema20": [25585.5, 25400.18, 25311.07, 25304.96, 25242.96, 25228.71, 25250.27, 25279.42, 25286.03, 25256.27, 25323.52, 25385.16, 25418.88, 25453.6, 25504.3, 25555.7, 25602.08, 25625.47, 25608.19, 25616.4, 25628.23, 25648.69, 25628.13, 25622.17, 25631.59, 25610.31, 25597.26, 25587.05, 25545.89, 25477.73, 25378.29, 25317.49, 25231.76, 25113.18, 25029.56, 24915.72, 24791.07, 24631.32, 24512.49, 24422.14, 24359.75, 24228.49, 24120.94, 23965.88, 23864.42, 23810.74, 23715.49, 23582.58, 23495.92, 23420.86, 23377.49, 23353.18, 23414.84, 23449.3, 23506.8, 23538.91, 23605.07, 23661.59, 23727.67], "ema50": [25585.5, 25405.47, 25319.49, 25311.64, 25254.75, 25240.17, 25256.64, 25279.87, 25285.16, 25261.76, 25313.07, 25360.69, 25387.97, 25415.93, 25455.15, 25494.97, 25531.44, 25552.51, 25546.51, 25556.21, 25567.89, 25584.74, 25576.24, 25575.92, 25584.42, 25574.73, 25569.26, 25565.02, 25542.96, 25504.95, 25448.42, 25411.35, 25359.93, 25289.67, 25236.16, 25165.8, 25088.29, 24991.06, 24912.51, 24847.09, 24795.07, 24708.66, 24632.51, 24532.11, 24456.02, 24402.43, 24329.18, 24237.38, 24166.27, 24100.37, 24049.34, 24007.85, 24007.39, 23997.09, 23999.45, 23992.57, 24003.0, 24011.42, 24026.24]};
-
-function renderNiftyChart() {
-    const container = document.getElementById('nifty-chart');
-    if (!container) return;
-
-    if (!niftyData || !niftyData.dates ||
-        niftyData.dates.length === 0) {
-        container.innerHTML =
-            '<div style="display:flex;align-items:center;' +
-            'justify-content:center;height:380px;' +
-            'color:#94a3b8;">No chart data available</div>';
-        return;
-    }
-
-    try {
-        // Build canvas inside container
-        container.innerHTML =
-            '<canvas id="nifty-canvas"></canvas>';
-        const ctx = document.getElementById(
-            'nifty-canvas').getContext('2d');
-
-        // Build OHLC data for candlestick
-        const ohlcData = niftyData.dates.map((d, i) => ({
-            x    : new Date(d).getTime(),
-            o    : niftyData.opens[i],
-            h    : niftyData.highs[i],
-            l    : niftyData.lows[i],
-            c    : niftyData.closes[i],
-        }));
-
-        // EMA line data
-        const ema20Data = niftyData.dates.map((d, i) => ({
-            x: new Date(d).getTime(),
-            y: niftyData.ema20[i],
-        }));
-        const ema50Data = niftyData.dates.map((d, i) => ({
-            x: new Date(d).getTime(),
-            y: niftyData.ema50[i],
-        }));
-
-        new Chart(ctx, {
-            type: 'candlestick',
-            data: {
-                datasets: [
-                    {
-                        label          : 'NIFTY 50',
-                        data           : ohlcData,
-                        color          : {
-                            up  : '#00ff88',
-                            down: '#ff4444',
-                            unchanged: '#ffd700',
-                        },
-                    },
-                    {
-                        type     : 'line',
-                        label    : 'EMA 20',
-                        data     : ema20Data,
-                        borderColor    : '#ffd700',
-                        borderWidth    : 2,
-                        pointRadius    : 0,
-                        tension        : 0.1,
-                    },
-                    {
-                        type     : 'line',
-                        label    : 'EMA 50',
-                        data     : ema50Data,
-                        borderColor    : '#3b82f6',
-                        borderWidth    : 2,
-                        pointRadius    : 0,
-                        tension        : 0.1,
-                    },
-                ],
-            },
-            options: {
-                responsive         : true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels : {
-                            color: '#94a3b8',
-                        },
-                    },
-                    tooltip: { mode: 'index' },
-                },
-                scales: {
-                    x: {
-                        type : 'timeseries',
-                        time : {
-                            unit           : 'day',
-                            tooltipFormat  : 'dd MMM yyyy',
-                            displayFormats : {
-                                day: 'dd MMM',
-                            },
-                        },
-                        grid : { color: '#1e2d45' },
-                        ticks: { color: '#94a3b8',
-                                  maxTicksLimit: 10 },
-                    },
-                    y: {
-                        grid : { color: '#1e2d45' },
-                        ticks: { color: '#94a3b8' },
-                    },
+new Chart(pCtx, {
+    type: 'line',
+    data: {
+        labels: pLabels,
+        datasets: [{
+            data: pData,
+            borderColor: pColor,
+            backgroundColor: pColor + '15',
+            borderWidth: 2,
+            pointRadius: 4,
+            fill: true,
+            tension: 0.3,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                grid : { color: '#1e2d45' },
+                ticks: {
+                    color: '#94a3b8',
+                    callback: v => 'Rs' + v.toLocaleString()
                 },
             },
-        });
-
-        console.log('✅ Nifty chart rendered: ' +
-                    ohlcData.length + ' candles');
-
-    } catch(e) {
-        console.error('Chart error:', e);
-        container.innerHTML =
-            '<div style="display:flex;align-items:center;' +
-            'justify-content:center;height:380px;' +
-            'color:#ff4444;">Chart error: ' +
-            e.message + '</div>';
-    }
-}
-
-window.addEventListener('load', renderNiftyChart);// ---- SIGNAL CONFIDENCE CHART (Chart.js) ----
-const sigLabels = ["HINDALCO.NS", "COALINDIA.NS", "ASIANPAINT.NS", "RELIANCE.NS", "INFY.NS"];
-const sigConfs  = [78.9, 74.3, 71.8, 71.8, 71.6];
-const sigColors = ["#3b82f6", "#3b82f6", "#3b82f6", "#3b82f6", "#3b82f6"];
-
-if (sigLabels.length > 0) {
-    const sigCtx = document.getElementById(
-        'signal-chart').getContext('2d');
-    new Chart(sigCtx, {
-        type: 'bar',
-        data: {
-            labels  : sigLabels,
-            datasets: [{
-                label          : 'Confidence %',
-                data           : sigConfs,
-                backgroundColor: sigColors.map(
-                    c => c + '99'),
-                borderColor    : sigColors,
-                borderWidth    : 2,
-                borderRadius   : 6,
-            }],
-        },
-        options: {
-            indexAxis   : 'y',
-            responsive  : true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: ctx =>
-                            ` ${ctx.raw.toFixed(1)}%`
-                    }
-                },
-            },
-            scales: {
-                x: {
-                    min        : 45,
-                    max        : 100,
-                    grid       : {
-                        color: '#1e2d45'
-                    },
-                    ticks      : {
-                        color   : '#94a3b8',
-                        callback: v => v + '%'
-                    },
-                },
-                y: {
-                    grid : { color: '#1e2d45' },
-                    ticks: { color: '#e2e8f0' },
+            x: {
+                grid : { color: '#1e2d45' },
+                ticks: {
+                    color: '#94a3b8'
                 },
             },
         },
-    });
-} else {
-    document.getElementById('signal-chart')
-        .parentElement.innerHTML =
-        '<div style="display:flex;align-items:center;' +
-        'justify-content:center;height:320px;' +
-        'color:#94a3b8;">' +
-        'No signal data available</div>';
-}
+    },
+});
 
-// ---- SECTOR ROTATION CHART (Chart.js) ----
-const secLabels = ["METAL", "CONSUMER", "INFRA", "FMCG", "TELECOM", "IT", "ENERGY", "NBFC", "AUTO", "PHARMA", "BANKING"];
-const secScores = [81.2, 78.3, 76.6, 71.8, 68.0, 66.8, 66.3, 65.9, 65.0, 63.5, 62.7];
-const secColors = ["#00ff88", "#00ff88", "#00ff88", "#ffd700", "#ffd700", "#ffd700", "#ffd700", "#ff4444", "#ff4444", "#ff4444", "#ff4444"];
-
-if (secLabels.length > 0) {
-    const secCtx = document.getElementById(
-        'sector-chart').getContext('2d');
-    new Chart(secCtx, {
-        type: 'bar',
-        data: {
-            labels  : secLabels,
-            datasets: [{
-                label          : 'Score',
-                data           : secScores,
-                backgroundColor: secColors.map(
-                    c => c + '99'),
-                borderColor    : secColors,
-                borderWidth    : 2,
-                borderRadius   : 6,
-            }],
+const aCtx = document.getElementById(
+    'alloc-chart').getContext('2d');
+new Chart(aCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Cash', 'COALINDIA.NS', 'ASIANPAINT.NS', 'INDUSTOWER.NS', 'INFY.NS', 'BHARTIARTL.NS'],
+        datasets: [{
+            data: [60864.45, 11078.75, 7688.7, 8295.0, 6566.0, 5565.0],
+            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff', '#aa88ff'],
+            borderColor: '#0a0e1a',
+            borderWidth: 2,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: {
+                    color: '#e2e8f0',
+                    font: { size: 11 },
+                }
+            }
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                annotation: {
-                    annotations: {
-                        ow: {
-                            type       : 'line',
-                            yMin       : 75,
-                            yMax       : 75,
-                            borderColor: '#00ff88',
-                            borderWidth: 2,
-                            borderDash : [6,4],
-                            label: {
-                                content   : 'Overweight',
-                                display   : true,
-                                color     : '#00ff88',
-                                position  : 'end',
-                            },
-                        },
-                        uw: {
-                            type       : 'line',
-                            yMin       : 65,
-                            yMax       : 65,
-                            borderColor: '#ff4444',
-                            borderWidth: 2,
-                            borderDash : [6,4],
-                            label: {
-                                content : 'Underweight',
-                                display : true,
-                                color   : '#ff4444',
-                                position: 'end',
-                            },
-                        },
-                    },
-                },
-            },
-            scales: {
-                y: {
-                    min  : 50,
-                    max  : 100,
-                    grid : { color: '#1e2d45' },
-                    ticks: { color: '#94a3b8' },
-                },
-                x: {
-                    grid : { color: '#1e2d45' },
-                    ticks: { color: '#e2e8f0' },
-                },
-            },
-        },
-    });
-} else {
-    document.getElementById('sector-chart')
-        .parentElement.innerHTML =
-        '<div style="display:flex;align-items:center;' +
-        'justify-content:center;height:320px;' +
-        'color:#94a3b8;">' +
-        'No sector data available</div>';
-}
-
+    },
+});
 </script>
+
 </body>
 </html>

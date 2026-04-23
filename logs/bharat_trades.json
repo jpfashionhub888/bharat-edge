@@ -16,11 +16,11 @@
       "shares": 3,
       "entry_price": 2543.60009765625,
       "entry_date": "2026-04-22T23:17:26.346253",
-      "highest_price": 2543.60009765625,
+      "highest_price": 2562.89990234375,
       "signal": 0.74,
       "cost": 7630.80029296875,
       "reason": "CONSUMER",
-      "current_price": 2543.60009765625
+      "current_price": 2562.89990234375
     },
     "INDUSTOWER.NS": {
       "shares": 20,
@@ -100,5 +100,5 @@
       "reason": "TELECOM"
     }
   ],
-  "saved_at": "2026-04-22T23:17:28.774567"
+  "saved_at": "2026-04-23T01:26:16.390128"
 }
