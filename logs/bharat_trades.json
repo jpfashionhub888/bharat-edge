@@ -6,11 +6,11 @@
       "shares": 25,
       "entry_price": 443.1499938964844,
       "entry_date": "2026-04-22T23:17:25.693147",
-      "highest_price": 449.79998779296875,
+      "highest_price": 450.6499938964844,
       "signal": 0.746,
       "cost": 11078.74984741211,
       "reason": "METAL",
-      "current_price": 449.79998779296875
+      "current_price": 450.6499938964844
     },
     "ASIANPAINT.NS": {
       "shares": 3,
@@ -100,5 +100,5 @@
       "reason": "TELECOM"
     }
   ],
-  "saved_at": "2026-04-23T09:16:11.857012"
+  "saved_at": "2026-04-23T11:00:38.699508"
 }
