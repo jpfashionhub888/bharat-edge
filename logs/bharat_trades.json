@@ -1,5 +1,5 @@
 {
-  "capital": 60864.450103759766,
+  "capital": 68325.14981079102,
   "starting_capital": 100000.0,
   "positions": {
     "COALINDIA.NS": {
@@ -10,17 +10,7 @@
       "signal": 0.746,
       "cost": 11078.74984741211,
       "reason": "METAL",
-      "current_price": 450.6499938964844
-    },
-    "ASIANPAINT.NS": {
-      "shares": 3,
-      "entry_price": 2543.60009765625,
-      "entry_date": "2026-04-22T23:17:26.346253",
-      "highest_price": 2562.89990234375,
-      "signal": 0.74,
-      "cost": 7630.80029296875,
-      "reason": "CONSUMER",
-      "current_price": 2543.60009765625
+      "current_price": 443.1499938964844
     },
     "INDUSTOWER.NS": {
       "shares": 20,
@@ -98,7 +88,18 @@
       "cost": 5565.0,
       "date": "2026-04-22T23:17:28.178586",
       "reason": "TELECOM"
+    },
+    {
+      "action": "SELL",
+      "symbol": "ASIANPAINT.NS",
+      "shares": 3,
+      "price": 2486.89990234375,
+      "revenue": 7460.69970703125,
+      "pnl": -170.1005859375,
+      "pnl_pct": -0.022291316691151756,
+      "date": "2026-04-24T09:21:20.129452",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-04-23T16:20:42.577535"
+  "saved_at": "2026-04-24T09:21:20.690612"
 }

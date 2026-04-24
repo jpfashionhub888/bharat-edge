@@ -162,10 +162,10 @@
         </div>
         <p style="color:#94a3b8;
         font-size:11px;margin-top:4px">
-            Updated: 2026-04-23 16:20 UTC
+            Updated: 2026-04-24 09:21 UTC
         </p>
         <p style="color:#94a3b8;font-size:11px">
-            Last scan: 2026-04-23T16:20
+            Last scan: 2026-04-24T09:21
         </p>
         <p style="color:#94a3b8;font-size:11px">
             Auto-refresh: 5 min
@@ -180,7 +180,7 @@
         <div class="card-label">Total Value</div>
         <div class="card-value"
         style="color:#00d4ff">
-            Rs100,187.50
+            Rs99,829.90
         </div>
         <div class="card-sub">
             Started: Rs100,000.00
@@ -191,32 +191,32 @@
         <div class="card-label">Cash Available</div>
         <div class="card-value"
         style="color:#3b82f6">
-            Rs60,864.45
+            Rs68,325.15
         </div>
         <div class="card-sub">
-            60.8% of portfolio
+            68.4% of portfolio
         </div>
     </div>
     <div class="card"
-    style="border-top:3px solid #00ff88">
+    style="border-top:3px solid #ff4444">
         <div class="card-label">Total P&L</div>
         <div class="card-value"
-        style="color:#00ff88">
-            +Rs187.50
+        style="color:#ff4444">
+            Rs-170.10
         </div>
         <div class="card-sub">
-            +0.19% overall
+            -0.17% overall
         </div>
     </div>
     <div class="card"
-    style="border-top:3px solid #00ff88">
+    style="border-top:3px solid #ff4444">
         <div class="card-label">Realized P&L</div>
         <div class="card-value"
-        style="color:#00ff88">
-            +Rs0.00
+        style="color:#ff4444">
+            Rs-170.10
         </div>
         <div class="card-sub">
-            From 0 closed trades
+            From 1 closed trades
         </div>
     </div>
     <div class="card"
@@ -224,7 +224,7 @@
         <div class="card-label">Open Positions</div>
         <div class="card-value"
         style="color:#ffd700">
-            5
+            4
         </div>
         <div class="card-sub">Max 5 allowed</div>
     </div>
@@ -235,7 +235,7 @@
         style="color:#ff4444">
             0%
         </div>
-        <div class="card-sub">0W / 0L</div>
+        <div class="card-sub">0W / 1L</div>
     </div>
 </div>
 
@@ -275,28 +275,8 @@
                 font-weight:700">COALINDIA.NS</td>
                 <td>25</td>
                 <td>Rs443.15</td>
-                <td>Rs450.65</td>
+                <td>Rs443.15</td>
                 <td>Rs11078.75</td>
-                <td style="color:#00ff88;font-weight:700">
-                    +Rs187.50
-                </td>
-                <td style="color:#00ff88">
-                    +1.69%
-                </td>
-                <td style="color:#94a3b8">
-                    2026-04-22
-                </td>
-                <td style="color:#ffd700">
-                    METAL
-                </td>
-            </tr>
-            <tr>
-                <td style="color:#00d4ff;
-                font-weight:700">ASIANPAINT.NS</td>
-                <td>3</td>
-                <td>Rs2543.60</td>
-                <td>Rs2543.60</td>
-                <td>Rs7630.80</td>
                 <td style="color:#00ff88;font-weight:700">
                     +Rs0.00
                 </td>
@@ -307,7 +287,7 @@
                     2026-04-22
                 </td>
                 <td style="color:#ffd700">
-                    CONSUMER
+                    METAL
                 </td>
             </tr>
             <tr>
@@ -391,6 +371,25 @@
                 </tr>
             </thead>
             <tbody>
+        <tr>
+            <td style="color:#94a3b8">
+                2026-04-24T09:21
+            </td>
+            <td style="color:#ff4444;font-weight:700">
+                SELL
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                ASIANPAINT.NS
+            </td>
+            <td>3</td>
+            <td>Rs2486.90</td>
+            <td style="color:#ff4444;font-weight:700">
+                Rs-170.10
+            </td>
+            <td style="color:#94a3b8">
+                trailing_stop
+            </td>
+        </tr>
         <tr>
             <td style="color:#94a3b8">
                 2026-04-22T23:17
@@ -503,8 +502,8 @@
 <script>
 const pCtx = document.getElementById(
     'portfolio-chart').getContext('2d');
-const pData = [100000.0, 100187.5];
-const pLabels = ['Start', 'Now'];
+const pData = [100000.0, 99829.8994140625, 99829.8994140625];
+const pLabels = ['Start', '2026-04-24', 'Now'];
 const pColor = pData[pData.length-1] >= pData[0]
     ? '#00ff88' : '#ff4444';
 
@@ -548,10 +547,10 @@ const aCtx = document.getElementById(
 new Chart(aCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Cash', 'COALINDIA.NS', 'ASIANPAINT.NS', 'INDUSTOWER.NS', 'INFY.NS', 'BHARTIARTL.NS'],
+        labels: ['Cash', 'COALINDIA.NS', 'INDUSTOWER.NS', 'INFY.NS', 'BHARTIARTL.NS'],
         datasets: [{
-            data: [60864.45, 11266.25, 7630.8, 8295.0, 6566.0, 5565.0],
-            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff', '#aa88ff'],
+            data: [68325.15, 11078.75, 8295.0, 6566.0, 5565.0],
+            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff'],
             borderColor: '#0a0e1a',
             borderWidth: 2,
         }]
