@@ -1,5 +1,5 @@
 {
-  "capital": 68325.14981079102,
+  "capital": 60893.54995727539,
   "starting_capital": 100000.0,
   "positions": {
     "COALINDIA.NS": {
@@ -41,6 +41,16 @@
       "cost": 5565.0,
       "reason": "TELECOM",
       "current_price": 1855.0
+    },
+    "HAVELLS.NS": {
+      "shares": 6,
+      "entry_price": 1238.5999755859375,
+      "entry_date": "2026-04-24T10:58:12.682898",
+      "highest_price": 1238.5999755859375,
+      "signal": 0.763,
+      "cost": 7431.599853515625,
+      "reason": "CONSUMER",
+      "current_price": 1238.5999755859375
     }
   },
   "trade_history": [
@@ -99,7 +109,16 @@
       "pnl_pct": -0.022291316691151756,
       "date": "2026-04-24T09:21:20.129452",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "HAVELLS.NS",
+      "shares": 6,
+      "price": 1238.5999755859375,
+      "cost": 7431.599853515625,
+      "date": "2026-04-24T10:58:12.682903",
+      "reason": "CONSUMER"
     }
   ],
-  "saved_at": "2026-04-24T09:21:20.690612"
+  "saved_at": "2026-04-24T10:58:13.163028"
 }

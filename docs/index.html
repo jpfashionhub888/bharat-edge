@@ -162,10 +162,10 @@
         </div>
         <p style="color:#94a3b8;
         font-size:11px;margin-top:4px">
-            Updated: 2026-04-24 09:21 UTC
+            Updated: 2026-04-24 10:58 UTC
         </p>
         <p style="color:#94a3b8;font-size:11px">
-            Last scan: 2026-04-24T09:21
+            Last scan: 2026-04-24T10:58
         </p>
         <p style="color:#94a3b8;font-size:11px">
             Auto-refresh: 5 min
@@ -191,10 +191,10 @@
         <div class="card-label">Cash Available</div>
         <div class="card-value"
         style="color:#3b82f6">
-            Rs68,325.15
+            Rs60,893.55
         </div>
         <div class="card-sub">
-            68.4% of portfolio
+            61.0% of portfolio
         </div>
     </div>
     <div class="card"
@@ -224,7 +224,7 @@
         <div class="card-label">Open Positions</div>
         <div class="card-value"
         style="color:#ffd700">
-            4
+            5
         </div>
         <div class="card-sub">Max 5 allowed</div>
     </div>
@@ -349,6 +349,26 @@
                 <td style="color:#ffd700">
                     TELECOM
                 </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">HAVELLS.NS</td>
+                <td>6</td>
+                <td>Rs1238.60</td>
+                <td>Rs1238.60</td>
+                <td>Rs7431.60</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-04-24
+                </td>
+                <td style="color:#ffd700">
+                    CONSUMER
+                </td>
             </tr></tbody>
         </table>
     </div>
@@ -371,6 +391,25 @@
                 </tr>
             </thead>
             <tbody>
+        <tr>
+            <td style="color:#94a3b8">
+                2026-04-24T10:58
+            </td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                HAVELLS.NS
+            </td>
+            <td>6</td>
+            <td>Rs1238.60</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                CONSUMER
+            </td>
+        </tr>
         <tr>
             <td style="color:#94a3b8">
                 2026-04-24T09:21
@@ -547,10 +586,10 @@ const aCtx = document.getElementById(
 new Chart(aCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Cash', 'COALINDIA.NS', 'INDUSTOWER.NS', 'INFY.NS', 'BHARTIARTL.NS'],
+        labels: ['Cash', 'COALINDIA.NS', 'INDUSTOWER.NS', 'INFY.NS', 'BHARTIARTL.NS', 'HAVELLS.NS'],
         datasets: [{
-            data: [68325.15, 11078.75, 8295.0, 6566.0, 5565.0],
-            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff'],
+            data: [60893.55, 11078.75, 8295.0, 6566.0, 5565.0, 7431.6],
+            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff', '#aa88ff'],
             borderColor: '#0a0e1a',
             borderWidth: 2,
         }]
