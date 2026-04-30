@@ -201,24 +201,31 @@ def run_bharat_scan():
     print("PHASE 5: POSITION MANAGEMENT")
     print("="*60)
 
-    # Fetch current prices for ALL open positions
-    # even if they did not appear in today's signals
     if trader.positions:
         print("\n   Fetching current prices for open positions...")
         for symbol in list(trader.positions.keys()):
-            if symbol not in current_prices:
-                try:
-                    ticker = yf.Ticker(symbol)
-                    df = ticker.history(period='2d')
-                    if not df.empty:
-                        price = float(df['Close'].iloc[-1])
+            try:
+                ticker = yf.Ticker(symbol)
+                df = ticker.history(period='5d')
+                if not df.empty and 'Close' in df.columns:
+                    close_series = df['Close'].dropna()
+                    if not close_series.empty:
+                        price = float(close_series.iloc[-1])
                         current_prices[symbol] = price
-                        print(f"   Fetched {symbol}: Rs{price:.2f}")
-                except Exception as e:
-                    print(f"   Could not fetch {symbol}: {e}")
+                        print(f"   {symbol}: Rs{price:.2f}")
+                    else:
+                        current_prices[symbol] = trader.positions[symbol].get(
+                            'entry_price', 0
+                        )
+                else:
                     current_prices[symbol] = trader.positions[symbol].get(
                         'entry_price', 0
                     )
+            except Exception as e:
+                print(f"   Could not fetch {symbol}: {e}")
+                current_prices[symbol] = trader.positions[symbol].get(
+                    'entry_price', 0
+                )
 
         print("\n   Checking stop loss / take profit...")
         for symbol in list(trader.positions.keys()):
@@ -226,24 +233,39 @@ def run_bharat_scan():
                 pos = trader.positions.get(symbol, {})
                 entry = pos.get('entry_price', 0)
                 current = current_prices[symbol]
+                pnl_pct = (current - entry) / entry * 100 if entry > 0 else 0
 
-                # Update current price in position
+                print(
+                    f"   {symbol}: "
+                    f"Entry Rs{entry:.2f} | "
+                    f"Now Rs{current:.2f} | "
+                    f"PnL {pnl_pct:+.1f}%"
+                )
+
+                # Update current price and highest price
                 trader.positions[symbol]['current_price'] = current
-
-                # Update highest price
                 if current > trader.positions[symbol].get('highest_price', 0):
                     trader.positions[symbol]['highest_price'] = current
 
+                # Check stop loss / take profit / trailing stop
                 trader.update_position(
-                    symbol, current_prices[symbol]
+                    symbol,
+                    current,
+                    stop_loss=0.03,
+                    take_profit=0.08,
+                    trailing_stop=0.025
                 )
+
+                # If position was closed send alert
                 if symbol not in trader.positions:
-                    exit_price = current_prices[symbol]
-                    pnl = (exit_price - entry) * pos.get('shares', 0)
-                    if pnl < 0:
-                        telegram.alert_stop_loss(symbol, exit_price, pnl)
+                    if pnl_pct < 0:
+                        pnl = (current - entry) * pos.get('shares', 0)
+                        telegram.alert_stop_loss(symbol, current, pnl)
+                        print(f"   STOP LOSS triggered for {symbol}!")
                     else:
-                        telegram.alert_take_profit(symbol, exit_price, pnl)
+                        pnl = (current - entry) * pos.get('shares', 0)
+                        telegram.alert_take_profit(symbol, current, pnl)
+                        print(f"   TAKE PROFIT triggered for {symbol}!")
     else:
         print("\n   No open positions to manage")
     # ==========================================
