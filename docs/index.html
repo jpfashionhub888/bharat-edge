@@ -162,10 +162,10 @@
         </div>
         <p style="color:#94a3b8;
         font-size:11px;margin-top:4px">
-            Updated: 2026-04-30 22:30 UTC
+            Updated: 2026-04-30 22:36 UTC
         </p>
         <p style="color:#94a3b8;font-size:11px">
-            Last scan: 2026-04-30T22:30
+            Last scan: 2026-04-30T22:36
         </p>
         <p style="color:#94a3b8;font-size:11px">
             Auto-refresh: 5 min
@@ -180,7 +180,7 @@
         <div class="card-label">Total Value</div>
         <div class="card-value"
         style="color:#00d4ff">
-            Rsnan
+            Rs99,829.90
         </div>
         <div class="card-sub">
             Started: Rs100,000.00
@@ -194,7 +194,7 @@
             Rs60,893.55
         </div>
         <div class="card-sub">
-            nan% of portfolio
+            61.0% of portfolio
         </div>
     </div>
     <div class="card"
@@ -202,10 +202,10 @@
         <div class="card-label">Total P&L</div>
         <div class="card-value"
         style="color:#ff4444">
-            Rsnan
+            Rs-170.10
         </div>
         <div class="card-sub">
-            nan% overall
+            -0.17% overall
         </div>
     </div>
     <div class="card"
@@ -275,13 +275,13 @@
                 font-weight:700">COALINDIA.NS</td>
                 <td>25</td>
                 <td>Rs443.15</td>
-                <td>Rsnan</td>
+                <td>Rs443.15</td>
                 <td>Rs11078.75</td>
-                <td style="color:#ff4444;font-weight:700">
-                    Rsnan
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
                 </td>
-                <td style="color:#ff4444">
-                    nan%
+                <td style="color:#00ff88">
+                    +0.00%
                 </td>
                 <td style="color:#94a3b8">
                     2026-04-22
@@ -295,13 +295,13 @@
                 font-weight:700">INDUSTOWER.NS</td>
                 <td>20</td>
                 <td>Rs414.75</td>
-                <td>Rsnan</td>
+                <td>Rs414.75</td>
                 <td>Rs8295.00</td>
-                <td style="color:#ff4444;font-weight:700">
-                    Rsnan
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
                 </td>
-                <td style="color:#ff4444">
-                    nan%
+                <td style="color:#00ff88">
+                    +0.00%
                 </td>
                 <td style="color:#94a3b8">
                     2026-04-22
@@ -315,13 +315,13 @@
                 font-weight:700">INFY.NS</td>
                 <td>5</td>
                 <td>Rs1313.20</td>
-                <td>Rsnan</td>
+                <td>Rs1313.20</td>
                 <td>Rs6566.00</td>
-                <td style="color:#ff4444;font-weight:700">
-                    Rsnan
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
                 </td>
-                <td style="color:#ff4444">
-                    nan%
+                <td style="color:#00ff88">
+                    +0.00%
                 </td>
                 <td style="color:#94a3b8">
                     2026-04-22
@@ -335,13 +335,13 @@
                 font-weight:700">BHARTIARTL.NS</td>
                 <td>3</td>
                 <td>Rs1855.00</td>
-                <td>Rsnan</td>
+                <td>Rs1855.00</td>
                 <td>Rs5565.00</td>
-                <td style="color:#ff4444;font-weight:700">
-                    Rsnan
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
                 </td>
-                <td style="color:#ff4444">
-                    nan%
+                <td style="color:#00ff88">
+                    +0.00%
                 </td>
                 <td style="color:#94a3b8">
                     2026-04-22
@@ -355,13 +355,13 @@
                 font-weight:700">HAVELLS.NS</td>
                 <td>6</td>
                 <td>Rs1238.60</td>
-                <td>Rsnan</td>
+                <td>Rs1238.60</td>
                 <td>Rs7431.60</td>
-                <td style="color:#ff4444;font-weight:700">
-                    Rsnan
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
                 </td>
-                <td style="color:#ff4444">
-                    nan%
+                <td style="color:#00ff88">
+                    +0.00%
                 </td>
                 <td style="color:#94a3b8">
                     2026-04-24
@@ -541,7 +541,7 @@
 <script>
 const pCtx = document.getElementById(
     'portfolio-chart').getContext('2d');
-const pData = [100000.0, 99829.8994140625, nan];
+const pData = [100000.0, 99829.8994140625, 99829.8994140625];
 const pLabels = ['Start', '2026-04-24', 'Now'];
 const pColor = pData[pData.length-1] >= pData[0]
     ? '#00ff88' : '#ff4444';
@@ -588,7 +588,7 @@ new Chart(aCtx, {
     data: {
         labels: ['Cash', 'COALINDIA.NS', 'INDUSTOWER.NS', 'INFY.NS', 'BHARTIARTL.NS', 'HAVELLS.NS'],
         datasets: [{
-            data: [60893.55, nan, nan, nan, nan, nan],
+            data: [60893.55, 11078.75, 8295.0, 6566.0, 5565.0, 7431.6],
             backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff', '#aa88ff'],
             borderColor: '#0a0e1a',
             borderWidth: 2,
