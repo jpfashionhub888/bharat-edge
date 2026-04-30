@@ -249,6 +249,32 @@ def run_bharat_scan():
     # ==========================================
     # PHASE 6: PORTFOLIO SUMMARY + TELEGRAM
     # ==========================================
+
+    # Force fetch current prices for ALL positions
+    print("\n   Force fetching current prices for all positions...")
+    for symbol in list(trader.positions.keys()):
+        try:
+            ticker = yf.Ticker(symbol)
+            df = ticker.history(period='2d')
+            if not df.empty and len(df) > 0:
+                price = float(df['Close'].iloc[-1])
+                if price > 0 and price == price:  # not NaN
+                    current_prices[symbol] = price
+                    print(f"   {symbol}: Rs{price:.2f}")
+                else:
+                    current_prices[symbol] = trader.positions[symbol].get(
+                        'entry_price', 0
+                    )
+            else:
+                current_prices[symbol] = trader.positions[symbol].get(
+                    'entry_price', 0
+                )
+        except Exception as e:
+            print(f"   Could not fetch {symbol}: {e}")
+            current_prices[symbol] = trader.positions[symbol].get(
+                'entry_price', 0
+            )
+
     print("\n" + "="*60)
     print("PHASE 6: PORTFOLIO SUMMARY")
     print("="*60)
