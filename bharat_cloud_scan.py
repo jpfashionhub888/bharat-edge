@@ -201,12 +201,39 @@ def run_bharat_scan():
     print("PHASE 5: POSITION MANAGEMENT")
     print("="*60)
 
+    # Fetch current prices for ALL open positions
+    # even if they did not appear in today's signals
     if trader.positions:
+        print("\n   Fetching current prices for open positions...")
+        for symbol in list(trader.positions.keys()):
+            if symbol not in current_prices:
+                try:
+                    ticker = yf.Ticker(symbol)
+                    df = ticker.history(period='2d')
+                    if not df.empty:
+                        price = float(df['Close'].iloc[-1])
+                        current_prices[symbol] = price
+                        print(f"   Fetched {symbol}: Rs{price:.2f}")
+                except Exception as e:
+                    print(f"   Could not fetch {symbol}: {e}")
+                    current_prices[symbol] = trader.positions[symbol].get(
+                        'entry_price', 0
+                    )
+
         print("\n   Checking stop loss / take profit...")
         for symbol in list(trader.positions.keys()):
             if symbol in current_prices:
                 pos = trader.positions.get(symbol, {})
                 entry = pos.get('entry_price', 0)
+                current = current_prices[symbol]
+
+                # Update current price in position
+                trader.positions[symbol]['current_price'] = current
+
+                # Update highest price
+                if current > trader.positions[symbol].get('highest_price', 0):
+                    trader.positions[symbol]['highest_price'] = current
+
                 trader.update_position(
                     symbol, current_prices[symbol]
                 )
@@ -219,7 +246,6 @@ def run_bharat_scan():
                         telegram.alert_take_profit(symbol, exit_price, pnl)
     else:
         print("\n   No open positions to manage")
-
     # ==========================================
     # PHASE 6: PORTFOLIO SUMMARY + TELEGRAM
     # ==========================================
