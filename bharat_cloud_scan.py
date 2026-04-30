@@ -255,10 +255,13 @@ def run_bharat_scan():
     for symbol in list(trader.positions.keys()):
         try:
             ticker = yf.Ticker(symbol)
-            df = ticker.history(period='2d')
-            if not df.empty and len(df) > 0:
-                price = float(df['Close'].iloc[-1])
-                if price > 0 and price == price:  # not NaN
+            df = ticker.history(period='5d')
+
+            if not df.empty and 'Close' in df.columns:
+                close_series = df['Close'].dropna()
+
+                if not close_series.empty:
+                    price = float(close_series.iloc[-1])
                     current_prices[symbol] = price
                     print(f"   {symbol}: Rs{price:.2f}")
                 else:
@@ -269,6 +272,7 @@ def run_bharat_scan():
                 current_prices[symbol] = trader.positions[symbol].get(
                     'entry_price', 0
                 )
+            
         except Exception as e:
             print(f"   Could not fetch {symbol}: {e}")
             current_prices[symbol] = trader.positions[symbol].get(
