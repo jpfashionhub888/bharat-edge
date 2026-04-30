@@ -263,31 +263,44 @@ def run_bharat_scan():
 
     trader.save_state()
 
-    # Calculate real P&L
-    total_value = trader.capital + sum(
-        pos.get('shares', 0) * current_prices.get(
+    # Calculate real P&L safely
+    position_value = 0.0
+    for symbol, pos in trader.positions.items():
+        shares = pos.get('shares', 0) or 0
+        price = current_prices.get(
             symbol, pos.get('entry_price', 0)
-        )
-        for symbol, pos in trader.positions.items()
-    )
+        ) or pos.get('entry_price', 0) or 0
+        position_value += shares * price
+
+    total_value = (trader.capital or 0) + position_value
+    if total_value <= 0 or total_value != total_value:
+        total_value = trader.starting_capital
+
     total_pnl = total_value - trader.starting_capital
-    total_pct = total_pnl / trader.starting_capital
+    total_pct = (total_pnl / trader.starting_capital) if trader.starting_capital > 0 else 0
 
     # Build positions with P&L for Telegram
     positions_with_pnl = {}
     for symbol, pos in trader.positions.items():
-        curr_price = current_prices.get(symbol, pos.get('entry_price', 0))
-        entry_price = pos.get('entry_price', 0)
-        shares = pos.get('shares', 0)
-        pnl = (curr_price - entry_price) * shares
-        pnl_pct = (curr_price - entry_price) / entry_price if entry_price > 0 else 0
+        curr_price = current_prices.get(
+            symbol, pos.get('entry_price', 0)
+        ) or pos.get('entry_price', 0) or 0
+        entry_price = pos.get('entry_price', 0) or 0
+        shares = pos.get('shares', 0) or 0
+        
+        if entry_price > 0:
+            pnl = (curr_price - entry_price) * shares
+            pnl_pct = (curr_price - entry_price) / entry_price
+        else:
+            pnl = 0.0
+            pnl_pct = 0.0
+
         positions_with_pnl[symbol] = {
             **pos,
             'current_price': curr_price,
             'pnl': pnl,
             'pnl_pct': pnl_pct,
         }
-
     telegram.alert_daily_summary(
         total_value, total_pnl, total_pct,
         positions_with_pnl, stock_signals
