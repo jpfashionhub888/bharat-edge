@@ -64,7 +64,7 @@ def run_bharat_scan():
     for i, symbol in enumerate(all_stocks, 1):
         try:
             ticker = yf.Ticker(symbol)
-            df = ticker.history(period='2y')
+            df = ticker.history(period='5d')
             if df.empty or len(df) < 100:
                 continue
             df.columns = [c.lower() for c in df.columns]
