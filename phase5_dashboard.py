@@ -1358,13 +1358,13 @@ if __name__ == "__main__":
     print("  BHARAT EDGE - LIVE DASHBOARD")
     print("="*55)
     print(f"\n  Open browser:")
-    print(f"  http://127.0.0.1:8050")
+    print(f"  http://127.0.0.1:8051")
     print(f"\n  Press Ctrl+C to stop")
     print(f"{'='*55}\n")
 
     app.run(
         debug        = False,
         host         = '0.0.0.0',
-        port         = 8050,
+        port         = 8051,
         use_reloader = False,
     )

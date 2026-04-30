@@ -1,0 +1,9 @@
+# .gitignore
+venv/
+env/
+__pycache__/
+*.pyc
+*.csv
+daily_report.txt
+backtest_output.txt
+.env

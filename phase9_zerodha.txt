@@ -1,0 +1,452 @@
+# phase9_zerodha.py
+# BHARAT EDGE - Phase 9A: Zerodha Kite Connection
+# Handles login, authentication and order placement
+
+import os
+import sys
+import time
+import pyotp
+import requests
+from datetime import datetime
+from kiteconnect import KiteConnect
+
+# Load .env
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("✅ .env loaded")
+except:
+    pass
+
+# ============================================================
+# CREDENTIALS
+# ============================================================
+API_KEY      = os.environ.get('KITE_API_KEY', '')
+API_SECRET   = os.environ.get('KITE_API_SECRET', '')
+USER_ID      = os.environ.get('KITE_USER_ID', '')
+PASSWORD     = os.environ.get('KITE_PASSWORD', '')
+PIN          = os.environ.get('KITE_PIN', '')
+TOTP_SECRET  = os.environ.get('KITE_TOTP_SECRET', '')
+
+# Token storage file
+TOKEN_FILE   = "kite_token.txt"
+
+print("✅ phase9_zerodha.py loaded")
+
+
+# ============================================================
+# SECTION 1: AUTO LOGIN
+# ============================================================
+
+def get_totp() -> str:
+    """Generate current TOTP code."""
+    try:
+        totp = pyotp.TOTP(TOTP_SECRET)
+        code = totp.now()
+        print(f"  ✅ TOTP generated: {code}")
+        return code
+    except Exception as e:
+        print(f"  ❌ TOTP error: {e}")
+        return ""
+
+
+def auto_login() -> KiteConnect:
+    """
+    Automatically login to Zerodha Kite.
+    Returns authenticated KiteConnect instance.
+    """
+    print("\n" + "="*50)
+    print("  BHARAT EDGE - ZERODHA LOGIN")
+    print("="*50)
+
+    # Validate credentials
+    if not all([API_KEY, API_SECRET,
+                USER_ID, PASSWORD, TOTP_SECRET]):
+        print("  ❌ Missing credentials in .env!")
+        print("  Required: KITE_API_KEY, KITE_API_SECRET,")
+        print("            KITE_USER_ID, KITE_PASSWORD,")
+        print("            KITE_TOTP_SECRET")
+        return None
+
+    kite = KiteConnect(api_key=API_KEY)
+
+    # Check if we have a saved token
+    if os.path.exists(TOKEN_FILE):
+        try:
+            with open(TOKEN_FILE, 'r') as f:
+                lines        = f.read().strip().split('\n')
+                saved_token  = lines[0]
+                saved_date   = lines[1] if len(lines) > 1 else ""
+                today        = datetime.now().strftime('%Y-%m-%d')
+
+            if saved_date == today and saved_token:
+                print(f"  ✅ Using saved token from today")
+                kite.set_access_token(saved_token)
+
+                # Verify token is still valid
+                try:
+                    profile = kite.profile()
+                    print(f"  ✅ Logged in as: "
+                          f"{profile['user_name']}")
+                    print(f"  ✅ Email: {profile['email']}")
+                    return kite
+                except:
+                    print("  ⚠️ Saved token expired."
+                          " Re-logging in...")
+        except:
+            pass
+
+    # Fresh login using requests
+    print("  🔐 Performing fresh login...")
+
+    try:
+        session = requests.Session()
+
+        # Step 1: Get login page
+        login_url = "https://kite.zerodha.com/api/login"
+        resp = session.post(login_url, data={
+            "user_id" : USER_ID,
+            "password": PASSWORD,
+        }, timeout=30)
+
+        data = resp.json()
+        if data.get('status') != 'success':
+            print(f"  ❌ Login failed: {data.get('message')}")
+            return None
+
+        request_id = data['data']['request_id']
+        print(f"  ✅ Step 1 done. Request ID: {request_id}")
+
+        # Step 2: Submit TOTP
+        time.sleep(1)
+        totp_code = get_totp()
+        if not totp_code:
+            return None
+
+        twofa_url = "https://kite.zerodha.com/api/twofa"
+        resp2     = session.post(twofa_url, data={
+            "user_id"       : USER_ID,
+            "request_id"    : request_id,
+            "twofa_value"   : totp_code,
+            "twofa_type"    : "totp",
+            "skip_session"  : "",
+        }, timeout=30)
+
+        data2 = resp2.json()
+        if data2.get('status') != 'success':
+            print(f"  ❌ 2FA failed: {data2.get('message')}")
+            return None
+
+        print("  ✅ Step 2 done. 2FA successful!")
+
+        # Step 3: Get request token
+        time.sleep(1)
+        login_page = kite.login_url()
+        resp3      = session.get(login_page,
+                                  allow_redirects=False,
+                                  timeout=30)
+
+        redirect = resp3.headers.get('location', '')
+        if 'request_token=' not in redirect:
+            # Try alternative method
+            resp3 = session.get(
+                f"https://kite.zerodha.com/connect/login"
+                f"?api_key={API_KEY}&v=3",
+                allow_redirects=False,
+                timeout=30
+            )
+            redirect = resp3.headers.get('location', '')
+
+        if 'request_token=' not in redirect:
+            print("  ❌ Could not get request token!")
+            print(f"  Redirect: {redirect[:100]}")
+            return None
+
+        request_token = redirect.split(
+            'request_token=')[1].split('&')[0]
+        print(f"  ✅ Step 3 done. "
+              f"Request token: {request_token[:10]}...")
+
+        # Step 4: Generate access token
+        time.sleep(1)
+        import hashlib
+        checksum = hashlib.sha256(
+            f"{API_KEY}{request_token}{API_SECRET}"
+            .encode()
+        ).hexdigest()
+
+        data4 = kite.generate_session(
+            request_token, api_secret=API_SECRET)
+        access_token = data4['access_token']
+        kite.set_access_token(access_token)
+
+        # Save token for today
+        today = datetime.now().strftime('%Y-%m-%d')
+        with open(TOKEN_FILE, 'w') as f:
+            f.write(f"{access_token}\n{today}")
+
+        print(f"  ✅ Step 4 done. Access token saved!")
+
+        # Verify
+        profile = kite.profile()
+        print(f"\n  ✅ Successfully logged in!")
+        print(f"  👤 Name  : {profile['user_name']}")
+        print(f"  📧 Email : {profile['email']}")
+        print(f"  🏦 Broker: {profile['broker']}")
+
+        return kite
+
+    except Exception as e:
+        print(f"  ❌ Login error: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
+# ============================================================
+# SECTION 2: ACCOUNT INFO
+# ============================================================
+
+def get_account_info(kite: KiteConnect) -> dict:
+    """Get account balance and margins."""
+    try:
+        margins = kite.margins()
+        equity  = margins.get('equity', {})
+
+        available = float(
+            equity.get('available', {})
+                  .get('live_balance', 0))
+        used      = float(
+            equity.get('utilised', {})
+                  .get('debits', 0))
+        total     = available + used
+
+        info = {
+            'available': round(available, 2),
+            'used'     : round(used, 2),
+            'total'    : round(total, 2),
+        }
+
+        print(f"\n  💰 ACCOUNT BALANCE")
+        print(f"  Total    : Rs {total:,.2f}")
+        print(f"  Available: Rs {available:,.2f}")
+        print(f"  Used     : Rs {used:,.2f}")
+
+        return info
+
+    except Exception as e:
+        print(f"  ❌ Account info error: {e}")
+        return {}
+
+
+# ============================================================
+# SECTION 3: GET POSITIONS
+# ============================================================
+
+def get_positions(kite: KiteConnect) -> dict:
+    """Get current open positions."""
+    try:
+        positions = kite.positions()
+        net       = positions.get('net', [])
+
+        open_pos  = [p for p in net
+                     if p['quantity'] != 0]
+
+        print(f"\n  📊 OPEN POSITIONS: {len(open_pos)}")
+        for p in open_pos:
+            pnl   = p.get('pnl', 0)
+            color = "✅" if pnl >= 0 else "❌"
+            print(f"  {color} {p['tradingsymbol']}: "
+                  f"Qty={p['quantity']} "
+                  f"PnL=Rs {pnl:+,.2f}")
+
+        return {
+            'net'     : net,
+            'open'    : open_pos,
+            'count'   : len(open_pos),
+        }
+
+    except Exception as e:
+        print(f"  ❌ Positions error: {e}")
+        return {}
+
+
+# ============================================================
+# SECTION 4: PLACE ORDER (PAPER MODE)
+# ============================================================
+
+def place_order(
+        kite        : KiteConnect,
+        symbol      : str,
+        action      : str,   # 'BUY' or 'SELL'
+        quantity    : int,
+        price       : float  = 0,
+        order_type  : str    = 'MARKET',
+        stop_loss   : float  = 0,
+        target      : float  = 0,
+        paper_mode  : bool   = True,
+) -> dict:
+    """
+    Place an order on Zerodha.
+    paper_mode=True: Just simulate, don't actually place.
+    paper_mode=False: Actually place the order!
+    """
+
+    symbol = symbol.replace('.NS', '').upper()
+
+    print(f"\n  {'📝 PAPER' if paper_mode else '🚨 LIVE'}"
+          f" ORDER:")
+    print(f"  Symbol    : {symbol}")
+    print(f"  Action    : {action}")
+    print(f"  Quantity  : {quantity}")
+    print(f"  Type      : {order_type}")
+    if stop_loss:
+        print(f"  Stop Loss : Rs {stop_loss:,.2f}")
+    if target:
+        print(f"  Target    : Rs {target:,.2f}")
+
+    if paper_mode:
+        print(f"  ✅ PAPER ORDER SIMULATED "
+              f"(not actually placed)")
+        return {
+            'order_id'  : f"PAPER_{int(time.time())}",
+            'symbol'    : symbol,
+            'action'    : action,
+            'quantity'  : quantity,
+            'status'    : 'PAPER',
+            'paper_mode': True,
+        }
+
+    # LIVE ORDER — Only runs if paper_mode=False
+    try:
+        trans_type = (
+            kite.TRANSACTION_TYPE_BUY
+            if action == 'BUY'
+            else kite.TRANSACTION_TYPE_SELL
+        )
+
+        order_id = kite.place_order(
+            variety          = kite.VARIETY_REGULAR,
+            exchange         = kite.EXCHANGE_NSE,
+            tradingsymbol    = symbol,
+            transaction_type = trans_type,
+            quantity         = quantity,
+            product          = kite.PRODUCT_CNC,
+            order_type       = kite.ORDER_TYPE_MARKET,
+        )
+
+        print(f"  ✅ LIVE ORDER PLACED!")
+        print(f"  Order ID: {order_id}")
+
+        # Place stop loss order if provided
+        if stop_loss > 0:
+            sl_type = (
+                kite.TRANSACTION_TYPE_SELL
+                if action == 'BUY'
+                else kite.TRANSACTION_TYPE_BUY
+            )
+            sl_order_id = kite.place_order(
+                variety          = kite.VARIETY_REGULAR,
+                exchange         = kite.EXCHANGE_NSE,
+                tradingsymbol    = symbol,
+                transaction_type = sl_type,
+                quantity         = quantity,
+                product          = kite.PRODUCT_CNC,
+                order_type       = kite.ORDER_TYPE_SL_M,
+                trigger_price    = stop_loss,
+            )
+            print(f"  ✅ Stop Loss Order: {sl_order_id}")
+
+        return {
+            'order_id': order_id,
+            'symbol'  : symbol,
+            'action'  : action,
+            'quantity': quantity,
+            'status'  : 'PLACED',
+            'paper_mode': False,
+        }
+
+    except Exception as e:
+        print(f"  ❌ Order error: {e}")
+        return {}
+
+
+# ============================================================
+# SECTION 5: GET QUOTE
+# ============================================================
+
+def get_quote(kite: KiteConnect,
+              symbol: str) -> dict:
+    """Get live quote for a symbol."""
+    try:
+        symbol  = symbol.replace('.NS', '').upper()
+        quote   = kite.quote(f"NSE:{symbol}")
+        data    = quote.get(f"NSE:{symbol}", {})
+
+        price   = data.get('last_price', 0)
+        change  = data.get('net_change', 0)
+        pct     = data.get('net_change', 0)
+        high    = data.get('ohlc', {}).get('high', 0)
+        low     = data.get('ohlc', {}).get('low', 0)
+        volume  = data.get('volume', 0)
+
+        print(f"  📈 {symbol}: Rs {price:,.2f} "
+              f"({change:+.2f})")
+
+        return {
+            'symbol': symbol,
+            'price' : price,
+            'change': change,
+            'high'  : high,
+            'low'   : low,
+            'volume': volume,
+        }
+
+    except Exception as e:
+        print(f"  ❌ Quote error: {e}")
+        return {}
+
+
+# ============================================================
+# MAIN TEST
+# ============================================================
+
+if __name__ == "__main__":
+    print("\n" + "="*55)
+    print("  BHARAT EDGE - PHASE 9A: ZERODHA CONNECTION")
+    print(f"  {datetime.now().strftime('%A, %d %B %Y %H:%M')}")
+    print("="*55)
+
+    # Step 1: Login
+    kite = auto_login()
+
+    if not kite:
+        print("\n  ❌ Login failed! Check credentials.")
+        sys.exit(1)
+
+    # Step 2: Account info
+    account = get_account_info(kite)
+
+    # Step 3: Positions
+    positions = get_positions(kite)
+
+    # Step 4: Test quote
+    print("\n  Testing live quote...")
+    quote = get_quote(kite, "RELIANCE")
+
+    # Step 5: Test paper order
+    print("\n  Testing paper order...")
+    order = place_order(
+        kite       = kite,
+        symbol     = "RELIANCE",
+        action     = "BUY",
+        quantity   = 1,
+        stop_loss  = quote.get('price', 0) * 0.98,
+        target     = quote.get('price', 0) * 1.03,
+        paper_mode = True,   # ✅ SAFE - Paper only
+    )
+
+    print(f"\n{'='*55}")
+    print(f"  ✅ PHASE 9A COMPLETE!")
+    print(f"  Kite connection working!")
+    print(f"{'='*55}")
