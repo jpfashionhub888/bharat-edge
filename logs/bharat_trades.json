@@ -1,17 +1,7 @@
 {
-  "capital": 60893.54995727539,
+  "capital": 78728.5498046875,
   "starting_capital": 100000.0,
   "positions": {
-    "COALINDIA.NS": {
-      "shares": 25,
-      "entry_price": 443.1499938964844,
-      "entry_date": "2026-04-22T23:17:25.693147",
-      "highest_price": 450.6499938964844,
-      "signal": 0.746,
-      "cost": 11078.74984741211,
-      "reason": "METAL",
-      "current_price": 479.8999938964844
-    },
     "INDUSTOWER.NS": {
       "shares": 20,
       "entry_price": 414.75,
@@ -22,21 +12,11 @@
       "reason": "TELECOM",
       "current_price": 413.8999938964844
     },
-    "INFY.NS": {
-      "shares": 5,
-      "entry_price": 1313.199951171875,
-      "entry_date": "2026-04-22T23:17:27.545459",
-      "highest_price": 1313.199951171875,
-      "signal": 0.703,
-      "cost": 6565.999755859375,
-      "reason": "IT",
-      "current_price": 1167.5
-    },
     "BHARTIARTL.NS": {
       "shares": 3,
       "entry_price": 1855.0,
       "entry_date": "2026-04-22T23:17:28.178574",
-      "highest_price": 1855.0,
+      "highest_price": 1888.0999755859375,
       "signal": 0.6890000000000001,
       "cost": 5565.0,
       "reason": "TELECOM",
@@ -46,7 +26,7 @@
       "shares": 6,
       "entry_price": 1238.5999755859375,
       "entry_date": "2026-04-24T10:58:12.682898",
-      "highest_price": 1238.5999755859375,
+      "highest_price": 1252.5,
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
@@ -118,7 +98,29 @@
       "cost": 7431.599853515625,
       "date": "2026-04-24T10:58:12.682903",
       "reason": "CONSUMER"
+    },
+    {
+      "action": "SELL",
+      "symbol": "COALINDIA.NS",
+      "shares": 25,
+      "price": 479.8999938964844,
+      "revenue": 11997.49984741211,
+      "pnl": 918.75,
+      "pnl_pct": 0.08292903194439499,
+      "date": "2026-04-30T23:10:45.916283",
+      "reason": "take_profit"
+    },
+    {
+      "action": "SELL",
+      "symbol": "INFY.NS",
+      "shares": 5,
+      "price": 1167.5,
+      "revenue": 5837.5,
+      "pnl": -728.499755859375,
+      "pnl_pct": -0.11095031723223496,
+      "date": "2026-04-30T23:10:46.430890",
+      "reason": "stop_loss"
     }
   ],
-  "saved_at": "2026-04-30T22:57:36.556161"
+  "saved_at": "2026-04-30T23:10:46.880020"
 }
