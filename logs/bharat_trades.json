@@ -10,7 +10,7 @@
       "signal": 0.746,
       "cost": 11078.74984741211,
       "reason": "METAL",
-      "current_price": 443.1499938964844
+      "current_price": 479.8999938964844
     },
     "INDUSTOWER.NS": {
       "shares": 20,
@@ -20,7 +20,7 @@
       "signal": 0.7070000000000001,
       "cost": 8295.0,
       "reason": "TELECOM",
-      "current_price": 414.75
+      "current_price": 413.8999938964844
     },
     "INFY.NS": {
       "shares": 5,
@@ -30,7 +30,7 @@
       "signal": 0.703,
       "cost": 6565.999755859375,
       "reason": "IT",
-      "current_price": 1313.199951171875
+      "current_price": 1167.5
     },
     "BHARTIARTL.NS": {
       "shares": 3,
@@ -40,7 +40,7 @@
       "signal": 0.6890000000000001,
       "cost": 5565.0,
       "reason": "TELECOM",
-      "current_price": 1855.0
+      "current_price": 1888.0999755859375
     },
     "HAVELLS.NS": {
       "shares": 6,
@@ -50,7 +50,7 @@
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1238.5999755859375
+      "current_price": 1252.5
     }
   },
   "trade_history": [
@@ -120,5 +120,5 @@
       "reason": "CONSUMER"
     }
   ],
-  "saved_at": "2026-04-30T22:36:03.290662"
+  "saved_at": "2026-04-30T22:57:36.556161"
 }
