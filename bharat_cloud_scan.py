@@ -7,6 +7,7 @@ import sys
 import warnings
 import logging
 from datetime import datetime
+from bharat_market_regime import BharatMarketRegimeFilter
 
 warnings.filterwarnings('ignore')
 os.environ['PYTHONWARNINGS'] = 'ignore'
@@ -106,6 +107,20 @@ def run_bharat_scan():
         print(f"   Sector rotation error: {e}")
 
     # ==========================================
+    # PHASE 2B: MARKET REGIME CHECK
+    # ==========================================
+    print("\n" + "="*60)
+    print("PHASE 2B: INDIAN MARKET REGIME FILTER")
+    print("="*60)
+
+    regime_filter = BharatMarketRegimeFilter()
+    market_regime = regime_filter.analyze()
+
+    if not market_regime['can_trade']:
+        print(f"\n   CASH MODE ACTIVATED!")
+        print(f"   Reason: {market_regime['reason']}")
+
+    # ==========================================
     # PHASE 3: ML MODELS + SIGNALS
     # ==========================================
     print("\n" + "="*60)
@@ -180,7 +195,7 @@ def run_bharat_scan():
     print("="*60)
 
     for symbol, data in stock_signals.items():
-        if data['signal'] == 'BUY':
+        if data['signal'] == 'BUY' and market_regime['can_trade']:
             price = data['price']
             opened = trader.open_position(
                 symbol, price,
