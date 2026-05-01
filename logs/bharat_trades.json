@@ -10,7 +10,7 @@
       "signal": 0.7070000000000001,
       "cost": 8295.0,
       "reason": "TELECOM",
-      "current_price": 413.8999938964844
+      "current_price": 409.95001220703125
     },
     "BHARTIARTL.NS": {
       "shares": 3,
@@ -20,7 +20,7 @@
       "signal": 0.6890000000000001,
       "cost": 5565.0,
       "reason": "TELECOM",
-      "current_price": 1888.0999755859375
+      "current_price": 1886.800048828125
     },
     "HAVELLS.NS": {
       "shares": 6,
@@ -30,7 +30,7 @@
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1252.5
+      "current_price": 1240.5999755859375
     }
   },
   "trade_history": [
@@ -122,5 +122,5 @@
       "reason": "stop_loss"
     }
   ],
-  "saved_at": "2026-04-30T23:10:46.880020"
+  "saved_at": "2026-05-01T09:24:40.561245"
 }
