@@ -37,7 +37,7 @@ class BharatPaperTrader:
         shares = int(adjusted / price)
         return max(shares, 0)
 
-    def open_position(self, symbol, price, signal, reason='signal'):
+    def open_position(self, symbol, price, signal, reason='signal', atr=None):
         if len(self.positions) >= self.max_positions:
             logger.info("Max positions reached, skipping")
             return False
@@ -60,16 +60,23 @@ class BharatPaperTrader:
 
         self.capital -= cost
 
-        self.positions[symbol] = {
-            'shares': shares,
-            'entry_price': price,
-            'entry_date': datetime.now().isoformat(),
-            'highest_price': price,
-            'signal': signal,
-            'cost': cost,
-            'reason': reason,
-        }
+        if atr and atr > 0:
+            atr_stop_pct = (2 * atr) / price
+            stop_loss_pct = max(0.02, min(0.08, atr_stop_pct))
+        else:
+            stop_loss_pct = 0.03
 
+        self.positions[symbol] = {
+            'shares'        : shares,
+            'entry_price'   : price,
+            'entry_date'    : datetime.now().isoformat(),
+            'highest_price' : price,
+            'signal'        : signal,
+            'cost'          : cost,
+            'reason'        : reason,
+            'stop_loss_pct' : stop_loss_pct,
+            'atr'           : atr or 0,
+        }
         trade = {
             'action': 'BUY',
             'symbol': symbol,
@@ -135,8 +142,19 @@ class BharatPaperTrader:
 
         pnl_pct = (current_price - entry) / entry
 
+        # Use position specific ATR stop loss
+        stop_loss = pos.get('stop_loss_pct', stop_loss)
+
+        # Stop loss
         if pnl_pct <= -stop_loss:
-            self.close_position(symbol, current_price, 'stop_loss')
+            print(
+                f"   STOP LOSS: {symbol} "
+                f"down {pnl_pct:.1%} "
+                f"(limit: -{stop_loss:.1%})"
+            )
+            self.close_position(
+                symbol, current_price, 'stop_loss'
+            )
             return
 
         if pnl_pct >= take_profit:
