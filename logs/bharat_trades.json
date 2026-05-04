@@ -1,5 +1,5 @@
 {
-  "capital": 78728.5498046875,
+  "capital": 66471.44970703125,
   "starting_capital": 100000.0,
   "positions": {
     "INDUSTOWER.NS": {
@@ -10,7 +10,7 @@
       "signal": 0.7070000000000001,
       "cost": 8295.0,
       "reason": "TELECOM",
-      "current_price": 409.95001220703125
+      "current_price": 414.54998779296875
     },
     "BHARTIARTL.NS": {
       "shares": 3,
@@ -20,7 +20,7 @@
       "signal": 0.6890000000000001,
       "cost": 5565.0,
       "reason": "TELECOM",
-      "current_price": 1886.800048828125
+      "current_price": 1873.199951171875
     },
     "HAVELLS.NS": {
       "shares": 6,
@@ -30,7 +30,31 @@
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1240.5999755859375
+      "current_price": 1241.0999755859375
+    },
+    "TITAN.NS": {
+      "shares": 1,
+      "entry_price": 4407.10009765625,
+      "entry_date": "2026-05-04T03:40:59.272738",
+      "highest_price": 4407.10009765625,
+      "signal": 0.746,
+      "cost": 4407.10009765625,
+      "reason": "CONSUMER",
+      "stop_loss_pct": 0.03,
+      "atr": 0,
+      "current_price": 4407.10009765625
+    },
+    "POWERGRID.NS": {
+      "shares": 25,
+      "entry_price": 314.0,
+      "entry_date": "2026-05-04T03:40:59.713159",
+      "highest_price": 314.0,
+      "signal": 0.7190000000000001,
+      "cost": 7850.0,
+      "reason": "ENERGY",
+      "stop_loss_pct": 0.03,
+      "atr": 0,
+      "current_price": 314.0
     }
   },
   "trade_history": [
@@ -120,7 +144,25 @@
       "pnl_pct": -0.11095031723223496,
       "date": "2026-04-30T23:10:46.430890",
       "reason": "stop_loss"
+    },
+    {
+      "action": "BUY",
+      "symbol": "TITAN.NS",
+      "shares": 1,
+      "price": 4407.10009765625,
+      "cost": 4407.10009765625,
+      "date": "2026-05-04T03:40:59.272745",
+      "reason": "CONSUMER"
+    },
+    {
+      "action": "BUY",
+      "symbol": "POWERGRID.NS",
+      "shares": 25,
+      "price": 314.0,
+      "cost": 7850.0,
+      "date": "2026-05-04T03:40:59.713172",
+      "reason": "ENERGY"
     }
   ],
-  "saved_at": "2026-05-04T03:27:39.981869"
+  "saved_at": "2026-05-04T03:41:00.562261"
 }
