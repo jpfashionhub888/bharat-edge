@@ -26,7 +26,6 @@ STOCK_UNIVERSE = {
             'TECHM.NS',
             'MPHASIS.NS',
             'PERSISTENT.NS',
-            'LTIM.NS',
         ],
         'index'      : '^CNXit',
         'weight'     : 1.0,
@@ -70,8 +69,7 @@ STOCK_UNIVERSE = {
     'AUTO': {
         'stocks': [
             'MARUTI.NS',
-            'TATAMOTORS.NS',
-            'M&M.NS',
+            'M_M.NS',
             'BAJAJ-AUTO.NS',
             'HEROMOTOCO.NS',
             'EICHERMOT.NS',

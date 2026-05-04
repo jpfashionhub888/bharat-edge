@@ -65,8 +65,9 @@ def run_bharat_scan():
     for i, symbol in enumerate(all_stocks, 1):
         try:
             ticker = yf.Ticker(symbol)
-            df = ticker.history(period='5d')
-            if df.empty or len(df) < 100:
+            df = ticker.history(period='2y')
+            if df.empty or len(df) < 100 or df['Close'].isnull().all():
+                print(f"   [!] Skipping {symbol} - No valid price data")
                 continue
             df.columns = [c.lower() for c in df.columns]
             df.index = df.index.tz_localize(None)
