@@ -162,10 +162,10 @@
         </div>
         <p style="color:#94a3b8;
         font-size:11px;margin-top:4px">
-            Updated: 2026-05-04 11:21 UTC
+            Updated: 2026-05-04 12:17 UTC
         </p>
         <p style="color:#94a3b8;font-size:11px">
-            Last scan: 2026-05-04T11:21
+            Last scan: 2026-05-04T12:17
         </p>
         <p style="color:#94a3b8;font-size:11px">
             Auto-refresh: 5 min
@@ -191,10 +191,10 @@
         <div class="card-label">Cash Available</div>
         <div class="card-value"
         style="color:#3b82f6">
-            Rs79,957.75
+            Rs63,917.75
         </div>
         <div class="card-sub">
-            80.1% of portfolio
+            64.0% of portfolio
         </div>
     </div>
     <div class="card"
@@ -224,7 +224,7 @@
         <div class="card-label">Open Positions</div>
         <div class="card-value"
         style="color:#ffd700">
-            3
+            5
         </div>
         <div class="card-sub">Max 5 allowed</div>
     </div>
@@ -329,6 +329,46 @@
                 <td style="color:#ffd700">
                     ENERGY
                 </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">DRREDDY.NS</td>
+                <td>7</td>
+                <td>Rs1287.20</td>
+                <td>Rs1287.20</td>
+                <td>Rs9010.40</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-05-04
+                </td>
+                <td style="color:#ffd700">
+                    PHARMA
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">ONGC.NS</td>
+                <td>24</td>
+                <td>Rs292.90</td>
+                <td>Rs292.90</td>
+                <td>Rs7029.60</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-05-04
+                </td>
+                <td style="color:#ffd700">
+                    ENERGY
+                </td>
             </tr></tbody>
         </table>
     </div>
@@ -351,6 +391,44 @@
                 </tr>
             </thead>
             <tbody>
+        <tr>
+            <td style="color:#94a3b8">
+                2026-05-04T12:17
+            </td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                ONGC.NS
+            </td>
+            <td>24</td>
+            <td>Rs292.90</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                ENERGY
+            </td>
+        </tr>
+        <tr>
+            <td style="color:#94a3b8">
+                2026-05-04T12:17
+            </td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                DRREDDY.NS
+            </td>
+            <td>7</td>
+            <td>Rs1287.20</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                PHARMA
+            </td>
+        </tr>
         <tr>
             <td style="color:#94a3b8">
                 2026-05-04T11:21
@@ -660,10 +738,10 @@ const aCtx = document.getElementById(
 new Chart(aCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Cash', 'HAVELLS.NS', 'TITAN.NS', 'POWERGRID.NS'],
+        labels: ['Cash', 'HAVELLS.NS', 'TITAN.NS', 'POWERGRID.NS', 'DRREDDY.NS', 'ONGC.NS'],
         datasets: [{
-            data: [79957.75, 7539.6, 4363.0, 7976.25],
-            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316'],
+            data: [63917.75, 7539.6, 4363.0, 7976.25, 9010.4, 7029.6],
+            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff', '#aa88ff'],
             borderColor: '#0a0e1a',
             borderWidth: 2,
         }]
