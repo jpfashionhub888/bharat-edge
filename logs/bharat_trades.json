@@ -1,36 +1,16 @@
 {
-  "capital": 66471.44970703125,
+  "capital": 79957.74963378906,
   "starting_capital": 100000.0,
   "positions": {
-    "INDUSTOWER.NS": {
-      "shares": 20,
-      "entry_price": 414.75,
-      "entry_date": "2026-04-22T23:17:26.950529",
-      "highest_price": 414.75,
-      "signal": 0.7070000000000001,
-      "cost": 8295.0,
-      "reason": "TELECOM",
-      "current_price": 414.54998779296875
-    },
-    "BHARTIARTL.NS": {
-      "shares": 3,
-      "entry_price": 1855.0,
-      "entry_date": "2026-04-22T23:17:28.178574",
-      "highest_price": 1888.0999755859375,
-      "signal": 0.6890000000000001,
-      "cost": 5565.0,
-      "reason": "TELECOM",
-      "current_price": 1873.199951171875
-    },
     "HAVELLS.NS": {
       "shares": 6,
       "entry_price": 1238.5999755859375,
       "entry_date": "2026-04-24T10:58:12.682898",
-      "highest_price": 1252.5,
+      "highest_price": 1256.5999755859375,
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1241.0999755859375
+      "current_price": 1256.5999755859375
     },
     "TITAN.NS": {
       "shares": 1,
@@ -42,19 +22,19 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 4407.10009765625
+      "current_price": 4363.0
     },
     "POWERGRID.NS": {
       "shares": 25,
       "entry_price": 314.0,
       "entry_date": "2026-05-04T03:40:59.713159",
-      "highest_price": 314.0,
+      "highest_price": 319.04998779296875,
       "signal": 0.7190000000000001,
       "cost": 7850.0,
       "reason": "ENERGY",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 314.0
+      "current_price": 319.04998779296875
     }
   },
   "trade_history": [
@@ -162,7 +142,29 @@
       "cost": 7850.0,
       "date": "2026-05-04T03:40:59.713172",
       "reason": "ENERGY"
+    },
+    {
+      "action": "SELL",
+      "symbol": "INDUSTOWER.NS",
+      "shares": 20,
+      "price": 400.25,
+      "revenue": 8005.0,
+      "pnl": -290.0,
+      "pnl_pct": -0.03496081977094635,
+      "date": "2026-05-04T11:21:14.197575",
+      "reason": "stop_loss"
+    },
+    {
+      "action": "SELL",
+      "symbol": "BHARTIARTL.NS",
+      "shares": 3,
+      "price": 1827.0999755859375,
+      "revenue": 5481.2999267578125,
+      "pnl": -83.7000732421875,
+      "pnl_pct": -0.015040444428066038,
+      "date": "2026-05-04T11:21:14.693398",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-05-04T03:41:00.562261"
+  "saved_at": "2026-05-04T11:21:15.173069"
 }
