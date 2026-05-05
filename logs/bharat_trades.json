@@ -10,7 +10,7 @@
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1256.5999755859375
+      "current_price": 1239.5999755859375
     },
     "TITAN.NS": {
       "shares": 1,
@@ -22,19 +22,19 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 4363.0
+      "current_price": 4373.60009765625
     },
     "POWERGRID.NS": {
       "shares": 25,
       "entry_price": 314.0,
       "entry_date": "2026-05-04T03:40:59.713159",
-      "highest_price": 319.04998779296875,
+      "highest_price": 319.45001220703125,
       "signal": 0.7190000000000001,
       "cost": 7850.0,
       "reason": "ENERGY",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 319.04998779296875
+      "current_price": 319.45001220703125
     },
     "DRREDDY.NS": {
       "shares": 7,
@@ -46,7 +46,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 1287.199951171875
+      "current_price": 1271.199951171875
     },
     "ONGC.NS": {
       "shares": 24,
@@ -58,7 +58,7 @@
       "reason": "ENERGY",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 292.8999938964844
+      "current_price": 289.95001220703125
     }
   },
   "trade_history": [
@@ -208,5 +208,5 @@
       "reason": "ENERGY"
     }
   ],
-  "saved_at": "2026-05-04T16:23:07.846088"
+  "saved_at": "2026-05-05T10:24:24.495152"
 }
