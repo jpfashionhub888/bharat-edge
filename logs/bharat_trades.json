@@ -1,16 +1,16 @@
 {
-  "capital": 63917.75012207031,
+  "capital": 70656.94982910156,
   "starting_capital": 100000.0,
   "positions": {
     "HAVELLS.NS": {
       "shares": 6,
       "entry_price": 1238.5999755859375,
       "entry_date": "2026-04-24T10:58:12.682898",
-      "highest_price": 1256.5999755859375,
+      "highest_price": 1257.300048828125,
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1239.5999755859375
+      "current_price": 1257.300048828125
     },
     "TITAN.NS": {
       "shares": 1,
@@ -22,7 +22,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 4373.60009765625
+      "current_price": 4359.60009765625
     },
     "POWERGRID.NS": {
       "shares": 25,
@@ -34,31 +34,19 @@
       "reason": "ENERGY",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 319.45001220703125
+      "current_price": 315.95001220703125
     },
     "DRREDDY.NS": {
       "shares": 7,
       "entry_price": 1287.199951171875,
       "entry_date": "2026-05-04T12:17:09.268858",
-      "highest_price": 1287.199951171875,
+      "highest_price": 1311.0,
       "signal": 0.768,
       "cost": 9010.399658203125,
       "reason": "PHARMA",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 1271.199951171875
-    },
-    "ONGC.NS": {
-      "shares": 24,
-      "entry_price": 292.8999938964844,
-      "entry_date": "2026-05-04T12:17:09.856628",
-      "highest_price": 292.8999938964844,
-      "signal": 0.6809999999999999,
-      "cost": 7029.599853515625,
-      "reason": "ENERGY",
-      "stop_loss_pct": 0.03,
-      "atr": 0,
-      "current_price": 289.95001220703125
+      "current_price": 1311.0
     }
   },
   "trade_history": [
@@ -206,7 +194,18 @@
       "cost": 7029.599853515625,
       "date": "2026-05-04T12:17:09.856643",
       "reason": "ENERGY"
+    },
+    {
+      "action": "SELL",
+      "symbol": "ONGC.NS",
+      "shares": 24,
+      "price": 280.79998779296875,
+      "revenue": 6739.19970703125,
+      "pnl": -290.400146484375,
+      "pnl_pct": -0.04131104935356183,
+      "date": "2026-05-06T11:25:04.901630",
+      "reason": "stop_loss"
     }
   ],
-  "saved_at": "2026-05-05T11:51:09.453789"
+  "saved_at": "2026-05-06T11:25:05.470861"
 }
