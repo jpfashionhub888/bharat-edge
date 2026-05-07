@@ -30,6 +30,7 @@ import sklearn.base
 
 import xgboost as xgb
 import lightgbm as lgb
+from catboost import CatBoostClassifier
 
 from phase2_features import build_features, get_feature_columns, build_live_row
 
@@ -93,8 +94,15 @@ CONFIG = {
         'random_state'     : 42,
         'n_jobs'           : 1,
     },
+    'catboost': {
+        'iterations'       : 300,
+        'depth'            : 4,
+        'learning_rate'    : 0.03,
+        'random_seed'      : 42,
+        'verbose'          : 0,
+        'thread_count'     : 1,
+    },
 }
-
 
 # ============================================================
 # SECTION 1: DATA PREPARATION
@@ -163,8 +171,8 @@ def build_base_models() -> dict:
         'lightgbm'     : lgb.LGBMClassifier(**CONFIG['lightgbm']),
         'random_forest': RandomForestClassifier(**CONFIG['random_forest']),
         'extra_trees'  : ExtraTreesClassifier(**CONFIG['extra_trees']),
+        'catboost'     : CatBoostClassifier(**CONFIG['catboost']),
     }
-
 
 def train_base_models(X, y, n_splits=5):
     print(f"\n{'='*50}")
