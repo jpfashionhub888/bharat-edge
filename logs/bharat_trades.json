@@ -6,11 +6,11 @@
       "shares": 6,
       "entry_price": 1238.5999755859375,
       "entry_date": "2026-04-24T10:58:12.682898",
-      "highest_price": 1257.300048828125,
+      "highest_price": 1268.9000244140625,
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1257.300048828125
+      "current_price": 1268.9000244140625
     },
     "TITAN.NS": {
       "shares": 1,
@@ -22,7 +22,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 4359.60009765625
+      "current_price": 4307.5
     },
     "POWERGRID.NS": {
       "shares": 25,
@@ -34,7 +34,7 @@
       "reason": "ENERGY",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 315.95001220703125
+      "current_price": 313.79998779296875
     },
     "DRREDDY.NS": {
       "shares": 7,
@@ -46,19 +46,19 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 1311.0
+      "current_price": 1307.5999755859375
     },
     "HINDALCO.NS": {
       "shares": 7,
       "entry_price": 1045.800048828125,
       "entry_date": "2026-05-06T13:21:02.992916",
-      "highest_price": 1045.800048828125,
+      "highest_price": 1055.699951171875,
       "signal": 0.778,
       "cost": 7320.600341796875,
       "reason": "METAL",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 1045.800048828125
+      "current_price": 1055.699951171875
     }
   },
   "trade_history": [
@@ -228,5 +228,5 @@
       "reason": "METAL"
     }
   ],
-  "saved_at": "2026-05-07T01:21:20.696562"
+  "saved_at": "2026-05-07T11:26:11.798268"
 }
