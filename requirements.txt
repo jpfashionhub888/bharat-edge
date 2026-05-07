@@ -11,4 +11,5 @@ plotly
 dash
 transformers
 feedparser
+groq
 catboost

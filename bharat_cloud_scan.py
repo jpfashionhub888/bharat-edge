@@ -8,6 +8,9 @@ import warnings
 import logging
 from datetime import datetime
 from bharat_market_regime import BharatMarketRegimeFilter
+from bharat_mtf import BharatMTFAnalyzer
+from bharat_correlation import BharatCorrelationFilter
+from bharat_veto_agent import BharatVetoAgent
 
 warnings.filterwarnings('ignore')
 os.environ['PYTHONWARNINGS'] = 'ignore'
@@ -122,6 +125,39 @@ def run_bharat_scan():
         print(f"   Reason: {market_regime['reason']}")
 
     # ==========================================
+    # MULTI-TIMEFRAME ANALYSIS
+    # ==========================================
+    print("\n" + "="*60)
+    print("MULTI-TIMEFRAME ANALYSIS")
+    print("="*60)
+
+    mtf_analyzer = BharatMTFAnalyzer()
+    mtf_scores   = {}
+
+    if market_regime['can_trade']:
+        print("\n   Checking timeframe alignment...")
+        from phase3_universe import get_all_stocks
+        all_stocks = get_all_stocks()
+        for symbol in all_stocks:
+            try:
+                score = mtf_analyzer.get_mtf_score(symbol)
+                mtf_scores[symbol] = score
+                if score > 0:
+                    print(f"   {symbol}: MTF {score:.0%} BULLISH")
+            except Exception as e:
+                mtf_scores[symbol] = 0.5
+
+        bullish = sum(1 for s in mtf_scores.values() if s > 0)
+        print(f"\n   MTF complete: {bullish} bullish stocks")
+    else:
+        for symbol in get_all_stocks():
+            mtf_scores[symbol] = 0.5
+
+    # Initialize Correlation Filter
+    corr_filter = BharatCorrelationFilter(max_per_sector=2)
+    veto_agent = BharatVetoAgent()
+
+    # ==========================================
     # PHASE 3: ML MODELS + SIGNALS
     # ==========================================
     print("\n" + "="*60)
@@ -133,7 +169,21 @@ def run_bharat_scan():
 
     try:
         from phase2_models import load_all_models
+        from phase2_models import train_full_ensemble
         from phase3_scanner import run_full_scan
+        from bharat_model_cache import should_retrain, mark_trained
+        from phase3_universe import get_all_stocks
+
+        # Walk-forward: Retrain every 30 days
+        if should_retrain():
+            print("\n   Retraining models (walk-forward)...")
+            all_symbols = get_all_stocks()
+            train_full_ensemble(
+                symbols = all_symbols,
+                period  = '6mo',  # Last 6 months only
+            )
+            mark_trained()
+            print("   Models retrained and saved!")
 
         ensemble = load_all_models()
 
@@ -198,6 +248,42 @@ def run_bharat_scan():
     for symbol, data in stock_signals.items():
         if data['signal'] == 'BUY' and market_regime['can_trade']:
             price = data['price']
+
+            # Multi-timeframe filter
+            mtf_score = mtf_scores.get(symbol, 0.5)
+            if mtf_score < 0.5:
+                print(f"   {symbol}: BUY blocked by MTF filter")
+                continue
+
+            # Correlation filter
+            if not corr_filter.can_add_position(
+                symbol, trader.positions
+            ):
+                print(f"   {symbol}: BUY blocked by correlation filter")
+                continue
+
+            # AI Veto Agent Review
+            veto_result = veto_agent.review_signal(
+                symbol            = symbol,
+                price             = price,
+                confidence        = data['confidence'],
+                sector            = data['sector'],
+                market_regime     = market_regime['regime'],
+                mtf_score         = mtf_scores.get(symbol, 0.5),
+                current_positions = trader.positions,
+                india_vix         = market_regime.get('vix', 15),
+            )
+
+            if veto_result['decision'] == 'VETO':
+                print(
+                    f"   {symbol}: VETOED by AI - "
+                    f"{veto_result['reason']}"
+                )
+                continue
+
+            # Calculate ATR
+            atr = None
+
             opened = trader.open_position(
                 symbol, price,
                 data['confidence'],
