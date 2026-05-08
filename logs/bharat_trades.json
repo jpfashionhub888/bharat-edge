@@ -10,7 +10,7 @@
       "signal": 0.763,
       "cost": 7431.599853515625,
       "reason": "CONSUMER",
-      "current_price": 1259.5999755859375
+      "current_price": 1255.199951171875
     },
     "TITAN.NS": {
       "shares": 1,
@@ -22,7 +22,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 4562.0
+      "current_price": 4509.0
     },
     "POWERGRID.NS": {
       "shares": 25,
@@ -34,7 +34,7 @@
       "reason": "ENERGY",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 313.8500061035156
+      "current_price": 313.95001220703125
     },
     "DRREDDY.NS": {
       "shares": 7,
@@ -46,7 +46,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 1301.0
+      "current_price": 1293.9000244140625
     },
     "HINDALCO.NS": {
       "shares": 7,
@@ -58,7 +58,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 1044.9000244140625
+      "current_price": 1044.4000244140625
     }
   },
   "trade_history": [
@@ -228,5 +228,5 @@
       "reason": "METAL"
     }
   ],
-  "saved_at": "2026-05-08T09:01:18.321970"
+  "saved_at": "2026-05-08T12:00:35.795635"
 }
