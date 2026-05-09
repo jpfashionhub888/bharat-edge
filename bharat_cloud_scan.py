@@ -49,7 +49,7 @@ def run_bharat_scan():
         starting_capital=100000.0,
         log_file='logs/bharat_trades.json'
     )
-      trader.load_state()
+    trader.load_state()
 
     # ==========================================
     # RISK CIRCUIT BREAKER CHECK
