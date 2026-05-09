@@ -8,6 +8,8 @@ import warnings
 import logging
 from datetime import datetime
 from bharat_market_regime import BharatMarketRegimeFilter
+from risk_circuit_breaker import RiskCircuitBreaker
+from critic_agent import CriticAgent
 from bharat_mtf import BharatMTFAnalyzer
 from bharat_correlation import BharatCorrelationFilter
 from bharat_veto_agent import BharatVetoAgent
@@ -28,7 +30,7 @@ logger = logging.getLogger(__name__)
 def is_market_day():
     """Check if today is a trading day (Mon-Fri)."""
     day = datetime.now().strftime('%A')
-    return day not in ['Saturday', 'Sunday']
+    return day not in ['Saturday']
 
 
 def run_bharat_scan():
@@ -47,7 +49,35 @@ def run_bharat_scan():
         starting_capital=100000.0,
         log_file='logs/bharat_trades.json'
     )
-    trader.load_state()
+      trader.load_state()
+
+    # ==========================================
+    # RISK CIRCUIT BREAKER CHECK
+    # ==========================================
+    print("\n" + "="*60)
+    print("RISK CIRCUIT BREAKER")
+    print("="*60)
+
+    circuit_breaker = RiskCircuitBreaker()
+    temp_value = trader.capital + sum(
+        pos.get('shares', 0) * pos.get(
+            'current_price', pos.get('entry_price', 0)
+        )
+        for pos in trader.positions.values()
+    )
+
+    circuit_triggered = circuit_breaker.check(
+        current_value    = temp_value,
+        starting_capital = trader.starting_capital,
+        telegram         = telegram,
+    )
+
+    if circuit_triggered:
+        print("   Trading suspended by circuit breaker!")
+
+    # ==========================================
+    # PHASE 1: FETCH STOCK DATA
+    # ==========================================
 
     # ==========================================
     # PHASE 1: FETCH STOCK DATA
@@ -468,13 +498,35 @@ def run_bharat_scan():
     print(f"   Portfolio: Rs{total_value:,.2f}")
     print(f"   Total PnL: Rs{total_pnl:+,.2f} ({total_pct:+.1%})")
 
+    # ==========================================
+    # SUNDAY CRITIC REVIEW
+    # ==========================================
+    critic = CriticAgent()
+    critic.run_weekly_review(
+        trade_history    = trader.trade_history,
+        portfolio_value  = total_value,
+        starting_capital = trader.starting_capital,
+        telegram_bot     = telegram,
+    )
 
 def main():
-    if not is_market_day():
-        day = datetime.now().strftime('%A')
-        print(f"{day} - Indian market closed.")
+    day = datetime.now().strftime('%A')
+
+    if day == 'Saturday':
+        print(f"Saturday - Indian market closed.")
         return
 
+    if day == 'Sunday':
+        print(f"Sunday - Market closed but running Weekly Review...")
+
+    try:
+        run_bharat_scan()
+        print("\nScan complete.")
+    except Exception as e:
+        logger.error(f"Scan failed: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
     try:
         run_bharat_scan()
         print("\nScan complete.")
