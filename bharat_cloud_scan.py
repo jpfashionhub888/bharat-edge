@@ -13,6 +13,7 @@ from critic_agent import CriticAgent
 from bharat_mtf import BharatMTFAnalyzer
 from bharat_correlation import BharatCorrelationFilter
 from bharat_veto_agent import BharatVetoAgent
+from bharat_insider_tracker import BharatInsiderTracker
 
 warnings.filterwarnings('ignore')
 os.environ['PYTHONWARNINGS'] = 'ignore'
@@ -186,6 +187,11 @@ def run_bharat_scan():
     # Initialize Correlation Filter
     corr_filter = BharatCorrelationFilter(max_per_sector=2)
     veto_agent = BharatVetoAgent()
+    insider_tracker = BharatInsiderTracker()
+    print("\n   Loading Indian insider data...")
+    insider_scores = insider_tracker.get_bulk_scores(
+        get_all_stocks(), days_back=30
+    )
 
     # ==========================================
     # PHASE 3: ML MODELS + SIGNALS
@@ -277,6 +283,11 @@ def run_bharat_scan():
 
     for symbol, data in stock_signals.items():
         if data['signal'] == 'BUY' and market_regime['can_trade']:
+            if data['signal'] == 'BUY' and market_regime['can_trade']:
+                # Boost with insider data
+                insider_score = insider_scores.get(symbol, 0.0)
+                if insider_score > 0:
+                    print(f"   {symbol}: +{insider_score:.2f} insider boost!")
             price = data['price']
 
             # Multi-timeframe filter
