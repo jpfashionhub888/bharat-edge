@@ -1,5 +1,5 @@
 # critic_agent.py
-# ALPHAEDGE - Self-Improving Critic Agent
+# BHARATEDGE - Self-Improving Critic Agent
 # Reviews losing trades every Sunday
 # Sends improvement report to Telegram
 # System gets smarter automatically!
@@ -164,7 +164,7 @@ Keep response concise and practical. Max 200 words."""
 
         # Build final report
         pnl_sign = '+' if total_pnl >= 0 else ''
-        report   = f"""ALPHAEDGE WEEKLY CRITIC REPORT
+        report   = f"""BHARATEDGE WEEKLY CRITIC REPORT
 ================================
 Period: Last {days_back} days
 Date: {datetime.now().strftime('%Y-%m-%d')}
@@ -184,7 +184,7 @@ AI ANALYSIS:
 {ai_analysis}
 
 Next review: {(datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')}
-AlphaEdge Critic Agent"""
+BharatEdge Critic Agent"""
 
         return report
 
@@ -201,7 +201,7 @@ AlphaEdge Critic Agent"""
             pnl = t.get('pnl', 0)
             loss_summary += f"- {t.get('symbol','?')}: ${pnl:.2f}\n"
 
-        return f"""ALPHAEDGE WEEKLY REPORT
+        return f"""BHARATEDGE WEEKLY REPORT
 ========================
 Trades: {analysis['total_trades']}
 Win Rate: {win_rate:.1f}%
@@ -210,11 +210,11 @@ P&L: {pnl_sign}${total_pnl:.2f}
 Losses:
 {loss_summary if loss_summary else 'None!'}
 
-AlphaEdge Critic Agent"""
+BharatEdge Critic Agent"""
 
     def _no_trades_report(self):
         """Report when no trades in period."""
-        return f"""ALPHAEDGE WEEKLY REPORT
+        return f"""BHARATEDGE WEEKLY REPORT
 ========================
 Date: {datetime.now().strftime('%Y-%m-%d')}
 
@@ -223,7 +223,7 @@ System is holding positions
 or waiting for signals.
 
 Portfolio is being protected.
-AlphaEdge Critic Agent"""
+BharatEdge Critic Agent"""
 
     def should_run_today(self):
         """Check if today is Sunday (weekly review day)."""
