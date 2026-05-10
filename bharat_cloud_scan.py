@@ -538,15 +538,6 @@ def main():
         import traceback
         traceback.print_exc()
         sys.exit(1)
-    try:
-        run_bharat_scan()
-        print("\nScan complete.")
-    except Exception as e:
-        logger.error(f"Scan failed: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
