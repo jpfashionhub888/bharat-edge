@@ -64,7 +64,7 @@ class BharatPaperTrader:
             atr_stop_pct = (2 * atr) / price
             stop_loss_pct = max(0.02, min(0.08, atr_stop_pct))
         else:
-            stop_loss_pct = 0.03
+            stop_loss_pct = 0.04
 
         self.positions[symbol] = {
             'shares'        : shares,
@@ -127,9 +127,9 @@ class BharatPaperTrader:
         return True
 
     def update_position(self, symbol, current_price,
-                        stop_loss=0.03,
+                        stop_loss=0.04,
                         take_profit=0.08,
-                        trailing_stop=0.025):
+                        trailing_stop=0.04):
 
         if symbol not in self.positions:
             return
