@@ -1,41 +1,7 @@
 {
-  "capital": 63336.34948730469,
+  "capital": 89858.94943237305,
   "starting_capital": 100000.0,
   "positions": {
-    "HAVELLS.NS": {
-      "shares": 6,
-      "entry_price": 1238.5999755859375,
-      "entry_date": "2026-04-24T10:58:12.682898",
-      "highest_price": 1268.9000244140625,
-      "signal": 0.763,
-      "cost": 7431.599853515625,
-      "reason": "CONSUMER",
-      "current_price": 1255.199951171875
-    },
-    "TITAN.NS": {
-      "shares": 1,
-      "entry_price": 4407.10009765625,
-      "entry_date": "2026-05-04T03:40:59.272738",
-      "highest_price": 4562.0,
-      "signal": 0.746,
-      "cost": 4407.10009765625,
-      "reason": "CONSUMER",
-      "stop_loss_pct": 0.03,
-      "atr": 0,
-      "current_price": 4509.0
-    },
-    "POWERGRID.NS": {
-      "shares": 25,
-      "entry_price": 314.0,
-      "entry_date": "2026-05-04T03:40:59.713159",
-      "highest_price": 319.45001220703125,
-      "signal": 0.7190000000000001,
-      "cost": 7850.0,
-      "reason": "ENERGY",
-      "stop_loss_pct": 0.03,
-      "atr": 0,
-      "current_price": 313.95001220703125
-    },
     "DRREDDY.NS": {
       "shares": 7,
       "entry_price": 1287.199951171875,
@@ -46,19 +12,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.03,
       "atr": 0,
-      "current_price": 1293.9000244140625
-    },
-    "HINDALCO.NS": {
-      "shares": 7,
-      "entry_price": 1045.800048828125,
-      "entry_date": "2026-05-06T13:21:02.992916",
-      "highest_price": 1055.699951171875,
-      "signal": 0.778,
-      "cost": 7320.600341796875,
-      "reason": "METAL",
-      "stop_loss_pct": 0.03,
-      "atr": 0,
-      "current_price": 1044.4000244140625
+      "current_price": 1279.9000244140625
     }
   },
   "trade_history": [
@@ -226,7 +180,51 @@
       "cost": 7320.600341796875,
       "date": "2026-05-06T13:21:02.992921",
       "reason": "METAL"
+    },
+    {
+      "action": "SELL",
+      "symbol": "HAVELLS.NS",
+      "shares": 6,
+      "price": 1230.0,
+      "revenue": 7380.0,
+      "pnl": -51.599853515625,
+      "pnl_pct": -0.006943303532578513,
+      "date": "2026-05-11T13:55:20.272059",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "TITAN.NS",
+      "shares": 1,
+      "price": 4205.60009765625,
+      "revenue": 4205.60009765625,
+      "pnl": -201.5,
+      "pnl_pct": -0.045721675372692394,
+      "date": "2026-05-11T13:55:20.712617",
+      "reason": "stop_loss"
+    },
+    {
+      "action": "SELL",
+      "symbol": "POWERGRID.NS",
+      "shares": 25,
+      "price": 310.8999938964844,
+      "revenue": 7772.499847412109,
+      "pnl": -77.50015258789062,
+      "pnl_pct": -0.009872630902916003,
+      "date": "2026-05-11T13:55:21.150045",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "HINDALCO.NS",
+      "shares": 7,
+      "price": 1023.5,
+      "revenue": 7164.5,
+      "pnl": -156.100341796875,
+      "pnl_pct": -0.021323434487417935,
+      "date": "2026-05-11T13:55:21.577274",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-05-10T15:41:15.363694"
+  "saved_at": "2026-05-11T13:55:22.013393"
 }
