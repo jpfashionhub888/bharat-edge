@@ -1,18 +1,30 @@
 {
-  "capital": 89858.94943237305,
+  "capital": 81544.14987182617,
   "starting_capital": 100000.0,
   "positions": {
-    "DRREDDY.NS": {
-      "shares": 7,
-      "entry_price": 1287.199951171875,
-      "entry_date": "2026-05-04T12:17:09.268858",
-      "highest_price": 1311.0,
-      "signal": 0.768,
-      "cost": 9010.399658203125,
+    "TORNTPHARM.NS": {
+      "shares": 2,
+      "entry_price": 4381.89990234375,
+      "entry_date": "2026-05-12T11:33:49.855455",
+      "highest_price": 4381.89990234375,
+      "signal": 0.7829999999999999,
+      "cost": 8763.7998046875,
       "reason": "PHARMA",
-      "stop_loss_pct": 0.03,
+      "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1279.9000244140625
+      "current_price": 4381.89990234375
+    },
+    "ADANIPORTS.NS": {
+      "shares": 5,
+      "entry_price": 1688.199951171875,
+      "entry_date": "2026-05-12T11:33:50.750119",
+      "highest_price": 1688.199951171875,
+      "signal": 0.738,
+      "cost": 8440.999755859375,
+      "reason": "INFRA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1688.199951171875
     }
   },
   "trade_history": [
@@ -224,7 +236,36 @@
       "pnl_pct": -0.021323434487417935,
       "date": "2026-05-11T13:55:21.577274",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "TORNTPHARM.NS",
+      "shares": 2,
+      "price": 4381.89990234375,
+      "cost": 8763.7998046875,
+      "date": "2026-05-12T11:33:49.855463",
+      "reason": "PHARMA"
+    },
+    {
+      "action": "BUY",
+      "symbol": "ADANIPORTS.NS",
+      "shares": 5,
+      "price": 1688.199951171875,
+      "cost": 8440.999755859375,
+      "date": "2026-05-12T11:33:50.750128",
+      "reason": "INFRA"
+    },
+    {
+      "action": "SELL",
+      "symbol": "DRREDDY.NS",
+      "shares": 7,
+      "price": 1270.0,
+      "revenue": 8890.0,
+      "pnl": -120.399658203125,
+      "pnl_pct": -0.013362299428473452,
+      "date": "2026-05-12T11:33:51.571359",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-05-11T17:38:42.316697"
+  "saved_at": "2026-05-12T11:33:52.062775"
 }
