@@ -1,5 +1,5 @@
 {
-  "capital": 81544.14987182617,
+  "capital": 72619.84970092773,
   "starting_capital": 100000.0,
   "positions": {
     "TORNTPHARM.NS": {
@@ -12,19 +12,31 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4381.89990234375
+      "current_price": 4295.7998046875
     },
     "ADANIPORTS.NS": {
       "shares": 5,
       "entry_price": 1688.199951171875,
       "entry_date": "2026-05-12T11:33:50.750119",
-      "highest_price": 1688.199951171875,
+      "highest_price": 1737.800048828125,
       "signal": 0.738,
       "cost": 8440.999755859375,
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1688.199951171875
+      "current_price": 1737.800048828125
+    },
+    "JSWSTEEL.NS": {
+      "shares": 7,
+      "entry_price": 1274.9000244140625,
+      "entry_date": "2026-05-13T11:45:04.393771",
+      "highest_price": 1274.9000244140625,
+      "signal": 0.753,
+      "cost": 8924.300170898438,
+      "reason": "METAL",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1274.9000244140625
     }
   },
   "trade_history": [
@@ -265,7 +277,16 @@
       "pnl_pct": -0.013362299428473452,
       "date": "2026-05-12T11:33:51.571359",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "JSWSTEEL.NS",
+      "shares": 7,
+      "price": 1274.9000244140625,
+      "cost": 8924.300170898438,
+      "date": "2026-05-13T11:45:04.393783",
+      "reason": "METAL"
     }
   ],
-  "saved_at": "2026-05-12T17:37:53.023371"
+  "saved_at": "2026-05-13T11:45:07.045644"
 }
