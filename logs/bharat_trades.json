@@ -1,42 +1,54 @@
 {
-  "capital": 72619.84970092773,
+  "capital": 64659.169525146484,
   "starting_capital": 100000.0,
   "positions": {
     "TORNTPHARM.NS": {
       "shares": 2,
       "entry_price": 4381.89990234375,
       "entry_date": "2026-05-12T11:33:49.855455",
-      "highest_price": 4381.89990234375,
+      "highest_price": 4403.89990234375,
       "signal": 0.7829999999999999,
       "cost": 8763.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4295.7998046875
+      "current_price": 4403.89990234375
     },
     "ADANIPORTS.NS": {
       "shares": 5,
       "entry_price": 1688.199951171875,
       "entry_date": "2026-05-12T11:33:50.750119",
-      "highest_price": 1737.800048828125,
+      "highest_price": 1773.4000244140625,
       "signal": 0.738,
       "cost": 8440.999755859375,
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1737.800048828125
+      "current_price": 1773.4000244140625
     },
     "JSWSTEEL.NS": {
       "shares": 7,
       "entry_price": 1274.9000244140625,
       "entry_date": "2026-05-13T11:45:04.393771",
-      "highest_price": 1274.9000244140625,
+      "highest_price": 1296.9000244140625,
       "signal": 0.753,
       "cost": 8924.300170898438,
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1274.9000244140625
+      "current_price": 1296.9000244140625
+    },
+    "TATASTEEL.NS": {
+      "shares": 36,
+      "entry_price": 221.1300048828125,
+      "entry_date": "2026-05-14T11:28:27.814696",
+      "highest_price": 221.1300048828125,
+      "signal": 0.742,
+      "cost": 7960.68017578125,
+      "reason": "METAL",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 221.1300048828125
     }
   },
   "trade_history": [
@@ -286,7 +298,16 @@
       "cost": 8924.300170898438,
       "date": "2026-05-13T11:45:04.393783",
       "reason": "METAL"
+    },
+    {
+      "action": "BUY",
+      "symbol": "TATASTEEL.NS",
+      "shares": 36,
+      "price": 221.1300048828125,
+      "cost": 7960.68017578125,
+      "date": "2026-05-14T11:28:27.814709",
+      "reason": "METAL"
     }
   ],
-  "saved_at": "2026-05-13T17:41:10.087052"
+  "saved_at": "2026-05-14T11:28:31.083605"
 }
