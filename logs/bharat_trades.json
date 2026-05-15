@@ -1,30 +1,30 @@
 {
-  "capital": 64659.169525146484,
+  "capital": 57898.669525146484,
   "starting_capital": 100000.0,
   "positions": {
     "TORNTPHARM.NS": {
       "shares": 2,
       "entry_price": 4381.89990234375,
       "entry_date": "2026-05-12T11:33:49.855455",
-      "highest_price": 4403.89990234375,
+      "highest_price": 4405.7001953125,
       "signal": 0.7829999999999999,
       "cost": 8763.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4403.89990234375
+      "current_price": 4405.7001953125
     },
     "ADANIPORTS.NS": {
       "shares": 5,
       "entry_price": 1688.199951171875,
       "entry_date": "2026-05-12T11:33:50.750119",
-      "highest_price": 1773.4000244140625,
+      "highest_price": 1795.0999755859375,
       "signal": 0.738,
       "cost": 8440.999755859375,
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1773.4000244140625
+      "current_price": 1795.0999755859375
     },
     "JSWSTEEL.NS": {
       "shares": 7,
@@ -36,7 +36,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1296.9000244140625
+      "current_price": 1278.800048828125
     },
     "TATASTEEL.NS": {
       "shares": 36,
@@ -48,7 +48,19 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 221.1300048828125
+      "current_price": 216.83999633789062
+    },
+    "DIVISLAB.NS": {
+      "shares": 1,
+      "entry_price": 6760.5,
+      "entry_date": "2026-05-15T11:37:35.192698",
+      "highest_price": 6760.5,
+      "signal": 0.748,
+      "cost": 6760.5,
+      "reason": "PHARMA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 6760.5
     }
   },
   "trade_history": [
@@ -307,7 +319,16 @@
       "cost": 7960.68017578125,
       "date": "2026-05-14T11:28:27.814709",
       "reason": "METAL"
+    },
+    {
+      "action": "BUY",
+      "symbol": "DIVISLAB.NS",
+      "shares": 1,
+      "price": 6760.5,
+      "cost": 6760.5,
+      "date": "2026-05-15T11:37:35.192707",
+      "reason": "PHARMA"
     }
   ],
-  "saved_at": "2026-05-14T16:38:59.810644"
+  "saved_at": "2026-05-15T11:37:37.599543"
 }
