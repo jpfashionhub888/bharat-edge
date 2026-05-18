@@ -1,5 +1,5 @@
 {
-  "capital": 65448.2297668457,
+  "capital": 59129.62991333008,
   "starting_capital": 100000.0,
   "positions": {
     "TORNTPHARM.NS": {
@@ -49,6 +49,18 @@
       "stop_loss_pct": 0.04,
       "atr": 0,
       "current_price": 6835.0
+    },
+    "HINDALCO.NS": {
+      "shares": 6,
+      "entry_price": 1053.0999755859375,
+      "entry_date": "2026-05-18T17:23:18.304751",
+      "highest_price": 1053.0999755859375,
+      "signal": 0.716,
+      "cost": 6318.599853515625,
+      "reason": "METAL",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1053.0999755859375
     }
   },
   "trade_history": [
@@ -327,7 +339,16 @@
       "pnl_pct": -0.051643820000805966,
       "date": "2026-05-18T14:51:34.263944",
       "reason": "stop_loss"
+    },
+    {
+      "action": "BUY",
+      "symbol": "HINDALCO.NS",
+      "shares": 6,
+      "price": 1053.0999755859375,
+      "cost": 6318.599853515625,
+      "date": "2026-05-18T17:23:18.304764",
+      "reason": "METAL"
     }
   ],
-  "saved_at": "2026-05-18T14:51:36.269387"
+  "saved_at": "2026-05-18T17:23:21.543387"
 }

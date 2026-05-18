@@ -162,10 +162,10 @@
         </div>
         <p style="color:#94a3b8;
         font-size:11px;margin-top:4px">
-            Updated: 2026-05-18 14:51 UTC
+            Updated: 2026-05-18 17:23 UTC
         </p>
         <p style="color:#94a3b8;font-size:11px">
-            Last scan: 2026-05-18T14:51
+            Last scan: 2026-05-18T17:23
         </p>
         <p style="color:#94a3b8;font-size:11px">
             Auto-refresh: 5 min
@@ -191,10 +191,10 @@
         <div class="card-label">Cash Available</div>
         <div class="card-value"
         style="color:#3b82f6">
-            Rs65,448.23
+            Rs59,129.63
         </div>
         <div class="card-sub">
-            66.1% of portfolio
+            59.7% of portfolio
         </div>
     </div>
     <div class="card"
@@ -224,7 +224,7 @@
         <div class="card-label">Open Positions</div>
         <div class="card-value"
         style="color:#ffd700">
-            4
+            5
         </div>
         <div class="card-sub">Max 5 allowed</div>
     </div>
@@ -349,6 +349,26 @@
                 <td style="color:#ffd700">
                     PHARMA
                 </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">HINDALCO.NS</td>
+                <td>6</td>
+                <td>Rs1053.10</td>
+                <td>Rs1053.10</td>
+                <td>Rs6318.60</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-05-18
+                </td>
+                <td style="color:#ffd700">
+                    METAL
+                </td>
             </tr></tbody>
         </table>
     </div>
@@ -371,6 +391,25 @@
                 </tr>
             </thead>
             <tbody>
+        <tr>
+            <td style="color:#94a3b8">
+                2026-05-18T17:23
+            </td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                HINDALCO.NS
+            </td>
+            <td>6</td>
+            <td>Rs1053.10</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                METAL
+            </td>
+        </tr>
         <tr>
             <td style="color:#94a3b8">
                 2026-05-18T14:51
@@ -965,10 +1004,10 @@ const aCtx = document.getElementById(
 new Chart(aCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Cash', 'TORNTPHARM.NS', 'ADANIPORTS.NS', 'JSWSTEEL.NS', 'DIVISLAB.NS'],
+        labels: ['Cash', 'TORNTPHARM.NS', 'ADANIPORTS.NS', 'JSWSTEEL.NS', 'DIVISLAB.NS', 'HINDALCO.NS'],
         datasets: [{
-            data: [65448.23, 8787.4, 8938.5, 9049.6, 6835.0],
-            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff'],
+            data: [59129.63, 8787.4, 8938.5, 9049.6, 6835.0, 6318.6],
+            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff', '#aa88ff'],
             borderColor: '#0a0e1a',
             borderWidth: 2,
         }]
