@@ -1,5 +1,5 @@
 {
-  "capital": 57898.669525146484,
+  "capital": 65448.2297668457,
   "starting_capital": 100000.0,
   "positions": {
     "TORNTPHARM.NS": {
@@ -12,7 +12,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4405.7001953125
+      "current_price": 4393.7001953125
     },
     "ADANIPORTS.NS": {
       "shares": 5,
@@ -24,7 +24,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1795.0999755859375
+      "current_price": 1787.699951171875
     },
     "JSWSTEEL.NS": {
       "shares": 7,
@@ -36,31 +36,19 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1278.800048828125
-    },
-    "TATASTEEL.NS": {
-      "shares": 36,
-      "entry_price": 221.1300048828125,
-      "entry_date": "2026-05-14T11:28:27.814696",
-      "highest_price": 221.1300048828125,
-      "signal": 0.742,
-      "cost": 7960.68017578125,
-      "reason": "METAL",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 216.83999633789062
+      "current_price": 1292.800048828125
     },
     "DIVISLAB.NS": {
       "shares": 1,
       "entry_price": 6760.5,
       "entry_date": "2026-05-15T11:37:35.192698",
-      "highest_price": 6760.5,
+      "highest_price": 6835.0,
       "signal": 0.748,
       "cost": 6760.5,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 6760.5
+      "current_price": 6835.0
     }
   },
   "trade_history": [
@@ -328,7 +316,18 @@
       "cost": 6760.5,
       "date": "2026-05-15T11:37:35.192707",
       "reason": "PHARMA"
+    },
+    {
+      "action": "SELL",
+      "symbol": "TATASTEEL.NS",
+      "shares": 36,
+      "price": 209.7100067138672,
+      "revenue": 7549.560241699219,
+      "pnl": -411.11993408203125,
+      "pnl_pct": -0.051643820000805966,
+      "date": "2026-05-18T14:51:34.263944",
+      "reason": "stop_loss"
     }
   ],
-  "saved_at": "2026-05-15T16:25:17.625808"
+  "saved_at": "2026-05-18T14:51:36.269387"
 }
