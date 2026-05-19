@@ -6,13 +6,13 @@
       "shares": 2,
       "entry_price": 4381.89990234375,
       "entry_date": "2026-05-12T11:33:49.855455",
-      "highest_price": 4455.7001953125,
+      "highest_price": 4460.10009765625,
       "signal": 0.7829999999999999,
       "cost": 8763.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4455.7001953125
+      "current_price": 4460.10009765625
     },
     "ADANIPORTS.NS": {
       "shares": 5,
@@ -24,7 +24,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1785.5
+      "current_price": 1762.800048828125
     },
     "JSWSTEEL.NS": {
       "shares": 7,
@@ -36,7 +36,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1291.199951171875
+      "current_price": 1285.199951171875
     },
     "DIVISLAB.NS": {
       "shares": 1,
@@ -48,7 +48,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 6914.0
+      "current_price": 6912.0
     },
     "HINDALCO.NS": {
       "shares": 6,
@@ -60,7 +60,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1049.4000244140625
+      "current_price": 1048.300048828125
     }
   },
   "trade_history": [
@@ -350,5 +350,5 @@
       "reason": "METAL"
     }
   ],
-  "saved_at": "2026-05-19T07:09:29.002114"
+  "saved_at": "2026-05-19T10:44:37.157949"
 }
