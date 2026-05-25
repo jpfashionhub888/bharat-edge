@@ -1,30 +1,30 @@
 {
-  "capital": 59129.62991333008,
+  "capital": 65865.62991333008,
   "starting_capital": 100000.0,
   "positions": {
     "TORNTPHARM.NS": {
       "shares": 2,
       "entry_price": 4381.89990234375,
       "entry_date": "2026-05-12T11:33:49.855455",
-      "highest_price": 4494.2001953125,
+      "highest_price": 4562.7998046875,
       "signal": 0.7829999999999999,
       "cost": 8763.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4486.2001953125
+      "current_price": 4562.7998046875
     },
     "ADANIPORTS.NS": {
       "shares": 5,
       "entry_price": 1688.199951171875,
       "entry_date": "2026-05-12T11:33:50.750119",
-      "highest_price": 1795.0999755859375,
+      "highest_price": 1803.199951171875,
       "signal": 0.738,
       "cost": 8440.999755859375,
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1786.9000244140625
+      "current_price": 1803.199951171875
     },
     "JSWSTEEL.NS": {
       "shares": 7,
@@ -36,19 +36,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1285.5
-    },
-    "DIVISLAB.NS": {
-      "shares": 1,
-      "entry_price": 6760.5,
-      "entry_date": "2026-05-15T11:37:35.192698",
-      "highest_price": 6914.0,
-      "signal": 0.748,
-      "cost": 6760.5,
-      "reason": "PHARMA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 6887.0
+      "current_price": 1288.0999755859375
     },
     "HINDALCO.NS": {
       "shares": 6,
@@ -60,7 +48,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1109.199951171875
+      "current_price": 1088.5
     }
   },
   "trade_history": [
@@ -348,7 +336,18 @@
       "cost": 6318.599853515625,
       "date": "2026-05-18T17:23:18.304764",
       "reason": "METAL"
+    },
+    {
+      "action": "SELL",
+      "symbol": "DIVISLAB.NS",
+      "shares": 1,
+      "price": 6736.0,
+      "revenue": 6736.0,
+      "pnl": -24.5,
+      "pnl_pct": -0.0036239923082612233,
+      "date": "2026-05-25T08:10:26.416826",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-05-22T12:11:12.030890"
+  "saved_at": "2026-05-25T08:10:28.903858"
 }
