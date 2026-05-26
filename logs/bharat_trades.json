@@ -1,30 +1,18 @@
 {
-  "capital": 65865.62991333008,
+  "capital": 68287.47988891602,
   "starting_capital": 100000.0,
   "positions": {
-    "TORNTPHARM.NS": {
-      "shares": 2,
-      "entry_price": 4381.89990234375,
-      "entry_date": "2026-05-12T11:33:49.855455",
-      "highest_price": 4572.60009765625,
-      "signal": 0.7829999999999999,
-      "cost": 8763.7998046875,
-      "reason": "PHARMA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 4572.60009765625
-    },
     "ADANIPORTS.NS": {
       "shares": 5,
       "entry_price": 1688.199951171875,
       "entry_date": "2026-05-12T11:33:50.750119",
-      "highest_price": 1803.199951171875,
+      "highest_price": 1810.0,
       "signal": 0.738,
       "cost": 8440.999755859375,
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1802.9000244140625
+      "current_price": 1810.0
     },
     "JSWSTEEL.NS": {
       "shares": 7,
@@ -36,7 +24,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1289.4000244140625
+      "current_price": 1293.0
     },
     "HINDALCO.NS": {
       "shares": 6,
@@ -48,7 +36,19 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1099.5999755859375
+      "current_price": 1107.800048828125
+    },
+    "INDUSINDBK.NS": {
+      "shares": 7,
+      "entry_price": 923.8499755859375,
+      "entry_date": "2026-05-26T07:05:32.655188",
+      "highest_price": 923.8499755859375,
+      "signal": 0.7,
+      "cost": 6466.9498291015625,
+      "reason": "BANKING",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 923.4000244140625
     }
   },
   "trade_history": [
@@ -347,7 +347,27 @@
       "pnl_pct": -0.0036239923082612233,
       "date": "2026-05-25T08:10:26.416826",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "INDUSINDBK.NS",
+      "shares": 7,
+      "price": 923.8499755859375,
+      "cost": 6466.9498291015625,
+      "date": "2026-05-26T07:05:32.655200",
+      "reason": "BANKING"
+    },
+    {
+      "action": "SELL",
+      "symbol": "TORNTPHARM.NS",
+      "shares": 2,
+      "price": 4444.39990234375,
+      "revenue": 8888.7998046875,
+      "pnl": 125.0,
+      "pnl_pct": 0.01426321946938372,
+      "date": "2026-05-26T07:05:34.922189",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-05-25T12:57:10.382470"
+  "saved_at": "2026-05-26T07:05:35.464724"
 }
