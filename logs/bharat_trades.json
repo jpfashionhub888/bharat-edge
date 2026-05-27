@@ -6,13 +6,13 @@
       "shares": 7,
       "entry_price": 1274.9000244140625,
       "entry_date": "2026-05-13T11:45:04.393771",
-      "highest_price": 1305.0,
+      "highest_price": 1309.300048828125,
       "signal": 0.753,
       "cost": 8924.300170898438,
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1305.0
+      "current_price": 1309.300048828125
     },
     "INDUSINDBK.NS": {
       "shares": 7,
@@ -24,7 +24,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 934.4000244140625
+      "current_price": 932.2999877929688
     },
     "DRREDDY.NS": {
       "shares": 5,
@@ -36,7 +36,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1321.9000244140625
+      "current_price": 1319.0
     }
   },
   "trade_history": [
@@ -388,5 +388,5 @@
       "reason": "take_profit"
     }
   ],
-  "saved_at": "2026-05-27T07:53:20.996293"
+  "saved_at": "2026-05-27T11:02:58.882255"
 }
