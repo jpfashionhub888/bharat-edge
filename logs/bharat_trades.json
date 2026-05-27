@@ -1,54 +1,42 @@
 {
-  "capital": 68287.47988891602,
+  "capital": 77667.48037719727,
   "starting_capital": 100000.0,
   "positions": {
-    "ADANIPORTS.NS": {
-      "shares": 5,
-      "entry_price": 1688.199951171875,
-      "entry_date": "2026-05-12T11:33:50.750119",
-      "highest_price": 1810.0,
-      "signal": 0.738,
-      "cost": 8440.999755859375,
-      "reason": "INFRA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1810.0
-    },
     "JSWSTEEL.NS": {
       "shares": 7,
       "entry_price": 1274.9000244140625,
       "entry_date": "2026-05-13T11:45:04.393771",
-      "highest_price": 1296.9000244140625,
+      "highest_price": 1305.0,
       "signal": 0.753,
       "cost": 8924.300170898438,
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1293.0
-    },
-    "HINDALCO.NS": {
-      "shares": 6,
-      "entry_price": 1053.0999755859375,
-      "entry_date": "2026-05-18T17:23:18.304751",
-      "highest_price": 1109.199951171875,
-      "signal": 0.716,
-      "cost": 6318.599853515625,
-      "reason": "METAL",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1107.800048828125
+      "current_price": 1305.0
     },
     "INDUSINDBK.NS": {
       "shares": 7,
       "entry_price": 923.8499755859375,
       "entry_date": "2026-05-26T07:05:32.655188",
-      "highest_price": 923.8499755859375,
+      "highest_price": 934.4000244140625,
       "signal": 0.7,
       "cost": 6466.9498291015625,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 923.4000244140625
+      "current_price": 934.4000244140625
+    },
+    "DRREDDY.NS": {
+      "shares": 5,
+      "entry_price": 1320.199951171875,
+      "entry_date": "2026-05-27T07:53:17.834557",
+      "highest_price": 1321.9000244140625,
+      "signal": 0.72,
+      "cost": 6600.999755859375,
+      "reason": "PHARMA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1321.9000244140625
     }
   },
   "trade_history": [
@@ -367,7 +355,38 @@
       "pnl_pct": 0.01426321946938372,
       "date": "2026-05-26T07:05:34.922189",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "DRREDDY.NS",
+      "shares": 5,
+      "price": 1320.199951171875,
+      "cost": 6600.999755859375,
+      "date": "2026-05-27T07:53:17.834571",
+      "reason": "PHARMA"
+    },
+    {
+      "action": "SELL",
+      "symbol": "ADANIPORTS.NS",
+      "shares": 5,
+      "price": 1825.800048828125,
+      "revenue": 9129.000244140625,
+      "pnl": 688.00048828125,
+      "pnl_pct": 0.08150699066229329,
+      "date": "2026-05-27T07:53:20.401720",
+      "reason": "take_profit"
+    },
+    {
+      "action": "SELL",
+      "symbol": "HINDALCO.NS",
+      "shares": 6,
+      "price": 1142.0,
+      "revenue": 6852.0,
+      "pnl": 533.400146484375,
+      "pnl_pct": 0.08441745938185892,
+      "date": "2026-05-27T07:53:20.685442",
+      "reason": "take_profit"
     }
   ],
-  "saved_at": "2026-05-26T07:05:35.464724"
+  "saved_at": "2026-05-27T07:53:20.996293"
 }
