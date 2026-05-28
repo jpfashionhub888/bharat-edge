@@ -1,5 +1,5 @@
 {
-  "capital": 77667.48037719727,
+  "capital": 69287.1301574707,
   "starting_capital": 100000.0,
   "positions": {
     "JSWSTEEL.NS": {
@@ -37,6 +37,18 @@
       "stop_loss_pct": 0.04,
       "atr": 0,
       "current_price": 1319.0
+    },
+    "BAJFINANCE.NS": {
+      "shares": 9,
+      "entry_price": 931.1500244140625,
+      "entry_date": "2026-05-28T07:13:13.895699",
+      "highest_price": 931.1500244140625,
+      "signal": 0.738,
+      "cost": 8380.350219726562,
+      "reason": "NBFC",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 931.1500244140625
     }
   },
   "trade_history": [
@@ -386,7 +398,16 @@
       "pnl_pct": 0.08441745938185892,
       "date": "2026-05-27T07:53:20.685442",
       "reason": "take_profit"
+    },
+    {
+      "action": "BUY",
+      "symbol": "BAJFINANCE.NS",
+      "shares": 9,
+      "price": 931.1500244140625,
+      "cost": 8380.350219726562,
+      "date": "2026-05-28T07:13:13.895709",
+      "reason": "NBFC"
     }
   ],
-  "saved_at": "2026-05-27T12:47:38.300226"
+  "saved_at": "2026-05-28T07:13:16.218779"
 }

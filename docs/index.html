@@ -162,10 +162,10 @@
         </div>
         <p style="color:#94a3b8;
         font-size:11px;margin-top:4px">
-            Updated: 2026-05-27 12:47 UTC
+            Updated: 2026-05-28 07:13 UTC
         </p>
         <p style="color:#94a3b8;font-size:11px">
-            Last scan: 2026-05-27T12:47
+            Last scan: 2026-05-28T07:13
         </p>
         <p style="color:#94a3b8;font-size:11px">
             Auto-refresh: 5 min
@@ -191,10 +191,10 @@
         <div class="card-label">Cash Available</div>
         <div class="card-value"
         style="color:#3b82f6">
-            Rs77,667.48
+            Rs69,287.13
         </div>
         <div class="card-sub">
-            77.7% of portfolio
+            69.3% of portfolio
         </div>
     </div>
     <div class="card"
@@ -224,7 +224,7 @@
         <div class="card-label">Open Positions</div>
         <div class="card-value"
         style="color:#ffd700">
-            3
+            4
         </div>
         <div class="card-sub">Max 5 allowed</div>
     </div>
@@ -329,6 +329,26 @@
                 <td style="color:#ffd700">
                     PHARMA
                 </td>
+            </tr>
+            <tr>
+                <td style="color:#00d4ff;
+                font-weight:700">BAJFINANCE.NS</td>
+                <td>9</td>
+                <td>Rs931.15</td>
+                <td>Rs931.15</td>
+                <td>Rs8380.35</td>
+                <td style="color:#00ff88;font-weight:700">
+                    +Rs0.00
+                </td>
+                <td style="color:#00ff88">
+                    +0.00%
+                </td>
+                <td style="color:#94a3b8">
+                    2026-05-28
+                </td>
+                <td style="color:#ffd700">
+                    NBFC
+                </td>
             </tr></tbody>
         </table>
     </div>
@@ -351,6 +371,25 @@
                 </tr>
             </thead>
             <tbody>
+        <tr>
+            <td style="color:#94a3b8">
+                2026-05-28T07:13
+            </td>
+            <td style="color:#00ff88;font-weight:700">
+                BUY
+            </td>
+            <td style="color:#00d4ff;font-weight:700">
+                BAJFINANCE.NS
+            </td>
+            <td>9</td>
+            <td>Rs931.15</td>
+            <td style="color:#00ff88;font-weight:700">
+                -
+            </td>
+            <td style="color:#94a3b8">
+                NBFC
+            </td>
+        </tr>
         <tr>
             <td style="color:#94a3b8">
                 2026-05-27T07:53
@@ -901,25 +940,6 @@
             <td style="color:#94a3b8">
                 CONSUMER
             </td>
-        </tr>
-        <tr>
-            <td style="color:#94a3b8">
-                2026-04-24T09:21
-            </td>
-            <td style="color:#ff4444;font-weight:700">
-                SELL
-            </td>
-            <td style="color:#00d4ff;font-weight:700">
-                ASIANPAINT.NS
-            </td>
-            <td>3</td>
-            <td>Rs2486.90</td>
-            <td style="color:#ff4444;font-weight:700">
-                Rs-170.10
-            </td>
-            <td style="color:#94a3b8">
-                trailing_stop
-            </td>
         </tr></tbody>
         </table>
     </div>
@@ -983,10 +1003,10 @@ const aCtx = document.getElementById(
 new Chart(aCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Cash', 'JSWSTEEL.NS', 'INDUSINDBK.NS', 'DRREDDY.NS'],
+        labels: ['Cash', 'JSWSTEEL.NS', 'INDUSINDBK.NS', 'DRREDDY.NS', 'BAJFINANCE.NS'],
         datasets: [{
-            data: [77667.48, 9165.1, 6526.1, 6595.0],
-            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316'],
+            data: [69287.13, 9165.1, 6526.1, 6595.0, 8380.35],
+            backgroundColor: ['#3b82f6', '#00ff88', '#ffd700', '#f97316', '#00d4ff'],
             borderColor: '#0a0e1a',
             borderWidth: 2,
         }]
