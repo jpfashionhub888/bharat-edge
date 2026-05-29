@@ -12,7 +12,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1294.699951171875
+      "current_price": 1278.0
     },
     "INDUSINDBK.NS": {
       "shares": 7,
@@ -24,7 +24,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 923.25
+      "current_price": 914.3499755859375
     },
     "DRREDDY.NS": {
       "shares": 5,
@@ -36,7 +36,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1316.4000244140625
+      "current_price": 1303.5
     },
     "BAJFINANCE.NS": {
       "shares": 9,
@@ -48,7 +48,7 @@
       "reason": "NBFC",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 924.0999755859375
+      "current_price": 908.25
     },
     "TORNTPHARM.NS": {
       "shares": 1,
@@ -60,7 +60,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4459.0
+      "current_price": 4410.7998046875
     }
   },
   "trade_history": [
@@ -430,5 +430,5 @@
       "reason": "PHARMA"
     }
   ],
-  "saved_at": "2026-05-29T07:14:15.385628"
+  "saved_at": "2026-05-29T10:55:44.140404"
 }
