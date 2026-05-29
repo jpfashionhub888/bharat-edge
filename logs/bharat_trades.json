@@ -1,5 +1,5 @@
 {
-  "capital": 69287.1301574707,
+  "capital": 64830.9299621582,
   "starting_capital": 100000.0,
   "positions": {
     "JSWSTEEL.NS": {
@@ -12,7 +12,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1309.300048828125
+      "current_price": 1294.699951171875
     },
     "INDUSINDBK.NS": {
       "shares": 7,
@@ -24,7 +24,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 932.2999877929688
+      "current_price": 923.25
     },
     "DRREDDY.NS": {
       "shares": 5,
@@ -36,7 +36,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1319.0
+      "current_price": 1316.4000244140625
     },
     "BAJFINANCE.NS": {
       "shares": 9,
@@ -48,7 +48,19 @@
       "reason": "NBFC",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 931.1500244140625
+      "current_price": 924.0999755859375
+    },
+    "TORNTPHARM.NS": {
+      "shares": 1,
+      "entry_price": 4456.2001953125,
+      "entry_date": "2026-05-29T07:14:12.118785",
+      "highest_price": 4459.0,
+      "signal": 0.7559999999999999,
+      "cost": 4456.2001953125,
+      "reason": "PHARMA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 4459.0
     }
   },
   "trade_history": [
@@ -407,7 +419,16 @@
       "cost": 8380.350219726562,
       "date": "2026-05-28T07:13:13.895709",
       "reason": "NBFC"
+    },
+    {
+      "action": "BUY",
+      "symbol": "TORNTPHARM.NS",
+      "shares": 1,
+      "price": 4456.2001953125,
+      "cost": 4456.2001953125,
+      "date": "2026-05-29T07:14:12.118798",
+      "reason": "PHARMA"
     }
   ],
-  "saved_at": "2026-05-28T12:59:17.751233"
+  "saved_at": "2026-05-29T07:14:15.385628"
 }
