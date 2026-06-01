@@ -1,5 +1,5 @@
 {
-  "capital": 79154.17965698242,
+  "capital": 71388.07943725586,
   "starting_capital": 100000.0,
   "positions": {
     "JSWSTEEL.NS": {
@@ -24,7 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1289.4000244140625
+      "current_price": 1290.4000244140625
     },
     "TORNTPHARM.NS": {
       "shares": 1,
@@ -36,7 +36,19 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4366.39990234375
+      "current_price": 4350.39990234375
+    },
+    "INDUSTOWER.NS": {
+      "shares": 18,
+      "entry_price": 431.45001220703125,
+      "entry_date": "2026-06-01T12:47:55.366340",
+      "highest_price": 431.45001220703125,
+      "signal": 0.67,
+      "cost": 7766.1002197265625,
+      "reason": "TELECOM",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 431.45001220703125
     }
   },
   "trade_history": [
@@ -426,7 +438,16 @@
       "pnl_pct": -0.04327986658592883,
       "date": "2026-06-01T09:06:53.306211",
       "reason": "stop_loss"
+    },
+    {
+      "action": "BUY",
+      "symbol": "INDUSTOWER.NS",
+      "shares": 18,
+      "price": 431.45001220703125,
+      "cost": 7766.1002197265625,
+      "date": "2026-06-01T12:47:55.366353",
+      "reason": "TELECOM"
     }
   ],
-  "saved_at": "2026-06-01T09:06:53.621403"
+  "saved_at": "2026-06-01T12:47:57.579702"
 }
