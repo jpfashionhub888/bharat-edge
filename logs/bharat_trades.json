@@ -1,5 +1,5 @@
 {
-  "capital": 64830.9299621582,
+  "capital": 79154.17965698242,
   "starting_capital": 100000.0,
   "positions": {
     "JSWSTEEL.NS": {
@@ -12,19 +12,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1278.0
-    },
-    "INDUSINDBK.NS": {
-      "shares": 7,
-      "entry_price": 923.8499755859375,
-      "entry_date": "2026-05-26T07:05:32.655188",
-      "highest_price": 934.4000244140625,
-      "signal": 0.7,
-      "cost": 6466.9498291015625,
-      "reason": "BANKING",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 914.3499755859375
+      "current_price": 1299.4000244140625
     },
     "DRREDDY.NS": {
       "shares": 5,
@@ -36,19 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1303.5
-    },
-    "BAJFINANCE.NS": {
-      "shares": 9,
-      "entry_price": 931.1500244140625,
-      "entry_date": "2026-05-28T07:13:13.895699",
-      "highest_price": 931.1500244140625,
-      "signal": 0.738,
-      "cost": 8380.350219726562,
-      "reason": "NBFC",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 908.25
+      "current_price": 1289.4000244140625
     },
     "TORNTPHARM.NS": {
       "shares": 1,
@@ -60,7 +36,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4410.7998046875
+      "current_price": 4366.39990234375
     }
   },
   "trade_history": [
@@ -428,7 +404,29 @@
       "cost": 4456.2001953125,
       "date": "2026-05-29T07:14:12.118798",
       "reason": "PHARMA"
+    },
+    {
+      "action": "SELL",
+      "symbol": "INDUSINDBK.NS",
+      "shares": 7,
+      "price": 900.7999877929688,
+      "revenue": 6305.599914550781,
+      "pnl": -161.34991455078125,
+      "pnl_pct": -0.024949925206578755,
+      "date": "2026-06-01T09:06:51.452715",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "BAJFINANCE.NS",
+      "shares": 9,
+      "price": 890.8499755859375,
+      "revenue": 8017.6497802734375,
+      "pnl": -362.700439453125,
+      "pnl_pct": -0.04327986658592883,
+      "date": "2026-06-01T09:06:53.306211",
+      "reason": "stop_loss"
     }
   ],
-  "saved_at": "2026-05-29T12:40:02.834209"
+  "saved_at": "2026-06-01T09:06:53.621403"
 }
