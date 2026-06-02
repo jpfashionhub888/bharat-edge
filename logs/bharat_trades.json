@@ -1,5 +1,5 @@
 {
-  "capital": 82066.17977905273,
+  "capital": 64594.780364990234,
   "starting_capital": 100000.0,
   "positions": {
     "JSWSTEEL.NS": {
@@ -12,7 +12,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1311.9000244140625
+      "current_price": 1310.800048828125
     },
     "INDUSTOWER.NS": {
       "shares": 18,
@@ -24,7 +24,31 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 429.29998779296875
+      "current_price": 429.1499938964844
+    },
+    "DLF.NS": {
+      "shares": 16,
+      "entry_price": 591.8499755859375,
+      "entry_date": "2026-06-02T11:27:28.893613",
+      "highest_price": 591.8499755859375,
+      "signal": 0.795,
+      "cost": 9469.599609375,
+      "reason": "INFRA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 591.8499755859375
+    },
+    "LT.NS": {
+      "shares": 2,
+      "entry_price": 4000.89990234375,
+      "entry_date": "2026-06-02T11:27:31.548391",
+      "highest_price": 4000.89990234375,
+      "signal": 0.737,
+      "cost": 8001.7998046875,
+      "reason": "INFRA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 4000.89990234375
     }
   },
   "trade_history": [
@@ -445,7 +469,25 @@
       "pnl_pct": -0.032449192432681906,
       "date": "2026-06-02T08:18:45.604511",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "DLF.NS",
+      "shares": 16,
+      "price": 591.8499755859375,
+      "cost": 9469.599609375,
+      "date": "2026-06-02T11:27:28.893626",
+      "reason": "INFRA"
+    },
+    {
+      "action": "BUY",
+      "symbol": "LT.NS",
+      "shares": 2,
+      "price": 4000.89990234375,
+      "cost": 8001.7998046875,
+      "date": "2026-06-02T11:27:31.548407",
+      "reason": "INFRA"
     }
   ],
-  "saved_at": "2026-06-02T08:18:46.158037"
+  "saved_at": "2026-06-02T11:27:32.164504"
 }
