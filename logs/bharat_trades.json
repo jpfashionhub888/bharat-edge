@@ -1,42 +1,18 @@
 {
-  "capital": 71388.07943725586,
+  "capital": 82066.17977905273,
   "starting_capital": 100000.0,
   "positions": {
     "JSWSTEEL.NS": {
       "shares": 7,
       "entry_price": 1274.9000244140625,
       "entry_date": "2026-05-13T11:45:04.393771",
-      "highest_price": 1309.300048828125,
+      "highest_price": 1311.9000244140625,
       "signal": 0.753,
       "cost": 8924.300170898438,
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1299.4000244140625
-    },
-    "DRREDDY.NS": {
-      "shares": 5,
-      "entry_price": 1320.199951171875,
-      "entry_date": "2026-05-27T07:53:17.834557",
-      "highest_price": 1321.9000244140625,
-      "signal": 0.72,
-      "cost": 6600.999755859375,
-      "reason": "PHARMA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1290.4000244140625
-    },
-    "TORNTPHARM.NS": {
-      "shares": 1,
-      "entry_price": 4456.2001953125,
-      "entry_date": "2026-05-29T07:14:12.118785",
-      "highest_price": 4459.0,
-      "signal": 0.7559999999999999,
-      "cost": 4456.2001953125,
-      "reason": "PHARMA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 4350.39990234375
+      "current_price": 1311.9000244140625
     },
     "INDUSTOWER.NS": {
       "shares": 18,
@@ -48,7 +24,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 431.45001220703125
+      "current_price": 429.29998779296875
     }
   },
   "trade_history": [
@@ -447,7 +423,29 @@
       "cost": 7766.1002197265625,
       "date": "2026-06-01T12:47:55.366353",
       "reason": "TELECOM"
+    },
+    {
+      "action": "SELL",
+      "symbol": "DRREDDY.NS",
+      "shares": 5,
+      "price": 1273.300048828125,
+      "revenue": 6366.500244140625,
+      "pnl": -234.49951171875,
+      "pnl_pct": -0.035524847809696794,
+      "date": "2026-06-02T08:18:43.417891",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "TORNTPHARM.NS",
+      "shares": 1,
+      "price": 4311.60009765625,
+      "revenue": 4311.60009765625,
+      "pnl": -144.60009765625,
+      "pnl_pct": -0.032449192432681906,
+      "date": "2026-06-02T08:18:45.604511",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-01T15:47:41.260089"
+  "saved_at": "2026-06-02T08:18:46.158037"
 }
