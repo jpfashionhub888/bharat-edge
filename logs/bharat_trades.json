@@ -1,18 +1,18 @@
 {
-  "capital": 64594.780364990234,
+  "capital": 57602.410385131836,
   "starting_capital": 100000.0,
   "positions": {
     "JSWSTEEL.NS": {
       "shares": 7,
       "entry_price": 1274.9000244140625,
       "entry_date": "2026-05-13T11:45:04.393771",
-      "highest_price": 1312.5,
+      "highest_price": 1312.9000244140625,
       "signal": 0.753,
       "cost": 8924.300170898438,
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1312.5
+      "current_price": 1312.9000244140625
     },
     "INDUSTOWER.NS": {
       "shares": 18,
@@ -24,7 +24,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 430.6499938964844
+      "current_price": 429.20001220703125
     },
     "DLF.NS": {
       "shares": 16,
@@ -36,7 +36,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 581.5999755859375
+      "current_price": 581.5499877929688
     },
     "LT.NS": {
       "shares": 2,
@@ -48,7 +48,19 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 3957.0
+      "current_price": 3953.199951171875
+    },
+    "TATASTEEL.NS": {
+      "shares": 33,
+      "entry_price": 211.88999938964844,
+      "entry_date": "2026-06-03T12:04:40.249309",
+      "highest_price": 211.88999938964844,
+      "signal": 0.737,
+      "cost": 6992.369979858398,
+      "reason": "METAL",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 211.88999938964844
     }
   },
   "trade_history": [
@@ -487,7 +499,16 @@
       "cost": 8001.7998046875,
       "date": "2026-06-02T11:27:31.548407",
       "reason": "INFRA"
+    },
+    {
+      "action": "BUY",
+      "symbol": "TATASTEEL.NS",
+      "shares": 33,
+      "price": 211.88999938964844,
+      "cost": 6992.369979858398,
+      "date": "2026-06-03T12:04:40.249320",
+      "reason": "METAL"
     }
   ],
-  "saved_at": "2026-06-03T08:39:36.298871"
+  "saved_at": "2026-06-03T12:04:42.629097"
 }
