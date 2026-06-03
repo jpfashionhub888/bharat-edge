@@ -6,13 +6,13 @@
       "shares": 7,
       "entry_price": 1274.9000244140625,
       "entry_date": "2026-05-13T11:45:04.393771",
-      "highest_price": 1311.9000244140625,
+      "highest_price": 1312.5,
       "signal": 0.753,
       "cost": 8924.300170898438,
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1310.800048828125
+      "current_price": 1312.5
     },
     "INDUSTOWER.NS": {
       "shares": 18,
@@ -24,7 +24,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 429.1499938964844
+      "current_price": 430.6499938964844
     },
     "DLF.NS": {
       "shares": 16,
@@ -36,7 +36,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 591.8499755859375
+      "current_price": 581.5999755859375
     },
     "LT.NS": {
       "shares": 2,
@@ -48,7 +48,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4000.89990234375
+      "current_price": 3957.0
     }
   },
   "trade_history": [
@@ -489,5 +489,5 @@
       "reason": "INFRA"
     }
   ],
-  "saved_at": "2026-06-02T13:05:54.471955"
+  "saved_at": "2026-06-03T08:39:36.298871"
 }
