@@ -12,7 +12,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1295.800048828125
+      "current_price": 1301.0999755859375
     },
     "INDUSTOWER.NS": {
       "shares": 18,
@@ -24,7 +24,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 430.3999938964844
+      "current_price": 430.45001220703125
     },
     "DLF.NS": {
       "shares": 16,
@@ -36,7 +36,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 580.2999877929688
+      "current_price": 577.7999877929688
     },
     "LT.NS": {
       "shares": 2,
@@ -48,7 +48,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 3935.60009765625
+      "current_price": 3942.10009765625
     },
     "TATASTEEL.NS": {
       "shares": 33,
@@ -60,7 +60,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 210.11000061035156
+      "current_price": 210.57000732421875
     }
   },
   "trade_history": [
@@ -510,5 +510,5 @@
       "reason": "METAL"
     }
   ],
-  "saved_at": "2026-06-04T08:12:19.951327"
+  "saved_at": "2026-06-04T10:45:38.491593"
 }
