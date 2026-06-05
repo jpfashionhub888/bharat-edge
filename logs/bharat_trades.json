@@ -1,19 +1,7 @@
 {
-  "capital": 57602.410385131836,
+  "capital": 73259.9806060791,
   "starting_capital": 100000.0,
   "positions": {
-    "JSWSTEEL.NS": {
-      "shares": 7,
-      "entry_price": 1274.9000244140625,
-      "entry_date": "2026-05-13T11:45:04.393771",
-      "highest_price": 1312.9000244140625,
-      "signal": 0.753,
-      "cost": 8924.300170898438,
-      "reason": "METAL",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1301.0999755859375
-    },
     "INDUSTOWER.NS": {
       "shares": 18,
       "entry_price": 431.45001220703125,
@@ -24,7 +12,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 430.45001220703125
+      "current_price": 431.04998779296875
     },
     "DLF.NS": {
       "shares": 16,
@@ -36,7 +24,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 577.7999877929688
+      "current_price": 578.75
     },
     "LT.NS": {
       "shares": 2,
@@ -48,19 +36,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 3942.10009765625
-    },
-    "TATASTEEL.NS": {
-      "shares": 33,
-      "entry_price": 211.88999938964844,
-      "entry_date": "2026-06-03T12:04:40.249309",
-      "highest_price": 211.88999938964844,
-      "signal": 0.737,
-      "cost": 6992.369979858398,
-      "reason": "METAL",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 210.57000732421875
+      "current_price": 3954.39990234375
     }
   },
   "trade_history": [
@@ -508,7 +484,29 @@
       "cost": 6992.369979858398,
       "date": "2026-06-03T12:04:40.249320",
       "reason": "METAL"
+    },
+    {
+      "action": "SELL",
+      "symbol": "JSWSTEEL.NS",
+      "shares": 7,
+      "price": 1272.300048828125,
+      "revenue": 8906.100341796875,
+      "pnl": -18.1998291015625,
+      "pnl_pct": -0.002039356448465389,
+      "date": "2026-06-05T07:57:13.674230",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "TATASTEEL.NS",
+      "shares": 33,
+      "price": 204.58999633789062,
+      "revenue": 6751.469879150391,
+      "pnl": -240.9001007080078,
+      "pnl_pct": -0.03445185271973927,
+      "date": "2026-06-05T07:57:15.686922",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-04T12:37:19.999101"
+  "saved_at": "2026-06-05T07:57:16.063055"
 }
