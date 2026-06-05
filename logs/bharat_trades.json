@@ -1,5 +1,5 @@
 {
-  "capital": 73259.9806060791,
+  "capital": 61527.58045959473,
   "starting_capital": 100000.0,
   "positions": {
     "INDUSTOWER.NS": {
@@ -12,7 +12,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 431.04998779296875
+      "current_price": 429.6499938964844
     },
     "DLF.NS": {
       "shares": 16,
@@ -24,7 +24,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 578.75
+      "current_price": 577.7000122070312
     },
     "LT.NS": {
       "shares": 2,
@@ -36,7 +36,31 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 3954.39990234375
+      "current_price": 3953.199951171875
+    },
+    "AUROPHARMA.NS": {
+      "shares": 5,
+      "entry_price": 1462.300048828125,
+      "entry_date": "2026-06-05T10:56:54.994951",
+      "highest_price": 1462.300048828125,
+      "signal": 0.715,
+      "cost": 7311.500244140625,
+      "reason": "PHARMA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1462.300048828125
+    },
+    "TORNTPHARM.NS": {
+      "shares": 1,
+      "entry_price": 4420.89990234375,
+      "entry_date": "2026-06-05T10:56:57.520563",
+      "highest_price": 4420.89990234375,
+      "signal": 0.688,
+      "cost": 4420.89990234375,
+      "reason": "PHARMA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 4420.89990234375
     }
   },
   "trade_history": [
@@ -506,7 +530,25 @@
       "pnl_pct": -0.03445185271973927,
       "date": "2026-06-05T07:57:15.686922",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "AUROPHARMA.NS",
+      "shares": 5,
+      "price": 1462.300048828125,
+      "cost": 7311.500244140625,
+      "date": "2026-06-05T10:56:54.994964",
+      "reason": "PHARMA"
+    },
+    {
+      "action": "BUY",
+      "symbol": "TORNTPHARM.NS",
+      "shares": 1,
+      "price": 4420.89990234375,
+      "cost": 4420.89990234375,
+      "date": "2026-06-05T10:56:57.520575",
+      "reason": "PHARMA"
     }
   ],
-  "saved_at": "2026-06-05T07:57:16.063055"
+  "saved_at": "2026-06-05T10:56:58.735105"
 }
