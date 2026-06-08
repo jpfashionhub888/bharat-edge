@@ -12,7 +12,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 426.6000061035156
+      "current_price": 426.1499938964844
     },
     "AUROPHARMA.NS": {
       "shares": 5,
@@ -24,7 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1459.5999755859375
+      "current_price": 1451.800048828125
     },
     "TORNTPHARM.NS": {
       "shares": 1,
@@ -36,7 +36,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4447.2001953125
+      "current_price": 4410.39990234375
     }
   },
   "trade_history": [
@@ -548,5 +548,5 @@
       "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-08T08:34:15.757116"
+  "saved_at": "2026-06-08T12:07:57.179095"
 }
