@@ -1,5 +1,5 @@
 {
-  "capital": 61527.58045959473,
+  "capital": 78372.18055725098,
   "starting_capital": 100000.0,
   "positions": {
     "INDUSTOWER.NS": {
@@ -12,31 +12,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 429.6499938964844
-    },
-    "DLF.NS": {
-      "shares": 16,
-      "entry_price": 591.8499755859375,
-      "entry_date": "2026-06-02T11:27:28.893613",
-      "highest_price": 591.8499755859375,
-      "signal": 0.795,
-      "cost": 9469.599609375,
-      "reason": "INFRA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 577.7000122070312
-    },
-    "LT.NS": {
-      "shares": 2,
-      "entry_price": 4000.89990234375,
-      "entry_date": "2026-06-02T11:27:31.548391",
-      "highest_price": 4000.89990234375,
-      "signal": 0.737,
-      "cost": 8001.7998046875,
-      "reason": "INFRA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 3953.199951171875
+      "current_price": 426.6000061035156
     },
     "AUROPHARMA.NS": {
       "shares": 5,
@@ -48,19 +24,19 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1462.300048828125
+      "current_price": 1459.5999755859375
     },
     "TORNTPHARM.NS": {
       "shares": 1,
       "entry_price": 4420.89990234375,
       "entry_date": "2026-06-05T10:56:57.520563",
-      "highest_price": 4420.89990234375,
+      "highest_price": 4447.2001953125,
       "signal": 0.688,
       "cost": 4420.89990234375,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4420.89990234375
+      "current_price": 4447.2001953125
     }
   },
   "trade_history": [
@@ -548,7 +524,29 @@
       "cost": 4420.89990234375,
       "date": "2026-06-05T10:56:57.520575",
       "reason": "PHARMA"
+    },
+    {
+      "action": "SELL",
+      "symbol": "DLF.NS",
+      "shares": 16,
+      "price": 565.4500122070312,
+      "revenue": 9047.2001953125,
+      "pnl": -422.3994140625,
+      "pnl_pct": -0.04460583672875887,
+      "date": "2026-06-08T08:34:12.955322",
+      "reason": "stop_loss"
+    },
+    {
+      "action": "SELL",
+      "symbol": "LT.NS",
+      "shares": 2,
+      "price": 3898.699951171875,
+      "revenue": 7797.39990234375,
+      "pnl": -204.39990234375,
+      "pnl_pct": -0.025544240962390906,
+      "date": "2026-06-08T08:34:15.418123",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-05T12:31:28.238238"
+  "saved_at": "2026-06-08T08:34:15.757116"
 }
