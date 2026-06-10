@@ -12,7 +12,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1457.199951171875
+      "current_price": 1453.5999755859375
     },
     "TORNTPHARM.NS": {
       "shares": 1,
@@ -24,7 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4498.60009765625
+      "current_price": 4463.7001953125
     },
     "PIDILITIND.NS": {
       "shares": 5,
@@ -36,7 +36,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1513.199951171875
+      "current_price": 1506.5
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -48,7 +48,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7265.0
+      "current_price": 7219.5
     },
     "JSWSTEEL.NS": {
       "shares": 5,
@@ -60,7 +60,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1286.699951171875
+      "current_price": 1269.800048828125
     }
   },
   "trade_history": [
@@ -610,5 +610,5 @@
       "reason": "METAL"
     }
   ],
-  "saved_at": "2026-06-10T07:58:07.434372"
+  "saved_at": "2026-06-10T11:04:13.938380"
 }
