@@ -12,7 +12,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1474.4000244140625
+      "current_price": 1472.800048828125
     },
     "TORNTPHARM.NS": {
       "shares": 1,
@@ -24,43 +24,43 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4575.10009765625
+      "current_price": 4571.2001953125
     },
     "PIDILITIND.NS": {
       "shares": 5,
       "entry_price": 1480.199951171875,
       "entry_date": "2026-06-09T07:08:34.122775",
-      "highest_price": 1534.199951171875,
+      "highest_price": 1535.5,
       "signal": 0.6920000000000001,
       "cost": 7400.999755859375,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1534.199951171875
+      "current_price": 1535.5
     },
     "EICHERMOT.NS": {
       "shares": 1,
       "entry_price": 7265.0,
       "entry_date": "2026-06-10T07:58:03.925120",
-      "highest_price": 7265.0,
+      "highest_price": 7312.0,
       "signal": 0.772,
       "cost": 7265.0,
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7264.5
+      "current_price": 7312.0
     },
     "JSWSTEEL.NS": {
       "shares": 5,
       "entry_price": 1286.0999755859375,
       "entry_date": "2026-06-10T07:58:06.762384",
-      "highest_price": 1296.4000244140625,
+      "highest_price": 1297.5999755859375,
       "signal": 0.6890000000000001,
       "cost": 6430.4998779296875,
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1296.4000244140625
+      "current_price": 1297.5999755859375
     }
   },
   "trade_history": [
@@ -610,5 +610,5 @@
       "reason": "METAL"
     }
   ],
-  "saved_at": "2026-06-12T08:14:30.499056"
+  "saved_at": "2026-06-12T11:09:42.759668"
 }
