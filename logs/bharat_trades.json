@@ -1,19 +1,7 @@
 {
-  "capital": 64824.88081359863,
+  "capital": 71865.88056945801,
   "starting_capital": 100000.0,
   "positions": {
-    "AUROPHARMA.NS": {
-      "shares": 5,
-      "entry_price": 1462.300048828125,
-      "entry_date": "2026-06-05T10:56:54.994951",
-      "highest_price": 1474.4000244140625,
-      "signal": 0.715,
-      "cost": 7311.500244140625,
-      "reason": "PHARMA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1472.800048828125
-    },
     "TORNTPHARM.NS": {
       "shares": 1,
       "entry_price": 4420.89990234375,
@@ -24,31 +12,31 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4571.2001953125
+      "current_price": 4518.39990234375
     },
     "PIDILITIND.NS": {
       "shares": 5,
       "entry_price": 1480.199951171875,
       "entry_date": "2026-06-09T07:08:34.122775",
-      "highest_price": 1535.5,
+      "highest_price": 1568.5999755859375,
       "signal": 0.6920000000000001,
       "cost": 7400.999755859375,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1535.5
+      "current_price": 1568.5999755859375
     },
     "EICHERMOT.NS": {
       "shares": 1,
       "entry_price": 7265.0,
       "entry_date": "2026-06-10T07:58:03.925120",
-      "highest_price": 7312.0,
+      "highest_price": 7625.0,
       "signal": 0.772,
       "cost": 7265.0,
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7312.0
+      "current_price": 7625.0
     },
     "JSWSTEEL.NS": {
       "shares": 5,
@@ -60,7 +48,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1297.5999755859375
+      "current_price": 1296.5
     }
   },
   "trade_history": [
@@ -608,7 +596,18 @@
       "cost": 6430.4998779296875,
       "date": "2026-06-10T07:58:06.762399",
       "reason": "METAL"
+    },
+    {
+      "action": "SELL",
+      "symbol": "AUROPHARMA.NS",
+      "shares": 5,
+      "price": 1408.199951171875,
+      "revenue": 7040.999755859375,
+      "pnl": -270.50048828125,
+      "pnl_pct": -0.03699657789084078,
+      "date": "2026-06-15T09:49:56.007235",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-12T12:48:18.509281"
+  "saved_at": "2026-06-15T09:49:58.030801"
 }
