@@ -12,19 +12,19 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4518.39990234375
+      "current_price": 4504.0
     },
     "PIDILITIND.NS": {
       "shares": 5,
       "entry_price": 1480.199951171875,
       "entry_date": "2026-06-09T07:08:34.122775",
-      "highest_price": 1568.5999755859375,
+      "highest_price": 1571.0,
       "signal": 0.6920000000000001,
       "cost": 7400.999755859375,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1568.5999755859375
+      "current_price": 1571.0
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -36,7 +36,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7625.0
+      "current_price": 7624.5
     },
     "JSWSTEEL.NS": {
       "shares": 5,
@@ -609,5 +609,5 @@
       "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-15T09:49:58.030801"
+  "saved_at": "2026-06-15T13:26:00.329955"
 }
