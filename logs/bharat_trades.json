@@ -1,19 +1,7 @@
 {
-  "capital": 71865.88056945801,
+  "capital": 72136.98066711426,
   "starting_capital": 100000.0,
   "positions": {
-    "TORNTPHARM.NS": {
-      "shares": 1,
-      "entry_price": 4420.89990234375,
-      "entry_date": "2026-06-05T10:56:57.520563",
-      "highest_price": 4599.2001953125,
-      "signal": 0.688,
-      "cost": 4420.89990234375,
-      "reason": "PHARMA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 4504.0
-    },
     "PIDILITIND.NS": {
       "shares": 5,
       "entry_price": 1480.199951171875,
@@ -24,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1571.0
+      "current_price": 1569.9000244140625
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -36,7 +24,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7624.5
+      "current_price": 7575.5
     },
     "JSWSTEEL.NS": {
       "shares": 5,
@@ -48,7 +36,19 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1296.5
+      "current_price": 1269.5
+    },
+    "LT.NS": {
+      "shares": 1,
+      "entry_price": 4187.7998046875,
+      "entry_date": "2026-06-16T09:15:35.779202",
+      "highest_price": 4187.7998046875,
+      "signal": 0.767,
+      "cost": 4187.7998046875,
+      "reason": "INFRA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 4182.5
     }
   },
   "trade_history": [
@@ -607,7 +607,27 @@
       "pnl_pct": -0.03699657789084078,
       "date": "2026-06-15T09:49:56.007235",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "LT.NS",
+      "shares": 1,
+      "price": 4187.7998046875,
+      "cost": 4187.7998046875,
+      "date": "2026-06-16T09:15:35.779213",
+      "reason": "INFRA"
+    },
+    {
+      "action": "SELL",
+      "symbol": "TORNTPHARM.NS",
+      "shares": 1,
+      "price": 4458.89990234375,
+      "revenue": 4458.89990234375,
+      "pnl": 38.0,
+      "pnl_pct": 0.008595535035718456,
+      "date": "2026-06-16T09:15:38.752443",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-15T15:36:17.687349"
+  "saved_at": "2026-06-16T09:15:39.132576"
 }
