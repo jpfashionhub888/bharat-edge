@@ -1,18 +1,18 @@
 {
-  "capital": 72136.98066711426,
+  "capital": 64728.98066711426,
   "starting_capital": 100000.0,
   "positions": {
     "PIDILITIND.NS": {
       "shares": 5,
       "entry_price": 1480.199951171875,
       "entry_date": "2026-06-09T07:08:34.122775",
-      "highest_price": 1571.0,
+      "highest_price": 1571.199951171875,
       "signal": 0.6920000000000001,
       "cost": 7400.999755859375,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1569.9000244140625
+      "current_price": 1571.199951171875
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -24,7 +24,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7575.5
+      "current_price": 7560.5
     },
     "JSWSTEEL.NS": {
       "shares": 5,
@@ -36,7 +36,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1269.5
+      "current_price": 1274.300048828125
     },
     "LT.NS": {
       "shares": 1,
@@ -48,7 +48,19 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4182.5
+      "current_price": 4186.39990234375
+    },
+    "INDUSINDBK.NS": {
+      "shares": 8,
+      "entry_price": 926.0,
+      "entry_date": "2026-06-16T12:19:40.550728",
+      "highest_price": 926.0,
+      "signal": 0.718,
+      "cost": 7408.0,
+      "reason": "BANKING",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 926.0
     }
   },
   "trade_history": [
@@ -627,7 +639,16 @@
       "pnl_pct": 0.008595535035718456,
       "date": "2026-06-16T09:15:38.752443",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "INDUSINDBK.NS",
+      "shares": 8,
+      "price": 926.0,
+      "cost": 7408.0,
+      "date": "2026-06-16T12:19:40.550739",
+      "reason": "BANKING"
     }
   ],
-  "saved_at": "2026-06-16T09:15:39.132576"
+  "saved_at": "2026-06-16T12:19:44.817247"
 }
