@@ -12,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1581.0999755859375
+      "current_price": 1574.5999755859375
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -24,7 +24,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7601.0
+      "current_price": 7582.5
     },
     "JSWSTEEL.NS": {
       "shares": 5,
@@ -36,7 +36,7 @@
       "reason": "METAL",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1293.9000244140625
+      "current_price": 1289.0
     },
     "LT.NS": {
       "shares": 1,
@@ -48,19 +48,19 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4190.0
+      "current_price": 4196.0
     },
     "INDUSINDBK.NS": {
       "shares": 8,
       "entry_price": 926.0,
       "entry_date": "2026-06-16T12:19:40.550728",
-      "highest_price": 938.75,
+      "highest_price": 943.2999877929688,
       "signal": 0.718,
       "cost": 7408.0,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 938.75
+      "current_price": 943.2999877929688
     }
   },
   "trade_history": [
@@ -650,5 +650,5 @@
       "reason": "BANKING"
     }
   ],
-  "saved_at": "2026-06-18T12:44:37.416750"
+  "saved_at": "2026-06-19T08:58:33.141933"
 }
