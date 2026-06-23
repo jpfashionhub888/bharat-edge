@@ -1,5 +1,5 @@
 {
-  "capital": 72097.38056945801,
+  "capital": 70742.88032531738,
   "starting_capital": 100000.0,
   "positions": {
     "PIDILITIND.NS": {
@@ -12,31 +12,19 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1572.199951171875
+      "current_price": 1579.5999755859375
     },
     "EICHERMOT.NS": {
       "shares": 1,
       "entry_price": 7265.0,
       "entry_date": "2026-06-10T07:58:03.925120",
-      "highest_price": 7644.0,
+      "highest_price": 7661.5,
       "signal": 0.772,
       "cost": 7265.0,
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7639.5
-    },
-    "JSWSTEEL.NS": {
-      "shares": 5,
-      "entry_price": 1286.0999755859375,
-      "entry_date": "2026-06-10T07:58:06.762384",
-      "highest_price": 1297.5999755859375,
-      "signal": 0.6890000000000001,
-      "cost": 6430.4998779296875,
-      "reason": "METAL",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1282.4000244140625
+      "current_price": 7661.5
     },
     "LT.NS": {
       "shares": 1,
@@ -48,7 +36,19 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4201.2998046875
+      "current_price": 4202.5
+    },
+    "KOTAKBANK.NS": {
+      "shares": 19,
+      "entry_price": 402.0,
+      "entry_date": "2026-06-23T07:09:07.649868",
+      "highest_price": 402.04998779296875,
+      "signal": 0.7190000000000001,
+      "cost": 7638.0,
+      "reason": "BANKING",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 402.04998779296875
     }
   },
   "trade_history": [
@@ -647,7 +647,27 @@
       "pnl_pct": -0.0053455855367508095,
       "date": "2026-06-22T12:58:30.270696",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "KOTAKBANK.NS",
+      "shares": 19,
+      "price": 402.0,
+      "cost": 7638.0,
+      "date": "2026-06-23T07:09:07.649882",
+      "reason": "BANKING"
+    },
+    {
+      "action": "SELL",
+      "symbol": "JSWSTEEL.NS",
+      "shares": 5,
+      "price": 1256.699951171875,
+      "revenue": 6283.499755859375,
+      "pnl": -147.0001220703125,
+      "pnl_pct": -0.022859828141018407,
+      "date": "2026-06-23T07:09:10.964016",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-22T15:13:30.429498"
+  "saved_at": "2026-06-23T07:09:11.498951"
 }
