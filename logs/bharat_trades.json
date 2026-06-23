@@ -1,5 +1,5 @@
 {
-  "capital": 70742.88032531738,
+  "capital": 66437.58052062988,
   "starting_capital": 100000.0,
   "positions": {
     "PIDILITIND.NS": {
@@ -12,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1579.5999755859375
+      "current_price": 1566.699951171875
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -24,7 +24,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7661.5
+      "current_price": 7578.0
     },
     "LT.NS": {
       "shares": 1,
@@ -36,7 +36,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4202.5
+      "current_price": 4179.39990234375
     },
     "KOTAKBANK.NS": {
       "shares": 19,
@@ -48,7 +48,19 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 402.04998779296875
+      "current_price": 401.6499938964844
+    },
+    "TITAN.NS": {
+      "shares": 1,
+      "entry_price": 4305.2998046875,
+      "entry_date": "2026-06-23T10:43:26.762041",
+      "highest_price": 4305.2998046875,
+      "signal": 0.708,
+      "cost": 4305.2998046875,
+      "reason": "CONSUMER",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 4305.2998046875
     }
   },
   "trade_history": [
@@ -667,7 +679,16 @@
       "pnl_pct": -0.022859828141018407,
       "date": "2026-06-23T07:09:10.964016",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "TITAN.NS",
+      "shares": 1,
+      "price": 4305.2998046875,
+      "cost": 4305.2998046875,
+      "date": "2026-06-23T10:43:26.762055",
+      "reason": "CONSUMER"
     }
   ],
-  "saved_at": "2026-06-23T07:09:11.498951"
+  "saved_at": "2026-06-23T10:43:29.319872"
 }
