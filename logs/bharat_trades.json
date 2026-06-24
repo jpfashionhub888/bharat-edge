@@ -12,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1566.699951171875
+      "current_price": 1571.300048828125
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -24,7 +24,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7578.0
+      "current_price": 7552.5
     },
     "LT.NS": {
       "shares": 1,
@@ -36,19 +36,19 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4179.39990234375
+      "current_price": 4181.10009765625
     },
     "KOTAKBANK.NS": {
       "shares": 19,
       "entry_price": 402.0,
       "entry_date": "2026-06-23T07:09:07.649868",
-      "highest_price": 402.04998779296875,
+      "highest_price": 405.3999938964844,
       "signal": 0.7190000000000001,
       "cost": 7638.0,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 401.6499938964844
+      "current_price": 405.3999938964844
     },
     "TITAN.NS": {
       "shares": 1,
@@ -60,7 +60,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4305.2998046875
+      "current_price": 4286.2998046875
     }
   },
   "trade_history": [
@@ -690,5 +690,5 @@
       "reason": "CONSUMER"
     }
   ],
-  "saved_at": "2026-06-23T12:29:12.603054"
+  "saved_at": "2026-06-24T07:06:00.295751"
 }
