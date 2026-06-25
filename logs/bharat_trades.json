@@ -1,54 +1,42 @@
 {
-  "capital": 66437.58052062988,
+  "capital": 74466.08027648926,
   "starting_capital": 100000.0,
   "positions": {
-    "PIDILITIND.NS": {
-      "shares": 5,
-      "entry_price": 1480.199951171875,
-      "entry_date": "2026-06-09T07:08:34.122775",
-      "highest_price": 1581.0999755859375,
-      "signal": 0.6920000000000001,
-      "cost": 7400.999755859375,
-      "reason": "CONSUMER",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1579.0
-    },
     "EICHERMOT.NS": {
       "shares": 1,
       "entry_price": 7265.0,
       "entry_date": "2026-06-10T07:58:03.925120",
-      "highest_price": 7661.5,
+      "highest_price": 7737.5,
       "signal": 0.772,
       "cost": 7265.0,
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7572.0
+      "current_price": 7737.5
     },
     "LT.NS": {
       "shares": 1,
       "entry_price": 4187.7998046875,
       "entry_date": "2026-06-16T09:15:35.779202",
-      "highest_price": 4209.39990234375,
+      "highest_price": 4261.2998046875,
       "signal": 0.767,
       "cost": 4187.7998046875,
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4181.7001953125
+      "current_price": 4261.2998046875
     },
     "KOTAKBANK.NS": {
       "shares": 19,
       "entry_price": 402.0,
       "entry_date": "2026-06-23T07:09:07.649868",
-      "highest_price": 405.95001220703125,
+      "highest_price": 412.20001220703125,
       "signal": 0.7190000000000001,
       "cost": 7638.0,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 405.95001220703125
+      "current_price": 412.20001220703125
     },
     "TITAN.NS": {
       "shares": 1,
@@ -60,7 +48,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4323.7998046875
+      "current_price": 4270.0
     }
   },
   "trade_history": [
@@ -688,7 +676,18 @@
       "cost": 4305.2998046875,
       "date": "2026-06-23T10:43:26.762055",
       "reason": "CONSUMER"
+    },
+    {
+      "action": "SELL",
+      "symbol": "PIDILITIND.NS",
+      "shares": 5,
+      "price": 1605.699951171875,
+      "revenue": 8028.499755859375,
+      "pnl": 627.5,
+      "pnl_pct": 0.08478584254825951,
+      "date": "2026-06-25T07:06:23.030081",
+      "reason": "take_profit"
     }
   ],
-  "saved_at": "2026-06-24T12:13:22.502147"
+  "saved_at": "2026-06-25T07:06:25.598465"
 }
