@@ -12,7 +12,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7737.5
+      "current_price": 7598.0
     },
     "LT.NS": {
       "shares": 1,
@@ -24,7 +24,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4261.2998046875
+      "current_price": 4216.39990234375
     },
     "KOTAKBANK.NS": {
       "shares": 19,
@@ -36,7 +36,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 412.20001220703125
+      "current_price": 409.0
     },
     "TITAN.NS": {
       "shares": 1,
@@ -48,7 +48,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4270.0
+      "current_price": 4291.2998046875
     }
   },
   "trade_history": [
@@ -689,5 +689,5 @@
       "reason": "take_profit"
     }
   ],
-  "saved_at": "2026-06-25T07:06:25.598465"
+  "saved_at": "2026-06-25T10:22:22.087555"
 }
