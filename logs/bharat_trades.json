@@ -1,19 +1,7 @@
 {
-  "capital": 74466.08027648926,
+  "capital": 89411.38050842285,
   "starting_capital": 100000.0,
   "positions": {
-    "EICHERMOT.NS": {
-      "shares": 1,
-      "entry_price": 7265.0,
-      "entry_date": "2026-06-10T07:58:03.925120",
-      "highest_price": 7737.5,
-      "signal": 0.772,
-      "cost": 7265.0,
-      "reason": "AUTO",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 7598.0
-    },
     "LT.NS": {
       "shares": 1,
       "entry_price": 4187.7998046875,
@@ -24,19 +12,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4216.39990234375
-    },
-    "KOTAKBANK.NS": {
-      "shares": 19,
-      "entry_price": 402.0,
-      "entry_date": "2026-06-23T07:09:07.649868",
-      "highest_price": 412.20001220703125,
-      "signal": 0.7190000000000001,
-      "cost": 7638.0,
-      "reason": "BANKING",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 409.0
+      "current_price": 4176.39990234375
     },
     "TITAN.NS": {
       "shares": 1,
@@ -48,7 +24,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4291.2998046875
+      "current_price": 4295.10009765625
     }
   },
   "trade_history": [
@@ -687,7 +663,29 @@
       "pnl_pct": 0.08478584254825951,
       "date": "2026-06-25T07:06:23.030081",
       "reason": "take_profit"
+    },
+    {
+      "action": "SELL",
+      "symbol": "EICHERMOT.NS",
+      "shares": 1,
+      "price": 7427.0,
+      "revenue": 7427.0,
+      "pnl": 162.0,
+      "pnl_pct": 0.02229869236063317,
+      "date": "2026-06-29T08:38:09.890334",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "KOTAKBANK.NS",
+      "shares": 19,
+      "price": 395.70001220703125,
+      "revenue": 7518.300231933594,
+      "pnl": -119.69976806640625,
+      "pnl_pct": -0.015671611425295398,
+      "date": "2026-06-29T08:38:12.416551",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-26T12:06:06.454603"
+  "saved_at": "2026-06-29T08:38:12.914564"
 }
