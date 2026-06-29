@@ -12,7 +12,7 @@
       "reason": "INFRA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4176.39990234375
+      "current_price": 4165.2001953125
     },
     "TITAN.NS": {
       "shares": 1,
@@ -24,7 +24,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4295.10009765625
+      "current_price": 4277.2001953125
     }
   },
   "trade_history": [
@@ -687,5 +687,5 @@
       "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-06-29T08:38:12.914564"
+  "saved_at": "2026-06-29T12:08:16.476714"
 }
