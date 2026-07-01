@@ -1,5 +1,5 @@
 {
-  "capital": 68941.5802154541,
+  "capital": 61476.7804107666,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
@@ -12,19 +12,19 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4395.2998046875
+      "current_price": 4398.60009765625
     },
     "SBIN.NS": {
       "shares": 8,
       "entry_price": 1026.9000244140625,
       "entry_date": "2026-06-30T10:38:38.793876",
-      "highest_price": 1041.699951171875,
+      "highest_price": 1047.4000244140625,
       "signal": 0.655,
       "cost": 8215.2001953125,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1041.699951171875
+      "current_price": 1047.4000244140625
     },
     "AXISBANK.NS": {
       "shares": 6,
@@ -36,19 +36,31 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1375.800048828125
+      "current_price": 1368.699951171875
     },
     "ASIANPAINT.NS": {
       "shares": 3,
       "entry_price": 2713.0,
       "entry_date": "2026-07-01T08:00:18.498039",
-      "highest_price": 2713.0,
+      "highest_price": 2716.39990234375,
       "signal": 0.7170000000000001,
       "cost": 8139.0,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 2712.89990234375
+      "current_price": 2716.39990234375
+    },
+    "SUNPHARMA.NS": {
+      "shares": 4,
+      "entry_price": 1866.199951171875,
+      "entry_date": "2026-07-01T10:50:00.179104",
+      "highest_price": 1866.199951171875,
+      "signal": 0.754,
+      "cost": 7464.7998046875,
+      "reason": "PHARMA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1866.199951171875
     }
   },
   "trade_history": [
@@ -747,7 +759,16 @@
       "cost": 8139.0,
       "date": "2026-07-01T08:00:18.498050",
       "reason": "CONSUMER"
+    },
+    {
+      "action": "BUY",
+      "symbol": "SUNPHARMA.NS",
+      "shares": 4,
+      "price": 1866.199951171875,
+      "cost": 7464.7998046875,
+      "date": "2026-07-01T10:50:00.179118",
+      "reason": "PHARMA"
     }
   ],
-  "saved_at": "2026-07-01T08:00:19.354516"
+  "saved_at": "2026-07-01T10:50:03.082673"
 }
