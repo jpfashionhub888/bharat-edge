@@ -1,5 +1,5 @@
 {
-  "capital": 85339.5802154541,
+  "capital": 68941.5802154541,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
@@ -12,19 +12,43 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4404.0
+      "current_price": 4395.2998046875
     },
     "SBIN.NS": {
       "shares": 8,
       "entry_price": 1026.9000244140625,
       "entry_date": "2026-06-30T10:38:38.793876",
-      "highest_price": 1026.9000244140625,
+      "highest_price": 1041.699951171875,
       "signal": 0.655,
       "cost": 8215.2001953125,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1026.9000244140625
+      "current_price": 1041.699951171875
+    },
+    "AXISBANK.NS": {
+      "shares": 6,
+      "entry_price": 1376.5,
+      "entry_date": "2026-07-01T08:00:14.773609",
+      "highest_price": 1376.5,
+      "signal": 0.7390000000000001,
+      "cost": 8259.0,
+      "reason": "BANKING",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1375.800048828125
+    },
+    "ASIANPAINT.NS": {
+      "shares": 3,
+      "entry_price": 2713.0,
+      "entry_date": "2026-07-01T08:00:18.498039",
+      "highest_price": 2713.0,
+      "signal": 0.7170000000000001,
+      "cost": 8139.0,
+      "reason": "CONSUMER",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 2712.89990234375
     }
   },
   "trade_history": [
@@ -705,7 +729,25 @@
       "pnl_pct": -0.010602202687447517,
       "date": "2026-06-30T10:38:41.403487",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "AXISBANK.NS",
+      "shares": 6,
+      "price": 1376.5,
+      "cost": 8259.0,
+      "date": "2026-07-01T08:00:14.773620",
+      "reason": "BANKING"
+    },
+    {
+      "action": "BUY",
+      "symbol": "ASIANPAINT.NS",
+      "shares": 3,
+      "price": 2713.0,
+      "cost": 8139.0,
+      "date": "2026-07-01T08:00:18.498050",
+      "reason": "CONSUMER"
     }
   ],
-  "saved_at": "2026-06-30T12:04:35.150899"
+  "saved_at": "2026-07-01T08:00:19.354516"
 }
