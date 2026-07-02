@@ -6,25 +6,25 @@
       "shares": 1,
       "entry_price": 4305.2998046875,
       "entry_date": "2026-06-23T10:43:26.762041",
-      "highest_price": 4441.60009765625,
+      "highest_price": 4481.10009765625,
       "signal": 0.708,
       "cost": 4305.2998046875,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4441.60009765625
+      "current_price": 4481.10009765625
     },
     "SBIN.NS": {
       "shares": 8,
       "entry_price": 1026.9000244140625,
       "entry_date": "2026-06-30T10:38:38.793876",
-      "highest_price": 1050.0999755859375,
+      "highest_price": 1051.5999755859375,
       "signal": 0.655,
       "cost": 8215.2001953125,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1050.0999755859375
+      "current_price": 1051.5999755859375
     },
     "AXISBANK.NS": {
       "shares": 6,
@@ -36,7 +36,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1369.0999755859375
+      "current_price": 1362.5999755859375
     },
     "ASIANPAINT.NS": {
       "shares": 3,
@@ -48,7 +48,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 2756.0
+      "current_price": 2744.5
     },
     "SUNPHARMA.NS": {
       "shares": 4,
@@ -60,7 +60,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1874.5
+      "current_price": 1871.0
     }
   },
   "trade_history": [
@@ -770,5 +770,5 @@
       "reason": "PHARMA"
     }
   ],
-  "saved_at": "2026-07-02T07:00:38.907767"
+  "saved_at": "2026-07-02T10:17:49.746029"
 }
