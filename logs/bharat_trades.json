@@ -1,18 +1,18 @@
 {
-  "capital": 69514.38026428223,
+  "capital": 61321.38026428223,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
       "shares": 1,
       "entry_price": 4305.2998046875,
       "entry_date": "2026-06-23T10:43:26.762041",
-      "highest_price": 4485.7001953125,
+      "highest_price": 4600.60009765625,
       "signal": 0.708,
       "cost": 4305.2998046875,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4484.39990234375
+      "current_price": 4600.60009765625
     },
     "SBIN.NS": {
       "shares": 8,
@@ -24,7 +24,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1037.699951171875
+      "current_price": 1041.0999755859375
     },
     "ASIANPAINT.NS": {
       "shares": 3,
@@ -36,19 +36,31 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 2754.89990234375
+      "current_price": 2738.39990234375
     },
     "SUNPHARMA.NS": {
       "shares": 4,
       "entry_price": 1866.199951171875,
       "entry_date": "2026-07-01T10:50:00.179104",
-      "highest_price": 1912.800048828125,
+      "highest_price": 1913.4000244140625,
       "signal": 0.754,
       "cost": 7464.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1912.800048828125
+      "current_price": 1913.4000244140625
+    },
+    "DRREDDY.NS": {
+      "shares": 6,
+      "entry_price": 1365.5,
+      "entry_date": "2026-07-07T07:07:12.150441",
+      "highest_price": 1367.199951171875,
+      "signal": 0.795,
+      "cost": 8193.0,
+      "reason": "PHARMA",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1367.199951171875
     }
   },
   "trade_history": [
@@ -767,7 +779,16 @@
       "pnl_pct": -0.026807137242326553,
       "date": "2026-07-06T11:45:45.152227",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "DRREDDY.NS",
+      "shares": 6,
+      "price": 1365.5,
+      "cost": 8193.0,
+      "date": "2026-07-07T07:07:12.150450",
+      "reason": "PHARMA"
     }
   ],
-  "saved_at": "2026-07-06T13:34:03.172137"
+  "saved_at": "2026-07-07T07:07:15.091687"
 }
