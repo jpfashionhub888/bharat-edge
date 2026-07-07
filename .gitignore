@@ -1,14 +1,34 @@
 venv/
 env/
-__pycache__/ 
-*.pyc 
-*.csv 
-daily_report.txt 
-backtest_output.txt 
-.env 
+__pycache__/
+*.pyc
+*.pyo
+*.csv
+daily_report.txt
+backtest_output.txt
+
+# ── Secrets & credentials (NEVER commit these) ────────────────
+.env
+.env.*
 config/secrets.env
 zerodha.txt
-.github/workflows/*.txt
-# Allow logs folder for trade persistence
+phase9_zerodha.txt
+*_secrets.*
+secrets.*
+
+# ── Logs (keep trade JSON for persistence, exclude raw logs) ──
 !logs/
 !logs/*.json
+logs/*.log
+logs/*.txt
+
+# ── Model/data artifacts ──────────────────────────────────────
+saved_models/*.pkl
+data/raw/
+*.h5
+
+# ── IDE & OS ──────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

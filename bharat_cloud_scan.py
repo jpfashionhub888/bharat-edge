@@ -14,6 +14,8 @@ from bharat_mtf import BharatMTFAnalyzer
 from bharat_correlation import BharatCorrelationFilter
 from bharat_veto_agent import BharatVetoAgent
 from bharat_insider_tracker import BharatInsiderTracker
+from monitoring.command_listener import start_command_listener
+from monitoring.trade_tracker import TradeTracker
 
 warnings.filterwarnings('ignore')
 os.environ['PYTHONWARNINGS'] = 'ignore'
@@ -53,6 +55,41 @@ def run_bharat_scan():
     trader.load_state()
 
     # ==========================================
+    # TELEGRAM KILL SWITCH
+    # ==========================================
+    def _get_portfolio():
+        """Portfolio getter for /status command."""
+        cash    = trader.capital
+        start   = trader.starting_capital
+        n_pos   = len(trader.positions)
+        pos_out = {}
+        for sym, pos in trader.positions.items():
+            entry = pos.get('entry_price', 0)
+            qty   = pos.get('shares', 0)
+            pos_out[sym] = {
+                'qty'           : qty,
+                'avg_entry'     : entry,
+                'unrealized_pnl': 0.0,   # updated below if prices available
+            }
+        return {
+            'value'       : cash,
+            'cash'        : cash,
+            'pnl'         : cash - start,
+            'n_positions' : n_pos,
+            'positions'   : pos_out,
+        }
+
+    ctrl_state, listener = start_command_listener(get_portfolio_fn=_get_portfolio)
+    listener.start()
+    logger.info('Telegram command listener started')
+
+    # Initialise trade tracker
+    trade_tracker = TradeTracker(
+        trades_file='logs/closed_trades.json',
+        telegram=telegram,
+    )
+
+    # ==========================================
     # RISK CIRCUIT BREAKER CHECK
     # ==========================================
     print("\n" + "="*60)
@@ -74,7 +111,18 @@ def run_bharat_scan():
     )
 
     if circuit_triggered:
-        print("   Trading suspended by circuit breaker!")
+        print('   Trading suspended by circuit breaker!')
+
+    # ── Kill-switch check ──────────────────────────────────────────────
+    if ctrl_state.is_paused:
+        print('\n⏸️  BOT PAUSED via Telegram /pause — skipping all new entries.')
+        telegram.send_message(
+            '⏸️ Scan ran but new entries SKIPPED — bot is paused.\n'
+            'Send /resume to re-enable.'
+        )
+        trader.save_state()
+        listener.stop()
+        return
 
     # ==========================================
     # PHASE 1: FETCH STOCK DATA
@@ -519,6 +567,8 @@ def run_bharat_scan():
         starting_capital = trader.starting_capital,
         telegram_bot     = telegram,
     )
+
+    listener.stop()
 
 def main():
     day = datetime.now().strftime('%A')

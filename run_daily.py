@@ -31,9 +31,9 @@ print("="*55)
 # CREDENTIALS
 # ============================================================
 
-TOKEN        = os.environ.get('8543146915:AAHGLpUz7IPyWDzSEAqjxV1zb_ZReGj9VsA', '')
-CHAT_ID      = os.environ.get('8616636381', '')
-GITHUB_TOKEN = os.environ.get('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', '')
+TOKEN        = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+CHAT_ID      = os.environ.get('TELEGRAM_CHAT_ID', '')
+GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN', '')
 GITHUB_REPO  = "jpfashionhub888/bharat-edge"
 
 

@@ -21,7 +21,8 @@ class BharatPaperTrader:
                  starting_capital=100000.0,
                  max_position_pct=0.15,
                  max_positions=5,
-                 log_file='logs/bharat_trades.json'):
+                 log_file='logs/bharat_trades.json',
+                 trade_tracker=None):
 
         self.starting_capital = starting_capital
         self.capital = starting_capital
@@ -30,6 +31,7 @@ class BharatPaperTrader:
         self.log_file = log_file
         self.positions = {}
         self.trade_history = []
+        self.trade_tracker = trade_tracker   # optional TradeTracker instance
 
     def get_position_size(self, price, signal_strength=1.0):
         max_inr = self.capital * self.max_position_pct
@@ -122,6 +124,21 @@ class BharatPaperTrader:
             f"   SELL {shares} {symbol} @ Rs{price:.2f}"
             f" PnL: Rs{pnl:+.2f} ({pnl_pct:+.1%}) [{direction}]"
         )
+
+        # ── Log to TradeTracker ───────────────────────────────────
+        if self.trade_tracker:
+            try:
+                self.trade_tracker.record_trade(
+                    symbol      = symbol,
+                    entry_price = entry,
+                    exit_price  = price,
+                    shares      = shares,
+                    reason      = reason.upper().replace('_', ' '),
+                    entry_time  = pos.get('entry_date'),
+                    exit_time   = datetime.now().isoformat(),
+                )
+            except Exception as e:
+                logger.warning('TradeTracker record failed: %s', e)
 
         del self.positions[symbol]
         return True

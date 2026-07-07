@@ -1,0 +1,79 @@
+# bharatedge.service
+# BharatEdge Telegram Command Listener — systemd service
+#
+# Runs the Telegram kill-switch listener as a persistent daemon on the VPS.
+# This allows /pause /resume /status to work 24/7 even between GitHub Actions scans.
+#
+# Installation:
+#   1. Copy to VPS:
+#      scp -i ~/.ssh/id_alpha_edge bharatedge.service root@67.207.82.11:/etc/systemd/system/
+#
+#   2. Create secrets file on VPS:
+#      mkdir -p /etc/bharatedge
+#      nano /etc/bharatedge/secrets
+#      chmod 600 /etc/bharatedge/secrets
+#
+#      Contents of /etc/bharatedge/secrets:
+#        TELEGRAM_BOT_TOKEN=<your_bharat_edge_bot_token>
+#        TELEGRAM_CHAT_ID=8616636381
+#        GITHUB_TOKEN=<your_github_token>
+#        GROQ_API_KEY=<your_groq_key>
+#        KITE_API_KEY=<your_kite_key>
+#        KITE_API_SECRET=<your_kite_secret>
+#        KITE_USER_ID=UA8159
+#        MPLCONFIGDIR=/tmp/matplotlib_cache
+#
+#   3. Enable & start:
+#      systemctl daemon-reload
+#      systemctl enable bharatedge
+#      systemctl start bharatedge
+#      systemctl status bharatedge
+#
+#   4. View logs:
+#      journalctl -u bharatedge -f
+
+[Unit]
+Description=BharatEdge Telegram Command Listener (Indian Markets)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/bharat_edge
+
+# Load secrets from protected file (chmod 600)
+EnvironmentFile=/etc/bharatedge/secrets
+
+# Run the command listener as a standalone daemon
+ExecStart=/root/bharat_edge/venv/bin/python3 -c "
+import os, sys, time, logging
+sys.path.insert(0, '/root/bharat_edge')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
+from monitoring.command_listener import start_command_listener
+state, listener = start_command_listener()
+listener.start()
+try:
+    while True:
+        time.sleep(60)
+except KeyboardInterrupt:
+    listener.stop()
+"
+
+# Restart policy
+Restart=on-failure
+RestartSec=15s
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bharatedge
+
+# Resource limits
+TimeoutStartSec=30
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target
