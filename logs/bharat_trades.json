@@ -1,5 +1,5 @@
 {
-  "capital": 61321.38026428223,
+  "capital": 77435.8800201416,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
@@ -12,31 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4598.7998046875
-    },
-    "SBIN.NS": {
-      "shares": 8,
-      "entry_price": 1026.9000244140625,
-      "entry_date": "2026-06-30T10:38:38.793876",
-      "highest_price": 1051.5999755859375,
-      "signal": 0.655,
-      "cost": 8215.2001953125,
-      "reason": "BANKING",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1036.4000244140625
-    },
-    "ASIANPAINT.NS": {
-      "shares": 3,
-      "entry_price": 2713.0,
-      "entry_date": "2026-07-01T08:00:18.498039",
-      "highest_price": 2756.0,
-      "signal": 0.7170000000000001,
-      "cost": 8139.0,
-      "reason": "CONSUMER",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 2689.39990234375
+      "current_price": 4584.39990234375
     },
     "SUNPHARMA.NS": {
       "shares": 4,
@@ -48,7 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1896.800048828125
+      "current_price": 1887.5
     },
     "DRREDDY.NS": {
       "shares": 6,
@@ -60,7 +36,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1360.0999755859375
+      "current_price": 1349.5
     }
   },
   "trade_history": [
@@ -788,7 +764,29 @@
       "cost": 8193.0,
       "date": "2026-07-07T07:07:12.150450",
       "reason": "PHARMA"
+    },
+    {
+      "action": "SELL",
+      "symbol": "SBIN.NS",
+      "shares": 8,
+      "price": 1015.7999877929688,
+      "revenue": 8126.39990234375,
+      "pnl": -88.80029296875,
+      "pnl_pct": -0.010809267072933712,
+      "date": "2026-07-08T09:33:51.435995",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "ASIANPAINT.NS",
+      "shares": 3,
+      "price": 2662.699951171875,
+      "revenue": 7988.099853515625,
+      "pnl": -150.900146484375,
+      "pnl_pct": -0.018540379221572062,
+      "date": "2026-07-08T09:33:52.026774",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-07-08T06:18:42.887321"
+  "saved_at": "2026-07-08T09:33:52.676909"
 }
