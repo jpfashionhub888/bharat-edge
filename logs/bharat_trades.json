@@ -1,5 +1,5 @@
 {
-  "capital": 77435.8800201416,
+  "capital": 62833.28028869629,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
@@ -12,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4584.39990234375
+      "current_price": 4586.39990234375
     },
     "SUNPHARMA.NS": {
       "shares": 4,
@@ -24,7 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1887.5
+      "current_price": 1888.199951171875
     },
     "DRREDDY.NS": {
       "shares": 6,
@@ -36,7 +36,31 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1349.5
+      "current_price": 1349.0
+    },
+    "EICHERMOT.NS": {
+      "shares": 1,
+      "entry_price": 7418.5,
+      "entry_date": "2026-07-08T11:34:55.893233",
+      "highest_price": 7418.5,
+      "signal": 0.738,
+      "cost": 7418.5,
+      "reason": "AUTO",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 7418.5
+    },
+    "FEDERALBNK.NS": {
+      "shares": 22,
+      "entry_price": 326.54998779296875,
+      "entry_date": "2026-07-08T11:34:56.587432",
+      "highest_price": 326.54998779296875,
+      "signal": 0.7040000000000001,
+      "cost": 7184.0997314453125,
+      "reason": "BANKING",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 326.54998779296875
     }
   },
   "trade_history": [
@@ -786,7 +810,25 @@
       "pnl_pct": -0.018540379221572062,
       "date": "2026-07-08T09:33:52.026774",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "EICHERMOT.NS",
+      "shares": 1,
+      "price": 7418.5,
+      "cost": 7418.5,
+      "date": "2026-07-08T11:34:55.893239",
+      "reason": "AUTO"
+    },
+    {
+      "action": "BUY",
+      "symbol": "FEDERALBNK.NS",
+      "shares": 22,
+      "price": 326.54998779296875,
+      "cost": 7184.0997314453125,
+      "date": "2026-07-08T11:34:56.587438",
+      "reason": "BANKING"
     }
   ],
-  "saved_at": "2026-07-08T09:33:52.676909"
+  "saved_at": "2026-07-08T11:34:57.440954"
 }
