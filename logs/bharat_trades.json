@@ -1,5 +1,5 @@
 {
-  "capital": 62833.28028869629,
+  "capital": 70477.28028869629,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
@@ -12,31 +12,19 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4586.39990234375
+      "current_price": 4597.60009765625
     },
     "SUNPHARMA.NS": {
       "shares": 4,
       "entry_price": 1866.199951171875,
       "entry_date": "2026-07-01T10:50:00.179104",
-      "highest_price": 1913.4000244140625,
+      "highest_price": 1934.9000244140625,
       "signal": 0.754,
       "cost": 7464.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1888.199951171875
-    },
-    "DRREDDY.NS": {
-      "shares": 6,
-      "entry_price": 1365.5,
-      "entry_date": "2026-07-07T07:07:12.150441",
-      "highest_price": 1367.199951171875,
-      "signal": 0.795,
-      "cost": 8193.0,
-      "reason": "PHARMA",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1349.0
+      "current_price": 1934.9000244140625
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -48,19 +36,19 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7418.5
+      "current_price": 7342.0
     },
     "FEDERALBNK.NS": {
       "shares": 22,
       "entry_price": 326.54998779296875,
       "entry_date": "2026-07-08T11:34:56.587432",
-      "highest_price": 326.54998779296875,
+      "highest_price": 329.79998779296875,
       "signal": 0.7040000000000001,
       "cost": 7184.0997314453125,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 326.54998779296875
+      "current_price": 329.79998779296875
     }
   },
   "trade_history": [
@@ -828,7 +816,18 @@
       "cost": 7184.0997314453125,
       "date": "2026-07-08T11:34:56.587438",
       "reason": "BANKING"
+    },
+    {
+      "action": "SELL",
+      "symbol": "DRREDDY.NS",
+      "shares": 6,
+      "price": 1274.0,
+      "revenue": 7644.0,
+      "pnl": -549.0,
+      "pnl_pct": -0.06700842182350787,
+      "date": "2026-07-09T07:13:05.821678",
+      "reason": "stop_loss"
     }
   ],
-  "saved_at": "2026-07-08T11:34:57.440954"
+  "saved_at": "2026-07-09T07:13:06.334968"
 }
