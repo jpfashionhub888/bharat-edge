@@ -12,19 +12,19 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4597.60009765625
+      "current_price": 4555.7998046875
     },
     "SUNPHARMA.NS": {
       "shares": 4,
       "entry_price": 1866.199951171875,
       "entry_date": "2026-07-01T10:50:00.179104",
-      "highest_price": 1934.9000244140625,
+      "highest_price": 1938.699951171875,
       "signal": 0.754,
       "cost": 7464.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1934.9000244140625
+      "current_price": 1938.699951171875
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -36,7 +36,7 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7342.0
+      "current_price": 7361.0
     },
     "FEDERALBNK.NS": {
       "shares": 22,
@@ -48,7 +48,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 329.79998779296875
+      "current_price": 327.75
     }
   },
   "trade_history": [
@@ -829,5 +829,5 @@
       "reason": "stop_loss"
     }
   ],
-  "saved_at": "2026-07-09T07:13:06.334968"
+  "saved_at": "2026-07-09T10:37:35.541266"
 }
