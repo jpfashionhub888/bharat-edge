@@ -12,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4585.5
+      "current_price": 4584.39990234375
     },
     "SUNPHARMA.NS": {
       "shares": 4,
@@ -24,7 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1934.699951171875
+      "current_price": 1935.5
     },
     "EICHERMOT.NS": {
       "shares": 1,
@@ -36,31 +36,31 @@
       "reason": "AUTO",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 7374.0
+      "current_price": 7365.5
     },
     "FEDERALBNK.NS": {
       "shares": 22,
       "entry_price": 326.54998779296875,
       "entry_date": "2026-07-08T11:34:56.587432",
-      "highest_price": 329.79998779296875,
+      "highest_price": 329.8500061035156,
       "signal": 0.7040000000000001,
       "cost": 7184.0997314453125,
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 328.6499938964844
+      "current_price": 329.8500061035156
     },
     "PIDILITIND.NS": {
       "shares": 4,
       "entry_price": 1597.0999755859375,
       "entry_date": "2026-07-10T07:06:58.004965",
-      "highest_price": 1597.0999755859375,
+      "highest_price": 1598.5,
       "signal": 0.7190000000000001,
       "cost": 6388.39990234375,
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1595.5999755859375
+      "current_price": 1598.5
     }
   },
   "trade_history": [
@@ -850,5 +850,5 @@
       "reason": "CONSUMER"
     }
   ],
-  "saved_at": "2026-07-10T07:06:58.905870"
+  "saved_at": "2026-07-10T10:31:16.407600"
 }
