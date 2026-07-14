@@ -1,5 +1,5 @@
 {
-  "capital": 64088.88038635254,
+  "capital": 77531.08058166504,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
@@ -12,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4601.5
+      "current_price": 4570.60009765625
     },
     "SUNPHARMA.NS": {
       "shares": 4,
@@ -24,19 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1921.4000244140625
-    },
-    "EICHERMOT.NS": {
-      "shares": 1,
-      "entry_price": 7418.5,
-      "entry_date": "2026-07-08T11:34:55.893233",
-      "highest_price": 7418.5,
-      "signal": 0.738,
-      "cost": 7418.5,
-      "reason": "AUTO",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 7296.5
+      "current_price": 1931.800048828125
     },
     "FEDERALBNK.NS": {
       "shares": 22,
@@ -48,19 +36,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 332.5
-    },
-    "PIDILITIND.NS": {
-      "shares": 4,
-      "entry_price": 1597.0999755859375,
-      "entry_date": "2026-07-10T07:06:58.004965",
-      "highest_price": 1598.5,
-      "signal": 0.7190000000000001,
-      "cost": 6388.39990234375,
-      "reason": "CONSUMER",
-      "stop_loss_pct": 0.04,
-      "atr": 0,
-      "current_price": 1580.699951171875
+      "current_price": 328.25
     }
   },
   "trade_history": [
@@ -848,7 +824,29 @@
       "cost": 6388.39990234375,
       "date": "2026-07-10T07:06:58.004975",
       "reason": "CONSUMER"
+    },
+    {
+      "action": "SELL",
+      "symbol": "EICHERMOT.NS",
+      "shares": 1,
+      "price": 7233.0,
+      "revenue": 7233.0,
+      "pnl": -185.5,
+      "pnl_pct": -0.025005054930241962,
+      "date": "2026-07-14T05:59:12.607579",
+      "reason": "trailing_stop"
+    },
+    {
+      "action": "SELL",
+      "symbol": "PIDILITIND.NS",
+      "shares": 4,
+      "price": 1552.300048828125,
+      "revenue": 6209.2001953125,
+      "pnl": -179.19970703125,
+      "pnl_pct": -0.02805079672071029,
+      "date": "2026-07-14T05:59:13.132268",
+      "reason": "trailing_stop"
     }
   ],
-  "saved_at": "2026-07-13T12:26:23.210198"
+  "saved_at": "2026-07-14T05:59:13.765039"
 }
