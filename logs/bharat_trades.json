@@ -1,5 +1,5 @@
 {
-  "capital": 77531.08058166504,
+  "capital": 62738.230545043945,
   "starting_capital": 100000.0,
   "positions": {
     "TITAN.NS": {
@@ -12,19 +12,19 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4570.60009765625
+      "current_price": 4571.7001953125
     },
     "SUNPHARMA.NS": {
       "shares": 4,
       "entry_price": 1866.199951171875,
       "entry_date": "2026-07-01T10:50:00.179104",
-      "highest_price": 1938.699951171875,
+      "highest_price": 1946.5999755859375,
       "signal": 0.754,
       "cost": 7464.7998046875,
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1931.800048828125
+      "current_price": 1946.5999755859375
     },
     "FEDERALBNK.NS": {
       "shares": 22,
@@ -36,7 +36,31 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 328.25
+      "current_price": 326.8999938964844
+    },
+    "INDUSINDBK.NS": {
+      "shares": 9,
+      "entry_price": 997.9500122070312,
+      "entry_date": "2026-07-14T09:13:40.639949",
+      "highest_price": 998.0,
+      "signal": 0.785,
+      "cost": 8981.550109863281,
+      "reason": "BANKING",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 998.0
+    },
+    "BHARTIARTL.NS": {
+      "shares": 3,
+      "entry_price": 1937.0999755859375,
+      "entry_date": "2026-07-14T09:13:41.490430",
+      "highest_price": 1937.199951171875,
+      "signal": 0.7190000000000001,
+      "cost": 5811.2999267578125,
+      "reason": "TELECOM",
+      "stop_loss_pct": 0.04,
+      "atr": 0,
+      "current_price": 1937.199951171875
     }
   },
   "trade_history": [
@@ -846,7 +870,25 @@
       "pnl_pct": -0.02805079672071029,
       "date": "2026-07-14T05:59:13.132268",
       "reason": "trailing_stop"
+    },
+    {
+      "action": "BUY",
+      "symbol": "INDUSINDBK.NS",
+      "shares": 9,
+      "price": 997.9500122070312,
+      "cost": 8981.550109863281,
+      "date": "2026-07-14T09:13:40.639960",
+      "reason": "BANKING"
+    },
+    {
+      "action": "BUY",
+      "symbol": "BHARTIARTL.NS",
+      "shares": 3,
+      "price": 1937.0999755859375,
+      "cost": 5811.2999267578125,
+      "date": "2026-07-14T09:13:41.490443",
+      "reason": "TELECOM"
     }
   ],
-  "saved_at": "2026-07-14T05:59:13.765039"
+  "saved_at": "2026-07-14T09:13:42.474668"
 }
