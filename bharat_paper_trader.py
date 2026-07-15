@@ -238,8 +238,11 @@ class BharatPaperTrader:
             'saved_at': datetime.now().isoformat(),
         }
         os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
-        with open(self.log_file, 'w') as f:
+        # Atomic write: temp file then rename to prevent truncation on crash
+        tmp_file = self.log_file + '.tmp'
+        with open(tmp_file, 'w') as f:
             json.dump(state, f, indent=2)
+        os.replace(tmp_file, self.log_file)
         print(f"   State saved to {self.log_file}")
 
     def load_state(self):

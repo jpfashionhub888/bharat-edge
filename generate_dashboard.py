@@ -3,7 +3,31 @@
 
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+def _ist_now():
+    return datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
+
+def fetch_live_prices(symbols: list) -> dict:
+    """Fetch live prices from yfinance. Returns {symbol: price}."""
+    prices = {}
+    if not symbols:
+        return prices
+    try:
+        import yfinance as yf
+        tickers = yf.Tickers(' '.join(symbols))
+        for sym in symbols:
+            try:
+                info = tickers.tickers[sym].fast_info
+                price = getattr(info, 'last_price', None)
+                if price and price > 0:
+                    prices[sym] = float(price)
+            except Exception:
+                pass
+        print(f"   Live prices fetched: {prices}")
+    except Exception as e:
+        print(f"   Live price fetch failed: {e}")
+    return prices
 
 TRADES_FILE   = 'logs/bharat_trades.json'
 DASHBOARD_DIR = 'docs'
@@ -50,7 +74,16 @@ def generate_dashboard():
     starting  = portfolio.get('starting_capital', 100000)
     positions = portfolio.get('positions', {})
     history   = portfolio.get('trade_history', [])
-    saved_at  = portfolio.get('saved_at', 'Never')[:16]
+    raw_saved = portfolio.get('saved_at') or ''
+    saved_at  = raw_saved[:16] if raw_saved else 'Never'
+
+    # Fetch live prices for open positions
+    live_prices = fetch_live_prices(list(positions.keys()))
+    for sym, pos in positions.items():
+        if sym in live_prices:
+            pos['current_price'] = live_prices[sym]
+        elif 'current_price' not in pos:
+            pos['current_price'] = pos.get('entry_price', 0)
 
     position_value = sum(
         pos.get('shares', 0) * pos.get(
@@ -72,7 +105,7 @@ def generate_dashboard():
     pnl_color    = COLORS['green'] if total_pnl >= 0 else COLORS['red']
     pnl_sign     = '+' if total_pnl >= 0 else ''
     wr_color     = COLORS['green'] if win_rate >= 50 else COLORS['red']
-    now_str      = datetime.now().strftime('%Y-%m-%d %H:%M UTC')
+    now_str      = _ist_now().strftime('%Y-%m-%d %H:%M IST')
 
     # Portfolio chart data
     chart_values = [starting]
@@ -345,17 +378,17 @@ def generate_dashboard():
         <div>
             <span class="live-dot"></span>
             <span style="color:{COLORS['green']};
-            font-weight:600;font-size:13px">LIVE</span>
+            font-weight:600;font-size:13px">PRICES LIVE</span>
         </div>
         <p style="color:{COLORS['text_dim']};
         font-size:11px;margin-top:4px">
-            Updated: {now_str}
+            Generated: {now_str}
         </p>
         <p style="color:{COLORS['text_dim']};font-size:11px">
-            Last scan: {saved_at}
+            Last trade: {saved_at}
         </p>
         <p style="color:{COLORS['text_dim']};font-size:11px">
-            Auto-refresh: 5 min
+            Runs: 9:10 AM / 12:30 PM / 3:15 PM IST
         </p>
     </div>
 </div>
@@ -530,11 +563,7 @@ new Chart(pCtx, {{
                 ticks: {{
                     color: '{COLORS['text_dim']}'
                 }},
-            }},
-        }},
-    }},
-}});
-
+  
 const aCtx = document.getElementById(
     'alloc-chart').getContext('2d');
 new Chart(aCtx, {{
@@ -579,5 +608,8 @@ new Chart(aCtx, {{
 
 if __name__ == '__main__':
     print("\nGenerating BharatEdge Dashboard...")
+    generate_dashboard()
+    print("Done!")
+nt("\nGenerating BharatEdge Dashboard...")
     generate_dashboard()
     print("Done!")
