@@ -16,8 +16,8 @@ sys.path.insert(0, os.getcwd())
 # 🔐 YOUR CREDENTIALS
 # ============================================================
 
-BOT_TOKEN = os.environ.get('8543146915:AAHGLpUz7IPyWDzSEAqjxV1zb_ZReGj9VsA', '')
-CHAT_ID   =  os.environ.get('8616636381', '')
+BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+CHAT_ID   = os.environ.get('TELEGRAM_CHAT_ID', '')
 
 # ============================================================
 
@@ -143,10 +143,11 @@ def send_scan_results() -> None:
     send_file(latest)
 
 
-def send_signal_alert(signals_df) -> None:
+def send_signal_alert(signals_df, market_ctx=None) -> None:
     """
     Send formatted signal alert from scan results.
     Called directly from scanner.
+    market_ctx: optional dict with vix_value, fii_net, sgx_gap etc.
     """
     if signals_df is None or signals_df.empty:
         send_message(
@@ -158,6 +159,28 @@ def send_signal_alert(signals_df) -> None:
 
     now      = datetime.now().strftime("%d %b %Y %H:%M")
     date_str = datetime.now().strftime("%A, %d %B %Y")
+
+    # Build market context block
+    if market_ctx:
+        vix = market_ctx.get('vix_value', 0)
+        fii = market_ctx.get('fii_net', 0)
+        sgx = market_ctx.get('sgx_gap', 0)
+        vix_label = (
+            "BULLISH"   if vix < 15 else
+            "CAUTIOUS"  if vix < 20 else
+            "DEFENSIVE" if vix < 25 else
+            "BEARISH"
+        )
+        fii_label = "BUYING" if fii >= 0 else "SELLING"
+        sgx_str   = f"+{sgx:.2f}%" if sgx >= 0 else f"{sgx:.2f}%"
+        market_block = (
+            f"<b>MARKET:</b>\n"
+            f"  VIX : {vix:.1f} ({vix_label})\n"
+            f"  FII : Rs {fii:+,.0f} Cr ({fii_label})\n"
+            f"  SGX : {sgx_str}\n\n"
+        )
+    else:
+        market_block = ""
 
     # Build signal lines
     signal_lines = ""
@@ -184,8 +207,7 @@ def send_signal_alert(signals_df) -> None:
         f"<b>BHARAT EDGE - DAILY SCAN</b>\n"
         f"<b>{date_str}</b>\n"
         f"{'─'*30}\n\n"
-        f"<b>MARKET:</b>\n"
-        # ✅ NEW - pass market as parameter
+        f"{market_block}"
         f"<b>TOP SIGNALS:</b>"
         f"{signal_lines}\n"
         f"<b>SUMMARY:</b>\n"

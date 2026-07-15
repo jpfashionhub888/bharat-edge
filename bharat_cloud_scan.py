@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 def is_market_day():
     """Check if today is a trading day (Mon-Fri)."""
     day = datetime.now().strftime('%A')
-    return day not in ['Saturday']
+    return day not in ['Saturday', 'Sunday']
 
 
 def run_bharat_scan():
@@ -63,18 +63,23 @@ def run_bharat_scan():
         start   = trader.starting_capital
         n_pos   = len(trader.positions)
         pos_out = {}
+        pos_value = 0.0
         for sym, pos in trader.positions.items():
-            entry = pos.get('entry_price', 0)
-            qty   = pos.get('shares', 0)
+            entry   = pos.get('entry_price', 0)
+            qty     = pos.get('shares', 0)
+            curr    = pos.get('current_price', entry)
+            unreal  = (curr - entry) * qty if entry > 0 else 0.0
+            pos_value += curr * qty
             pos_out[sym] = {
                 'qty'           : qty,
                 'avg_entry'     : entry,
-                'unrealized_pnl': 0.0,   # updated below if prices available
+                'unrealized_pnl': round(unreal, 2),
             }
+        total_value = cash + pos_value
         return {
-            'value'       : cash,
+            'value'       : total_value,
             'cash'        : cash,
-            'pnl'         : cash - start,
+            'pnl'         : total_value - start,
             'n_positions' : n_pos,
             'positions'   : pos_out,
         }
@@ -127,10 +132,6 @@ def run_bharat_scan():
     # ==========================================
     # PHASE 1: FETCH STOCK DATA
     # ==========================================
-
-    # ==========================================
-    # PHASE 1: FETCH STOCK DATA
-    # ==========================================
     print("\n" + "="*60)
     print("PHASE 1: FETCHING NSE STOCK DATA")
     print("="*60)
@@ -152,7 +153,8 @@ def run_bharat_scan():
                 print(f"   [!] Skipping {symbol} - No valid price data")
                 continue
             df.columns = [c.lower() for c in df.columns]
-            df.index = df.index.tz_localize(None)
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None)
             df = df[['open', 'high', 'low', 'close', 'volume']].copy()
             df.dropna(inplace=True)
             stock_data[symbol] = df
@@ -215,8 +217,6 @@ def run_bharat_scan():
 
     if market_regime['can_trade']:
         print("\n   Checking timeframe alignment...")
-        from phase3_universe import get_all_stocks
-        all_stocks = get_all_stocks()
         for symbol in all_stocks:
             try:
                 score = mtf_analyzer.get_mtf_score(symbol)
@@ -272,16 +272,23 @@ def run_bharat_scan():
         ensemble = load_all_models()
 
         if ensemble:
+            # Fetch live market context for accurate scan
+            live_market = dict(
+                vix_value=17.0, vix_change=0.0,
+                fii_net=0.0, dii_net=0.0,
+                sgx_gap=0.0, news_sentiment=0.0, news_volume=0,
+            )
+            try:
+                from phase6_market_data import get_live_market_context
+                live_market, _ = get_live_market_context()
+                print("   Live market context loaded for scan.")
+            except Exception as _e:
+                print(f"   Live context failed ({_e}), using defaults.")
+
             scan_df = run_full_scan(
                 ensemble=ensemble,
                 verbose=False,
-                vix_value=17.0,
-                vix_change=0.0,
-                fii_net=0.0,
-                dii_net=0.0,
-                sgx_gap=0.0,
-                news_sentiment=0.0,
-                news_volume=0,
+                **live_market,
             )
 
             if scan_df is not None and not scan_df.empty:
@@ -299,7 +306,8 @@ def run_bharat_scan():
                     current_prices[symbol] = price
 
                     sig = row.get('signal', 'HOLD')
-                    if sector_status == 'UNDERWEIGHT' and sig == 'BUY':
+                    # Downgrade BUY/STRONG_BUY signals in underweight sectors
+                    if sector_status == 'UNDERWEIGHT' and sig in ('BUY', 'STRONG_BUY'):
                         sig = 'HOLD'
 
                     stock_signals[symbol] = {
@@ -330,13 +338,13 @@ def run_bharat_scan():
     print("="*60)
 
     for symbol, data in stock_signals.items():
-        if data['signal'] == 'BUY' and market_regime['can_trade']:
-            if data['signal'] == 'BUY' and market_regime['can_trade']:
-                # Boost with insider data
-                insider_score = insider_scores.get(symbol, 0.0)
-                if insider_score > 0:
-                    print(f"   {symbol}: +{insider_score:.2f} insider boost!")
+        if data['signal'] in ('BUY', 'STRONG_BUY') and market_regime['can_trade']:
             price = data['price']
+
+            # Log insider boost if available
+            insider_score = insider_scores.get(symbol, 0.0)
+            if insider_score > 0:
+                print(f"   {symbol}: +{insider_score:.2f} insider boost!")
 
             # Multi-timeframe filter
             mtf_score = mtf_scores.get(symbol, 0.5)
@@ -463,34 +471,11 @@ def run_bharat_scan():
     # PHASE 6: PORTFOLIO SUMMARY + TELEGRAM
     # ==========================================
 
-    # Force fetch current prices for ALL positions
-    print("\n   Force fetching current prices for all positions...")
+    # current_prices already populated in Phase 5; ensure any newly opened
+    # positions in this scan also have a fallback price.
     for symbol in list(trader.positions.keys()):
-        try:
-            ticker = yf.Ticker(symbol)
-            df = ticker.history(period='5d')
-
-            if not df.empty and 'Close' in df.columns:
-                close_series = df['Close'].dropna()
-
-                if not close_series.empty:
-                    price = float(close_series.iloc[-1])
-                    current_prices[symbol] = price
-                    print(f"   {symbol}: Rs{price:.2f}")
-                else:
-                    current_prices[symbol] = trader.positions[symbol].get(
-                        'entry_price', 0
-                    )
-            else:
-                current_prices[symbol] = trader.positions[symbol].get(
-                    'entry_price', 0
-                )
-            
-        except Exception as e:
-            print(f"   Could not fetch {symbol}: {e}")
-            current_prices[symbol] = trader.positions[symbol].get(
-                'entry_price', 0
-            )
+        if symbol not in current_prices:
+            current_prices[symbol] = trader.positions[symbol].get('entry_price', 0)
 
     print("\n" + "="*60)
     print("PHASE 6: PORTFOLIO SUMMARY")

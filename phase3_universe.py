@@ -69,7 +69,7 @@ STOCK_UNIVERSE = {
     'AUTO': {
         'stocks': [
             'MARUTI.NS',
-            'M_M.NS',
+            'M&M.NS',
             'BAJAJ-AUTO.NS',
             'HEROMOTOCO.NS',
             'EICHERMOT.NS',
@@ -272,7 +272,8 @@ def fetch_universe_data(
                 continue
 
             df.columns = [c.lower() for c in df.columns]
-            df.index   = df.index.tz_localize(None)
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None)
             df         = df[['open','high','low',
                               'close','volume']].copy()
             df.dropna(inplace=True)
@@ -381,11 +382,12 @@ if __name__ == "__main__":
             ticker = yf.Ticker(sym)
             df     = ticker.history(period="1mo")
             df.columns = [c.lower() for c in df.columns]
-            df.index   = df.index.tz_localize(None)
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None)
             sample[sym] = df
             print(f"     ✅ {sym}: {len(df)} rows")
         except Exception as e:
             print(f"     ❌ {sym}: {e}")
 
-    print(f"\n  ✅ Universe module ready!")
+    print(f"\n  Universe module ready!")
     print(f"  Total stocks available: {len(all_stocks)}")

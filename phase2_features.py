@@ -33,7 +33,8 @@ def fetch_stock_data(symbol: str, period: str = "2y") -> pd.DataFrame:
             return pd.DataFrame()
 
         df.columns = [c.lower() for c in df.columns]
-        df.index   = df.index.tz_localize(None)
+        if df.index.tz is not None:
+            df.index = df.index.tz_localize(None)
         df         = df[['open','high','low','close','volume']].copy()
         df.dropna(inplace=True)
 

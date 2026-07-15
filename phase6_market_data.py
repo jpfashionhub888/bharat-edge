@@ -27,7 +27,10 @@ def fetch_india_vix() -> dict:
         if len(df) >= 2:
             current  = float(df["Close"].iloc[-1])
             previous = float(df["Close"].iloc[-2])
-            chg_pct  = (current - previous) / previous * 100
+            chg_pct  = (current - previous) / previous * 100 if previous else 0.0
+        elif len(df) == 1:
+            current = float(df["Close"].iloc[-1])
+            chg_pct = 0.0
         else:
             current = 17.0
             chg_pct = 0.0

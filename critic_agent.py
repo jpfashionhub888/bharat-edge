@@ -8,7 +8,12 @@ import os
 import json
 import logging
 from datetime import datetime, timedelta
-from groq import Groq
+
+try:
+    from groq import Groq
+    _GROQ_AVAILABLE = True
+except ImportError:
+    _GROQ_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +27,12 @@ class CriticAgent:
 
     def __init__(self):
         self.api_key = os.getenv('GROQ_API_KEY', '')
-        self.enabled = bool(self.api_key)
+        self.enabled = bool(self.api_key) and _GROQ_AVAILABLE
         self.model   = 'llama-3.3-70b-versatile'
 
-        if not self.enabled:
+        if not _GROQ_AVAILABLE:
+            print("   Critic Agent: groq package not installed")
+        elif not self.enabled:
             print("   Critic Agent: GROQ_API_KEY not found")
         else:
             print("   Critic Agent: Groq/Llama3 connected ✅")
@@ -91,7 +98,7 @@ class CriticAgent:
             pnl_pct = t.get('pnl_pct', 0) * 100
             loss_summary += (
                 f"- {t.get('symbol', '?')}: "
-                f"${pnl:.2f} ({pnl_pct:.1f}%) "
+                f"Rs{pnl:.2f} ({pnl_pct:.1f}%) "
                 f"Reason: {t.get('reason', 'unknown')}\n"
             )
 
@@ -101,7 +108,7 @@ class CriticAgent:
             pnl_pct = t.get('pnl_pct', 0) * 100
             win_summary += (
                 f"- {t.get('symbol', '?')}: "
-                f"+${pnl:.2f} (+{pnl_pct:.1f}%) "
+                f"+Rs{pnl:.2f} (+{pnl_pct:.1f}%) "
                 f"Reason: {t.get('reason', 'unknown')}\n"
             )
 
@@ -122,9 +129,9 @@ Period: Last {days_back} days
 Total Trades: {analysis['total_trades']}
 Wins: {len(wins)} | Losses: {len(losses)}
 Win Rate: {win_rate:.1f}%
-Total P&L: ${total_pnl:+.2f}
-Portfolio Value: ${portfolio_value:,.2f}
-Starting Capital: ${starting_capital:,.2f}
+Total P&L: Rs{total_pnl:+.2f}
+Portfolio Value: Rs{portfolio_value:,.2f}
+Starting Capital: Rs{starting_capital:,.2f}
 
 LOSING TRADES:
 {loss_summary if loss_summary else 'No losses this week!'}
@@ -172,8 +179,8 @@ Date: {datetime.now().strftime('%Y-%m-%d')}
 PERFORMANCE SUMMARY:
 Total Trades: {analysis['total_trades']}
 Win Rate: {win_rate:.1f}%
-Total P&L: {pnl_sign}${total_pnl:.2f}
-Portfolio: ${portfolio_value:,.2f}
+Total P&L: {pnl_sign}Rs{total_pnl:.2f}
+Portfolio: Rs{portfolio_value:,.2f}
 
 WINS ({len(wins)}):
 {win_summary if win_summary else 'No wins this week'}
@@ -199,13 +206,13 @@ BharatEdge Critic Agent"""
         loss_summary = ""
         for t in losses[:5]:
             pnl = t.get('pnl', 0)
-            loss_summary += f"- {t.get('symbol','?')}: ${pnl:.2f}\n"
+            loss_summary += f"- {t.get('symbol','?')}: Rs{pnl:.2f}\n"
 
         return f"""BHARATEDGE WEEKLY REPORT
 ========================
 Trades: {analysis['total_trades']}
 Win Rate: {win_rate:.1f}%
-P&L: {pnl_sign}${total_pnl:.2f}
+P&L: {pnl_sign}Rs{total_pnl:.2f}
 
 Losses:
 {loss_summary if loss_summary else 'None!'}
@@ -268,36 +275,36 @@ if __name__ == '__main__':
 
     critic = CriticAgent()
 
-    # Sample trade history for testing
+    # Sample trade history for testing (Indian NSE stocks)
     sample_trades = [
         {
             'action' : 'SELL',
-            'symbol' : 'TSLA',
-            'pnl'    : -45.20,
+            'symbol' : 'TATASTEEL.NS',
+            'pnl'    : -4520.00,
             'pnl_pct': -0.035,
             'reason' : 'stop_loss',
             'date'   : (datetime.now() - timedelta(days=2)).isoformat(),
         },
         {
             'action' : 'SELL',
-            'symbol' : 'AAPL',
-            'pnl'    : +78.50,
+            'symbol' : 'TCS.NS',
+            'pnl'    : +7850.00,
             'pnl_pct': 0.042,
             'reason' : 'take_profit',
             'date'   : (datetime.now() - timedelta(days=3)).isoformat(),
         },
         {
             'action' : 'SELL',
-            'symbol' : 'PFE',
-            'pnl'    : -22.10,
+            'symbol' : 'SUNPHARMA.NS',
+            'pnl'    : -2210.00,
             'pnl_pct': -0.028,
             'reason' : 'stop_loss',
             'date'   : (datetime.now() - timedelta(days=4)).isoformat(),
         },
         {
             'action' : 'SELL',
-            'symbol' : 'CVX',
-            'pnl'    : +112.30,
+            'symbol' : 'RELIANCE.NS',
+            'pnl'    : +11230.00,
             'pnl_pct': 0.089,
             'reason' : 'take_profit',
             'date'   : (datetime.now() - timedelta(days=1)).isoformat(),
@@ -306,8 +313,8 @@ if __name__ == '__main__':
 
     report = critic.generate_report(
         trade_history    = sample_trades,
-        portfolio_value  = 10245.00,
-        starting_capital = 10000.00,
+        portfolio_value  = 102450.00,
+        starting_capital = 100000.00,
         days_back        = 7,
     )
 

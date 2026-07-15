@@ -19,15 +19,15 @@ HEADERS = {
 # Map NSE symbols to US ADR tickers (for SEC data)
 NSE_TO_ADR = {
     'INFY.NS'      : 'INFY',
-    'WIT'          : 'WIPRO.NS',
-    'HDB'          : 'HDFCBANK.NS',
-    'IBN'          : 'ICICIBANK.NS',
-    'TTM'          : 'TATAMOTORS.NS',
-    'RDY'          : 'DRREDDY.NS',
-    'SIFY'         : 'SIFY.NS',
+    'WIPRO.NS'     : 'WIT',
+    'HDFCBANK.NS'  : 'HDB',
+    'ICICIBANK.NS' : 'IBN',
+    'TATAMOTORS.NS': 'TTM',
+    'DRREDDY.NS'   : 'RDY',
+    'SIFY.NS'      : 'SIFY',
 }
 
-# Reverse map for lookup
+# Reverse map: ADR → NSE
 ADR_SYMBOLS = {v: k for k, v in NSE_TO_ADR.items()}
 
 

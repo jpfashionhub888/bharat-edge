@@ -6,6 +6,12 @@ import os
 import json
 import logging
 
+try:
+    from groq import Groq as _Groq
+    _GROQ_AVAILABLE = True
+except ImportError:
+    _GROQ_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,10 +23,12 @@ class BharatVetoAgent:
 
     def __init__(self):
         self.api_key = os.getenv('GROQ_API_KEY', '')
-        self.enabled = bool(self.api_key)
+        self.enabled = bool(self.api_key) and _GROQ_AVAILABLE
         self.model   = 'llama-3.3-70b-versatile'
 
-        if not self.enabled:
+        if not _GROQ_AVAILABLE:
+            print("   Veto Agent: groq package not installed")
+        elif not self.enabled:
             print("   Veto Agent: GROQ_API_KEY not found")
         else:
             print("   Veto Agent: Groq/Llama3 connected ✅")
@@ -43,8 +51,7 @@ class BharatVetoAgent:
             }
 
         try:
-            from groq import Groq
-            client = Groq(api_key=self.api_key)
+            client = _Groq(api_key=self.api_key)
 
             positions_text = ', '.join(current_positions.keys()) \
                 if current_positions else 'None'

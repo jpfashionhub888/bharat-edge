@@ -86,7 +86,7 @@ def scan_stock(
             news_sentiment = news_sentiment,
             news_volume    = news_volume,
         )
-    except:
+    except Exception:
         return {}
 
     if live_df.empty:
@@ -110,7 +110,7 @@ def scan_stock(
                 model.n_jobs = 1
             prob = float(model.predict_proba(X_row)[0][1])
             individual[name] = prob
-        except:
+        except Exception:
             individual[name] = 0.5
 
     avg_prob  = float(np.mean(list(individual.values())))

@@ -44,7 +44,7 @@ def _is_market_day() -> bool:
 
 # ── Model staleness ───────────────────────────────────────────────────
 
-def _check_model_freshness(models_dir: str = 'saved_models') -> tuple[bool, str]:
+def _check_model_freshness(models_dir: str = 'models') -> tuple[bool, str]:
     """
     Returns (is_stale, message).
     Checks the most recently modified .pkl file in models_dir.

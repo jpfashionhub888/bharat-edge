@@ -18,13 +18,17 @@ os.environ['PYTHONWARNINGS']     = 'ignore'
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.getcwd())
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import pandas as pd
 import numpy as np
 
+def _ist_now():
+    """Return current time in IST (UTC+5:30)."""
+    return datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
+
 print("\n" + "="*55)
 print("  BHARAT EDGE - DAILY AUTOMATION")
-print(f"  {datetime.now().strftime('%A, %d %B %Y %H:%M IST')}")
+print(f"  {_ist_now().strftime('%A, %d %B %Y %H:%M IST')}")
 print("="*55)
 
 # ============================================================
@@ -251,8 +255,8 @@ def send_reports(scan_df, market):
     )
     fii_label = "BUYING" if fii >= 0 else "SELLING"
     sgx_str   = f"+{sgx:.2f}%" if sgx >= 0 else f"{sgx:.2f}%"
-    date_str  = datetime.now().strftime("%A, %d %B %Y")
-    time_str  = datetime.now().strftime("%H:%M IST")
+    date_str  = _ist_now().strftime("%A, %d %B %Y")
+    time_str  = _ist_now().strftime("%H:%M IST")
 
     # Sector rotation report
     try:
@@ -349,11 +353,11 @@ def send_reports(scan_df, market):
 # ============================================================
 
 if __name__ == "__main__":
-    start = datetime.now()
+    start = _ist_now()
 
     send_msg(
         f"<b>BHARAT EDGE STARTING</b>\n"
-        f"{datetime.now().strftime('%d %b %Y %H:%M IST')}\n"
+        f"{_ist_now().strftime('%d %b %Y %H:%M IST')}\n"
         f"Checking models..."
     )
 

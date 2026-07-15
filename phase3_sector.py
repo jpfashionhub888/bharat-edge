@@ -91,7 +91,8 @@ def fetch_sector_data(
             df     = ticker.history(period=period)
             if not df.empty:
                 df.columns = [c.lower() for c in df.columns]
-                df.index   = df.index.tz_localize(None)
+                if df.index.tz is not None:
+                    df.index = df.index.tz_localize(None)
                 df         = df[['open','high','low',
                                   'close','volume']].copy()
                 df.dropna(inplace=True)
@@ -116,9 +117,10 @@ def fetch_nifty_data(period: str = "6mo") -> pd.DataFrame:
         ticker = yf.Ticker('^NSEI')
         df     = ticker.history(period=period)
         df.columns = [c.lower() for c in df.columns]
-        df.index   = df.index.tz_localize(None)
+        if df.index.tz is not None:
+            df.index = df.index.tz_localize(None)
         return df[['close']].copy()
-    except:
+    except Exception:
         return pd.DataFrame()
 
 
@@ -137,7 +139,7 @@ def calculate_momentum(
         ret = (df['close'].iloc[-1] /
                df['close'].iloc[-window] - 1) * 100
         return float(ret)
-    except:
+    except Exception:
         return 0.0
 
 
@@ -167,7 +169,7 @@ def calculate_relative_strength(
 
         rs = (sector_ret - nifty_ret) * 100
         return float(rs)
-    except:
+    except Exception:
         return 0.0
 
 
@@ -194,7 +196,7 @@ def calculate_trend_score(df: pd.DataFrame) -> float:
             score += 20
 
         return min(100, max(0, score))
-    except:
+    except Exception:
         return 50.0
 
 
@@ -221,7 +223,7 @@ def calculate_volatility_score(df: pd.DataFrame) -> float:
             return 35.0
         else:
             return 20.0
-    except:
+    except Exception:
         return 50.0
 
 
@@ -549,6 +551,6 @@ if __name__ == "__main__":
             emoji  = ("🟢" if status == 'OVERWEIGHT'
                       else "🟡" if status == 'NEUTRAL'
                       else "🔴")
-            print(f"     {sym:<20} {emoji} {status:<12} → {mult:.1f}x")
+            print(f"     {sym:<20} {emoji} {status:<12} -> {mult:.1f}x")
 
-        print(f"\n  ✅ Sector Rotation Engine Ready!")
+        print(f"\n  Sector Rotation Engine Ready!")

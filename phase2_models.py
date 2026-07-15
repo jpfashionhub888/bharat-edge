@@ -364,16 +364,14 @@ def train_full_ensemble(
 def _save_models(base_models, scaler, feature_names):
     print(f"\n  💾 Saving to '{MODEL_DIR}/'...")
     for name, m in base_models.items():
-        pickle.dump(
-            m,
-            open(os.path.join(MODEL_DIR, f"{name}.pkl"), 'wb'))
+        path = os.path.join(MODEL_DIR, f"{name}.pkl")
+        with open(path, 'wb') as f:
+            pickle.dump(m, f)
         print(f"     ✅ {name}.pkl")
-    pickle.dump(
-        scaler,
-        open(os.path.join(MODEL_DIR, "scaler.pkl"), 'wb'))
-    pickle.dump(
-        {'feature_names': feature_names},
-        open(os.path.join(MODEL_DIR, "feature_names.pkl"), 'wb'))
+    with open(os.path.join(MODEL_DIR, "scaler.pkl"), 'wb') as f:
+        pickle.dump(scaler, f)
+    with open(os.path.join(MODEL_DIR, "feature_names.pkl"), 'wb') as f:
+        pickle.dump({'feature_names': feature_names}, f)
     print(f"     ✅ scaler.pkl + feature_names.pkl")
 
 
@@ -384,16 +382,16 @@ def load_all_models() -> dict:
         for name in ['xgboost','lightgbm',
                      'random_forest','extra_trees']:
             path = os.path.join(MODEL_DIR, f"{name}.pkl")
-            base_models[name] = pickle.load(open(path, 'rb'))
+            with open(path, 'rb') as f:
+                base_models[name] = pickle.load(f)
             if hasattr(base_models[name], 'n_jobs'):
                 base_models[name].n_jobs = 1
             print(f"     ✅ {name}")
 
-        scaler = pickle.load(
-            open(os.path.join(MODEL_DIR, "scaler.pkl"), 'rb'))
-        names  = pickle.load(
-            open(os.path.join(
-                MODEL_DIR, "feature_names.pkl"), 'rb'))
+        with open(os.path.join(MODEL_DIR, "scaler.pkl"), 'rb') as f:
+            scaler = pickle.load(f)
+        with open(os.path.join(MODEL_DIR, "feature_names.pkl"), 'rb') as f:
+            names  = pickle.load(f)
 
         print(f"     ✅ scaler + feature_names")
         return {
@@ -419,7 +417,7 @@ def calculate_confidence(base_models, X_row) -> dict:
             if hasattr(model, 'n_jobs'):
                 model.n_jobs = 1
             p = float(model.predict_proba(X_row)[0][1])
-        except:
+        except Exception:
             p = 0.5
         individual_probs[name] = p
         prob_list.append(p)
