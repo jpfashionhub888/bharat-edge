@@ -12,7 +12,7 @@
       "reason": "CONSUMER",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 4583.89990234375
+      "current_price": 4579.39990234375
     },
     "SUNPHARMA.NS": {
       "shares": 4,
@@ -24,7 +24,7 @@
       "reason": "PHARMA",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1951.699951171875
+      "current_price": 1951.5
     },
     "FEDERALBNK.NS": {
       "shares": 22,
@@ -36,7 +36,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 327.1499938964844
+      "current_price": 327.54998779296875
     },
     "INDUSINDBK.NS": {
       "shares": 9,
@@ -48,7 +48,7 @@
       "reason": "BANKING",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1011.75
+      "current_price": 1009.7000122070312
     },
     "BHARTIARTL.NS": {
       "shares": 3,
@@ -60,7 +60,7 @@
       "reason": "TELECOM",
       "stop_loss_pct": 0.04,
       "atr": 0,
-      "current_price": 1920.0
+      "current_price": 1918.300048828125
     }
   },
   "trade_history": [
@@ -890,5 +890,5 @@
       "reason": "TELECOM"
     }
   ],
-  "saved_at": "2026-07-15T09:18:54.098144"
+  "saved_at": "2026-07-15T11:19:36.216062"
 }
