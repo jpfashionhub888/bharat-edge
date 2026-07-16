@@ -1,0 +1,13 @@
+{
+  "scan_time": "2026-07-16T00:29:49.419598",
+  "market_regime": {
+    "regime": "BULL",
+    "can_trade": true,
+    "nifty_return_1m": 0.008306833992770279,
+    "nifty_return_3m": 0.0,
+    "vix": 13.75,
+    "reason": "Bull market: NIFTY 0.8%, VIX=13.8",
+    "recommendation": "TRADE NORMALLY"
+  },
+  "signals": []
+}
