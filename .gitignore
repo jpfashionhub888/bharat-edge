@@ -16,11 +16,18 @@ phase9_zerodha.txt
 *_secrets.*
 secrets.*
 
-# ── Logs (keep trade JSON for persistence, exclude raw logs) ──
-!logs/
-!logs/*.json
+# ── Logs — portfolio state stays LOCAL ONLY, never committed ──
+# bharat_trades.json and closed_trades.json are managed by the
+# local paper trader. Committing them from GitHub Actions would
+# reset the portfolio on every run.
+logs/bharat_trades.json
+logs/closed_trades.json
 logs/*.log
 logs/*.txt
+# Allow scan signals and circuit breaker (written by Actions)
+!logs/scan_results.json
+!logs/circuit_breaker.json
+!logs/bot_control.json
 
 # ── Model/data artifacts ──────────────────────────────────────
 saved_models/*.pkl

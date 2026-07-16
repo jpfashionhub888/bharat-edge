@@ -67,19 +67,20 @@ jobs:
         run: |
           python generate_dashboard.py || echo "Dashboard generation skipped"
 
-      - name: 💾 Commit trading state + dashboard
+      - name: 💾 Commit scan signals + dashboard
         if: always()
         run: |
           git config --global user.email "bharatedge-bot@github.com"
           git config --global user.name "BharatEdge Bot"
           mkdir -p logs docs
-          git add -f logs/bharat_trades.json    || true
-          git add -f logs/closed_trades.json    || true
+          # NOTE: bharat_trades.json and closed_trades.json are intentionally
+          # NOT committed here — portfolio state is managed locally only.
+          # Committing it from Actions would reset the portfolio on every run.
+          git add -f logs/scan_results.json     || true
           git add -f logs/bot_control.json      || true
           git add -f logs/circuit_breaker.json  || true
-          git add -f logs/scan_results.json     || true
           git add -f docs/index.html            || true
-          git diff --staged --quiet || git commit -m "Auto: BharatEdge state + dashboard $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --staged --quiet || git commit -m "Auto: scan signals $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push origin main || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
