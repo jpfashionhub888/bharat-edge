@@ -642,9 +642,19 @@ def create_app(telegram=None) -> Dash:
             if tab == "history":   return _tab_history()
             if tab == "sysconfig": return _tab_sysconfig()
         except Exception:
-            traceback.print_exc()
-            return html.Div("Error rendering tab — check console",
-                            style={"color": RED, "padding": "30px", "fontFamily": FONT})
+            tb = traceback.format_exc()
+            print(tb)
+            return html.Div([
+                html.Div("TAB ERROR — details below:",
+                         style={"color": RED, "fontWeight": "700",
+                                "fontFamily": FONT, "marginBottom": "10px"}),
+                html.Pre(tb, style={
+                    "color": "#ff8888", "fontFamily": FONT,
+                    "fontSize": "11px", "background": PANEL2,
+                    "padding": "16px", "borderRadius": "4px",
+                    "overflowX": "auto", "whiteSpace": "pre-wrap",
+                }),
+            ], style={"padding": "20px"})
         return html.Div()
 
     return app
@@ -665,9 +675,17 @@ def _tab_overview() -> html.Div:
     pos      = port.get("positions", {})
     history  = port.get("trade_history", [])
 
-    # Live position values
+    # Live position values (threaded with timeout so slow yfinance won't hang)
     syms = list(pos.keys())
-    live = fetch_live_prices(syms)
+    live: dict = {}
+    if syms:
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            fut = ex.submit(fetch_live_prices, syms)
+            try:
+                live = fut.result(timeout=10)
+            except Exception:
+                live = {}
     for sym, p in pos.items():
         lp = live.get(sym)
         if lp and lp > 0:
@@ -803,7 +821,15 @@ def _tab_positions() -> html.Div:
                                         "padding": "30px", "textAlign": "center"}))
 
     syms = list(pos.keys())
-    live = fetch_live_prices(syms)
+    live: dict = {}
+    if syms:
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            fut = ex.submit(fetch_live_prices, syms)
+            try:
+                live = fut.result(timeout=10)
+            except Exception:
+                live = {}
 
     rows = []
     for sym, p in pos.items():
@@ -1162,8 +1188,7 @@ def _tab_sysconfig() -> html.Div:
     cb = circuit.get("triggered", False)
     cb_cfg = [
         ("Status",          "TRIGGERED" if cb else "OK", RED if cb else GREEN),
-        ("Reason",          circuit.get("trigger_reason") or "—", RED if cb else DIM),
-        ("Trigger Date",    circuit.get("trigger_date") or "—", TEXT),
+        ("Reason",          circuit.get("trigger_reason") or "--", RED if cb else DIM),
         ("Daily Limit",     "5%",  RED),
         ("Weekly Limit",    "7%",  RED),
         ("Total Limit",     "10%", RED),
@@ -1173,9 +1198,9 @@ def _tab_sysconfig() -> html.Div:
     scan_cfg = [
         ("Last Scan",       scan.get("scan_time", "Never")[:19] if scan.get("scan_time") else "Never", TEXT),
         ("Signals Found",   len(scan.get("signals", [])), ORANGE),
-        ("Regime",          scan.get("market_regime",{}).get("regime","—"), TEXT),
+        ("Regime",          scan.get("market_regime",{}).get("regime","--"), TEXT),
         ("VIX",             f"{scan.get('market_regime',{}).get('vix',0):.1f}", YELLOW),
-        ("Can Trade",       scan.get("market_regime",{}).get("can_trade","—"), TEXT),
+        ("Can Trade",       scan.get("market_regime",{}).get("can_trade","--"), TEXT),
     ]
 
     return html.Div([
