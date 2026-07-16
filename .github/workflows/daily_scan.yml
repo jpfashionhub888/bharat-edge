@@ -1,0 +1,104 @@
+name: Bharat Edge Daily Scan
+
+on:
+  schedule:
+    - cron: '40 3 * * 1-5'   # 9:10 AM IST  (market open)
+    - cron: '0 7 * * 1-5'    # 12:30 PM IST (midday check)
+    - cron: '45 9 * * 1-5'   # 3:15 PM IST  (market close)
+  workflow_dispatch:
+
+jobs:
+  daily-scan:
+    name: BharatEdge Scan + Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install yfinance pandas numpy scikit-learn
+          pip install xgboost lightgbm requests python-dotenv
+
+      - name: 🔎 Run BharatEdge Scan
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          KITE_API_KEY:       ${{ secrets.KITE_API_KEY }}
+          KITE_API_SECRET:    ${{ secrets.KITE_API_SECRET }}
+          KITE_USER_ID:       ${{ secrets.KITE_USER_ID }}
+          MPLCONFIGDIR:       /tmp/matplotlib_cache
+        run: |
+          mkdir -p logs docs
+          python bharat_cloud_scan.py
+
+      - name: 🩺 Run Audit
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python audit_bharat.py || echo "Audit completed with warnings"
+
+      - name: 📊 Generate Dashboard
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python generate_dashboard.py || echo "Dashboard generation skipped"
+
+      - name: 💾 Commit trading state + dashboard
+        if: always()
+        run: |
+          git config --global user.email "bharatedge-bot@github.com"
+          git config --global user.name "BharatEdge Bot"
+          mkdir -p logs docs
+          git add -f logs/bharat_trades.json    || true
+          git add -f logs/closed_trades.json    || true
+          git add -f logs/bot_control.json      || true
+          git add -f logs/circuit_breaker.json  || true
+          git add -f logs/scan_results.json     || true
+          git add -f docs/index.html            || true
+          git diff --staged --quiet || git commit -m "Auto: BharatEdge state + dashboard $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push origin main || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload scan artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bharat-scan-${{ github.run_number }}
+          path: logs/
+          retention-days: 30
+
+      - name: 🌐 Upload dashboard to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        if: always()
+        with:
+          path: docs/
+
+      - name: 🚀 Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        if: always()
+        id: deployment
