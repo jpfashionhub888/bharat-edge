@@ -43,6 +43,13 @@ PURPLE  = "#a855f7"
 CYAN    = "#06b6d4"
 FONT    = "IBM Plex Mono, Courier New, monospace"
 
+def _rgba(hex_color: str, alpha: float) -> str:
+    """Convert '#rrggbb' + alpha float to 'rgba(r,g,b,a)' for Plotly."""
+    h = hex_color.lstrip('#')
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return f"rgba({r},{g},{b},{alpha})"
+
+
 # ── Indian sector map ─────────────────────────────────────────
 SECTOR_COLORS = {
     "IT"      : BLUE,
@@ -751,7 +758,7 @@ def _tab_overview() -> html.Div:
         x=eq_dates, y=eq_vals,
         mode="lines+markers",
         line=dict(color=ec, width=2),
-        fill="tozeroy", fillcolor=ec + "18",
+        fill="tozeroy", fillcolor=_rgba(ec, 0.094),
         marker=dict(size=4, color=ec),
         hovertemplate="%{x}<br>₹%{y:,.0f}<extra></extra>",
     ))
