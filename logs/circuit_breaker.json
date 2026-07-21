@@ -2,7 +2,7 @@
   "triggered": false,
   "trigger_reason": null,
   "trigger_date": null,
-  "daily_start": "2026-07-20",
+  "daily_start": "2026-07-21",
   "daily_start_val": 100000.0,
   "weekly_start": "2026-07-20",
   "weekly_start_val": 100000.0
