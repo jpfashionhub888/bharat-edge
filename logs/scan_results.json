@@ -1,12 +1,12 @@
 {
-  "scan_time": "2026-08-20T10:15:57.933877",
+  "scan_time": "2026-08-21T04:23:55.100174",
   "market_regime": {
     "regime": "BULL",
     "can_trade": true,
-    "nifty_return_1m": 0.01517620764186271,
-    "nifty_return_3m": 0.021608934970383593,
-    "vix": 10.755000114440918,
-    "reason": "Bull market: NIFTY 1.5%, VIX=10.8",
+    "nifty_return_1m": 0.01588841062298532,
+    "nifty_return_3m": 0.0,
+    "vix": 11.267499923706055,
+    "reason": "Bull market: NIFTY 1.6%, VIX=11.3",
     "recommendation": "TRADE NORMALLY"
   },
   "signals": []
