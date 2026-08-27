@@ -93,6 +93,7 @@ def run_bharat_scan():
         trades_file='logs/closed_trades.json',
         telegram=telegram,
     )
+    trader.trade_tracker = trade_tracker
 
     # ==========================================
     # RISK CIRCUIT BREAKER CHECK
@@ -119,15 +120,14 @@ def run_bharat_scan():
         print('   Trading suspended by circuit breaker!')
 
     # ── Kill-switch check ──────────────────────────────────────────────
+    new_entries_blocked = circuit_triggered or ctrl_state.is_paused
     if ctrl_state.is_paused:
-        print('\n⏸️  BOT PAUSED via Telegram /pause — skipping all new entries.')
+        print('\n⏸️  BOT PAUSED via Telegram /pause — new entries are disabled.')
         telegram.send_message(
-            '⏸️ Scan ran but new entries SKIPPED — bot is paused.\n'
+            '⏸️ New entries are disabled — bot is paused. '
+            'Existing positions will still be risk-managed.\n'
             'Send /resume to re-enable.'
         )
-        trader.save_state()
-        listener.stop()
-        return
 
     # ==========================================
     # PHASE 1: FETCH STOCK DATA
@@ -300,6 +300,7 @@ def run_bharat_scan():
 
                     if symbol in stock_data:
                         price = float(stock_data[symbol]['close'].iloc[-1])
+                        price_as_of = stock_data[symbol].index[-1].isoformat()
                     else:
                         continue
 
@@ -316,6 +317,8 @@ def run_bharat_scan():
                         'sector': sector,
                         'sector_status': sector_status,
                         'price': price,
+                        'price_source': 'Yahoo Finance',
+                        'price_as_of': price_as_of,
                     }
 
                     print(
@@ -338,7 +341,8 @@ def run_bharat_scan():
     print("="*60)
 
     for symbol, data in stock_signals.items():
-        if data['signal'] in ('BUY', 'STRONG_BUY') and market_regime['can_trade']:
+        if (data['signal'] in ('BUY', 'STRONG_BUY')
+                and market_regime['can_trade'] and not new_entries_blocked):
             price = data['price']
 
             # Log insider boost if available
@@ -540,6 +544,11 @@ def run_bharat_scan():
         _scan_out = {
             'scan_time'    : datetime.now().isoformat(),
             'market_regime': market_regime,
+            'data_quality'  : {
+                'price_source': 'Yahoo Finance',
+                'signal_count': len(stock_signals),
+                'defaults_used': bool(locals().get('live_market', {}).get('_defaults_used', False)),
+            },
             'signals'      : [
                 {
                     'symbol'       : sym,
@@ -548,6 +557,8 @@ def run_bharat_scan():
                     'sector'       : d.get('sector', ''),
                     'sector_status': d.get('sector_status', 'NEUTRAL'),
                     'price'        : round(d.get('price', 0), 2),
+                    'price_source' : d.get('price_source', 'Unknown'),
+                    'price_as_of'  : d.get('price_as_of'),
                 }
                 for sym, d in stock_signals.items()
             ],

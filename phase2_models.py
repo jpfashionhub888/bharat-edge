@@ -274,14 +274,19 @@ def train_full_ensemble(
     if X is None:
         return {}
 
-    n_splits = 3 if len(X) < 200 else 5
-    base_models, cv_scores, scaler = train_base_models(
-        X, y, n_splits)
+    # Reserve the newest observations before fitting. Previously the models
+    # were trained on all rows and then scored on a slice of those same rows,
+    # which made the reported hold-out metrics optimistically biased.
+    split = int(len(X) * 0.80)
+    X_train, y_train = X.iloc[:split], y.iloc[:split]
+    X_test, y_test = X.iloc[split:], y.iloc[split:]
+    if X_train.empty or X_test.empty:
+        print("  ❌ Not enough samples for a chronological hold-out")
+        return {}
 
-    # Hold-out evaluation
-    split  = int(len(X) * 0.80)
-    X_test = X.iloc[split:]
-    y_test = y.iloc[split:]
+    n_splits = 3 if len(X_train) < 200 else 5
+    base_models, cv_scores, scaler = train_base_models(
+        X_train, y_train, n_splits)
 
     print(f"\n{'='*62}")
     print(f"  HOLD-OUT EVALUATION")
@@ -333,6 +338,12 @@ def train_full_ensemble(
     print(classification_report(
         y_test, v_preds,
         target_names=['DOWN','UP'], zero_division=0))
+
+    # Once honest out-of-sample metrics have been captured, refit the models
+    # on all available history for production predictions.
+    for model in base_models.values():
+        model.fit(X, y)
+    scaler.fit(X)
 
     if save_models:
         _save_models(base_models, scaler, feature_names)

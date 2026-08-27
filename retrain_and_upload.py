@@ -20,8 +20,11 @@ print("="*55)
 # YOUR GITHUB CREDENTIALS
 # ============================================================
 
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "").strip()
 GITHUB_REPO  = "jpfashionhub888/bharat-edge"
+
+if not GITHUB_TOKEN:
+    raise SystemExit("GITHUB_TOKEN is not set; refusing to upload models.")
 
 # ============================================================
 

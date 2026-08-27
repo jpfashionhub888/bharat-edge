@@ -107,7 +107,7 @@ def start_local_server():
                     self.send_header(
                         'Content-type', 'text/html')
                     self.end_headers()
-                    self.wfile.write(b"""
+                    self.wfile.write("""
                     <html><body style='background:#0a0e1a;
                     color:#00ff88;font-family:sans-serif;
                     text-align:center;padding:50px;'>
@@ -115,7 +115,7 @@ def start_local_server():
                     <h2>Login Successful!</h2>
                     <p>You can close this window.</p>
                     </body></html>
-                    """)
+                    """.encode("utf-8"))
                 else:
                     self.send_response(200)
                     self.end_headers()

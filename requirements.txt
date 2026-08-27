@@ -14,3 +14,5 @@ transformers
 feedparser
 groq
 catboost
+python-dotenv
+kiteconnect

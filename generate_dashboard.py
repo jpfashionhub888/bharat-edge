@@ -610,6 +610,3 @@ if __name__ == '__main__':
     print("\nGenerating BharatEdge Dashboard...")
     generate_dashboard()
     print("Done!")
-nt("\nGenerating BharatEdge Dashboard...")
-    generate_dashboard()
-    print("Done!")

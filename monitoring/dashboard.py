@@ -24,6 +24,18 @@ SCAN_FILE     = LOG / "scan_results.json"
 STARTING_CAP  = 100_000.0
 REFRESH_S     = 60          # dashboard refresh interval (seconds)
 HEARTBEAT_S   = 300         # Telegram alert if scan silent > 5 min
+MARKET_TTL_S  = 45          # share one market request across callbacks
+
+_MARKET_LOCK = threading.Lock()
+_MARKET_CACHE: dict[str, Any] = {
+    "expires": 0.0, "symbols": set(), "prices": {},
+    "nifty": None, "vix": None, "fetched_at": None,
+    "source": "Yahoo Finance Chart API", "error": None, "stale": True,
+}
+_EARNINGS_LOCK = threading.Lock()
+_EARNINGS_CACHE: dict[str, Any] = {
+    "expires": 0.0, "rows": [], "fetched_at": None, "error": None,
+}
 
 # ── Bloomberg terminal palette ────────────────────────────────
 BG      = "#0a0a0a"
@@ -124,45 +136,113 @@ def load_scan() -> dict:
     })
 
 
+def _latest_close(data, symbol: str) -> float | None:
+    """Handle both yfinance MultiIndex column layouts."""
+    try:
+        if getattr(data.columns, "nlevels", 1) > 1:
+            level0 = set(data.columns.get_level_values(0))
+            level1 = set(data.columns.get_level_values(1))
+            series = (data[symbol]["Close"] if symbol in level0
+                      else data["Close"][symbol] if symbol in level1
+                      else None)
+        else:
+            series = data["Close"]
+        if series is None:
+            return None
+        clean = series.dropna()
+        return float(clean.iloc[-1]) if not clean.empty else None
+    except (KeyError, IndexError, TypeError, ValueError):
+        return None
+
+
+def _fetch_chart_quote(symbol: str) -> tuple[float, str]:
+    """Fetch one quote without yfinance's fragile cookie/cache layer."""
+    from urllib.parse import quote
+    import requests
+
+    url = ("https://query1.finance.yahoo.com/v8/finance/chart/"
+           f"{quote(symbol, safe='')}?range=5d&interval=5m")
+    response = requests.get(
+        url, timeout=12, headers={"User-Agent": "BharatEdge/2.0"})
+    response.raise_for_status()
+    result = response.json().get("chart", {}).get("result") or []
+    if not result:
+        raise RuntimeError(f"no chart result for {symbol}")
+    chart = result[0]
+    timestamps = chart.get("timestamp") or []
+    closes = (((chart.get("indicators") or {}).get("quote") or [{}])[0]
+              .get("close") or [])
+    valid = [(ts, value) for ts, value in zip(timestamps, closes)
+             if value is not None]
+    if not valid:
+        raise RuntimeError(f"no valid close for {symbol}")
+    ts, value = valid[-1]
+    as_of = datetime.fromtimestamp(ts, timezone.utc).astimezone(
+        timezone(timedelta(hours=5, minutes=30))).isoformat()
+    return float(value), as_of
+
+
+def get_market_data(symbols: list[str] | None = None) -> dict:
+    """Return cached prices with explicit source, timestamp, and stale state."""
+    requested = set(symbols or [])
+    now = time.time()
+    with _MARKET_LOCK:
+        cached_symbols = set(_MARKET_CACHE["symbols"])
+        if now < _MARKET_CACHE["expires"] and requested <= cached_symbols:
+            return dict(_MARKET_CACHE)
+
+        tickers = sorted(requested | cached_symbols | {"^NSEI", "^INDIAVIX"})
+        try:
+            import concurrent.futures
+            prices = dict(_MARKET_CACHE["prices"])
+            quotes = {}
+            errors = []
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+                futures = {executor.submit(_fetch_chart_quote, sym): sym
+                           for sym in tickers}
+                for future, sym in [(future, futures[future]) for future in futures]:
+                    try:
+                        quotes[sym] = future.result()
+                    except Exception as exc:
+                        errors.append(f"{sym}: {exc}")
+            if not quotes:
+                raise RuntimeError("; ".join(errors) or "provider returned no quotes")
+            for sym in requested | cached_symbols:
+                if sym in quotes and quotes[sym][0] > 0:
+                    prices[sym] = quotes[sym][0]
+            nifty = quotes.get("^NSEI", (None, None))[0]
+            vix = quotes.get("^INDIAVIX", (None, None))[0]
+            fetched_times = [value[1] for value in quotes.values() if value[1]]
+            incomplete = bool(
+                [sym for sym in requested if sym not in prices]
+                or nifty is None or vix is None)
+            _MARKET_CACHE.update({
+                "expires": now + MARKET_TTL_S,
+                "symbols": requested | cached_symbols,
+                "prices": prices,
+                "nifty": nifty,
+                "vix": vix,
+                "fetched_at": max(fetched_times) if fetched_times else _ist_now().isoformat(),
+                "error": "; ".join(errors) or None,
+                "stale": incomplete,
+            })
+            return dict(_MARKET_CACHE)
+        except Exception as exc:
+            print(f"[dashboard] market fetch error: {exc}")
+            _MARKET_CACHE["error"] = str(exc)
+            result = dict(_MARKET_CACHE)
+            result["stale"] = True
+            return result
+
+
 def fetch_live_prices(symbols: list[str]) -> dict[str, float]:
-    """Fetch latest NSE prices via yfinance. Returns {sym: price}."""
-    prices: dict[str, float] = {}
-    if not symbols:
-        return prices
-    try:
-        import yfinance as yf
-        data = yf.download(
-            " ".join(symbols), period="1d", interval="1m",
-            progress=False, auto_adjust=True, group_by="ticker",
-        )
-        if data.empty:
-            return prices
-        for sym in symbols:
-            try:
-                if len(symbols) == 1:
-                    cl = data["Close"]
-                else:
-                    cl = data["Close"][sym]
-                prices[sym] = float(cl.dropna().iloc[-1])
-            except Exception:
-                pass
-    except Exception as e:
-        print(f"[dashboard] price fetch error: {e}")
-    return prices
+    """Compatibility wrapper returning only successfully sourced prices."""
+    return get_market_data(symbols)["prices"]
 
 
-def fetch_nifty_vix() -> tuple[float, float]:
-    """Returns (nifty_price, india_vix)."""
-    try:
-        import yfinance as yf
-        data = yf.download("^NSEI ^INDIAVIX", period="1d",
-                           interval="1m", progress=False,
-                           auto_adjust=True, group_by="ticker")
-        nifty = float(data["Close"]["^NSEI"].dropna().iloc[-1])
-        vix   = float(data["Close"]["^INDIAVIX"].dropna().iloc[-1])
-        return nifty, vix
-    except Exception:
-        return 0.0, 15.0
+def fetch_nifty_vix() -> tuple[float | None, float | None]:
+    market = get_market_data([])
+    return market["nifty"], market["vix"]
 
 
 # ╔══════════════════════════════════════════════════════════════╗
@@ -379,42 +459,57 @@ def _upcoming_earnings() -> list[dict]:
     Returns list of dicts with symbol, date, epsEstimate.
     """
     from config.settings import STOCK_WATCHLIST
-    rows = []
-    try:
-        import yfinance as yf
-        watch = [s for s in STOCK_WATCHLIST if ".NS" in s][:20]
-        for sym in watch:
-            try:
-                cal = yf.Ticker(sym).calendar
-                if cal is None:
-                    continue
-                # yfinance returns a dict or DataFrame
-                if hasattr(cal, "to_dict"):
-                    cal = cal.to_dict()
-                date_val = (cal.get("Earnings Date") or
-                            cal.get("earningsDate") or
-                            cal.get("Earnings Dates", [None])
-                            )
-                if isinstance(date_val, list):
-                    date_val = date_val[0] if date_val else None
-                if date_val is None:
-                    continue
-                if hasattr(date_val, "date"):
-                    date_val = str(date_val.date())
-                else:
-                    date_val = str(date_val)[:10]
-                rows.append({
-                    "Symbol"       : sym.replace(".NS", ""),
-                    "Earnings Date": date_val,
-                    "EPS Est"      : cal.get("EPS Estimate", "—"),
-                    "Revenue Est"  : cal.get("Revenue Estimate", "—"),
-                })
-            except Exception:
-                pass
-    except Exception:
-        pass
-    rows.sort(key=lambda r: r["Earnings Date"])
-    return rows
+    now = time.time()
+    with _EARNINGS_LOCK:
+        if now < _EARNINGS_CACHE["expires"]:
+            return list(_EARNINGS_CACHE["rows"])
+        rows = []
+        errors = []
+        try:
+            import concurrent.futures
+            import yfinance as yf
+            watch = [s for s in STOCK_WATCHLIST if ".NS" in s][:20]
+
+            def fetch_one(sym):
+                try:
+                    cal = yf.Ticker(sym).calendar
+                    if cal is None:
+                        return None
+                    if hasattr(cal, "to_dict"):
+                        cal = cal.to_dict()
+                    date_val = (cal.get("Earnings Date") or
+                                cal.get("earningsDate") or
+                                cal.get("Earnings Dates", [None]))
+                    if isinstance(date_val, list):
+                        date_val = date_val[0] if date_val else None
+                    if date_val is None:
+                        return None
+                    date_val = (str(date_val.date()) if hasattr(date_val, "date")
+                                else str(date_val)[:10])
+                    return {
+                        "Symbol": sym.replace(".NS", ""),
+                        "Earnings Date": date_val,
+                        "EPS Est": cal.get("EPS Estimate", "—"),
+                        "Revenue Est": cal.get("Revenue Estimate", "—"),
+                    }
+                except Exception as exc:
+                    errors.append(f"{sym}: {exc}")
+                    return None
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                for result in executor.map(fetch_one, watch):
+                    if result:
+                        rows.append(result)
+        except Exception as exc:
+            errors.append(str(exc))
+        rows.sort(key=lambda r: r["Earnings Date"])
+        _EARNINGS_CACHE.update({
+            "expires": now + 21_600,
+            "rows": rows,
+            "fetched_at": _ist_now().isoformat(),
+            "error": "; ".join(errors[:3]) or None,
+        })
+        return list(rows)
 
 
 # ╔══════════════════════════════════════════════════════════════╗
@@ -550,7 +645,7 @@ def create_app(telegram=None) -> Dash:
             "fontFamily": FONT,
         }, children=[
             html.Span("BharatEdge V2  ·  ML Ensemble  ·  NSE/BSE India  ·  Paper Trading"),
-            html.Span(f"Auto-refresh: {REFRESH_S}s  ·  Zerodha Kite API"),
+            html.Span(f"Auto-refresh: {REFRESH_S}s  ·  Market data: Yahoo Finance"),
         ]),
     ])
 
@@ -570,6 +665,7 @@ def create_app(telegram=None) -> Dash:
             ist     = _ist_now()
             mkt_open = _is_market_open()
             regime  = scan.get("market_regime", {})
+            market  = get_market_data(list(port.get("positions", {}).keys()))
 
             # Market dot
             dot_color = GREEN if mkt_open else RED
@@ -584,9 +680,12 @@ def create_app(telegram=None) -> Dash:
             capital  = float(port.get("capital", STARTING_CAP))
             start    = float(port.get("starting_capital", STARTING_CAP))
             pos      = port.get("positions", {})
-            pos_val  = sum(
-                p["shares"] * p.get("current_price", p.get("entry_price", 0))
-                for p in pos.values()
+            live_prices = (market.get("prices", {})
+                           if not market.get("stale") else {})
+            pos_val = sum(
+                p["shares"] * live_prices.get(sym, p.get("current_price",
+                                                         p.get("entry_price", 0)))
+                for sym, p in pos.items()
             )
             total    = capital + pos_val
             pnl      = total - start
@@ -608,9 +707,15 @@ def create_app(telegram=None) -> Dash:
                 html.Span(mkt_label, style={"color": dot_color,
                           "fontWeight": "700", "marginRight": "20px"}),
                 html.Span("NIFTY: ", style={"color": DIM}),
-                html.Span("—", style={"color": TEXT, "marginRight": "20px"}),
+                html.Span(
+                    f"{market['nifty']:,.2f}" if market.get("nifty") else "UNAVAILABLE",
+                    style={"color": TEXT if market.get("nifty") else RED,
+                           "marginRight": "20px"}),
                 html.Span("VIX: ", style={"color": DIM}),
-                html.Span(f"{regime.get('vix', 0):.1f}", style={"color": YELLOW, "marginRight": "20px"}),
+                html.Span(
+                    f"{market['vix']:.2f}" if market.get("vix") else "UNAVAILABLE",
+                    style={"color": YELLOW if market.get("vix") else RED,
+                           "marginRight": "20px"}),
                 html.Span("REGIME: ", style={"color": DIM}),
                 html.Span(regime_name, style={"color": _regime_color(regime_name),
                           "fontWeight": "700", "marginRight": "20px"}),
@@ -622,6 +727,13 @@ def create_app(telegram=None) -> Dash:
                 html.Span(cb_text, style={"color": cb_color, "fontWeight": "700", "marginRight": "20px"}),
                 html.Span("LAST SCAN: ", style={"color": DIM}),
                 html.Span(scan_age, style={"color": TEXT}),
+                html.Span("  DATA: ", style={"color": DIM, "marginLeft": "20px"}),
+                html.Span(
+                    "STALE" if market.get("stale") else "LIVE/CLOSE",
+                    title=(f"Yahoo Finance · {market.get('fetched_at') or 'never'}"
+                           + (f" · {market.get('error')}" if market.get('error') else "")),
+                    style={"color": RED if market.get("stale") else GREEN,
+                           "fontWeight": "700"}),
             ]
 
             topbar = html.Span(ist.strftime("%A %d %b %Y  %H:%M:%S IST"))
@@ -682,17 +794,9 @@ def _tab_overview() -> html.Div:
     pos      = port.get("positions", {})
     history  = port.get("trade_history", [])
 
-    # Live position values (threaded with timeout so slow yfinance won't hang)
     syms = list(pos.keys())
-    live: dict = {}
-    if syms:
-        import concurrent.futures
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
-            fut = ex.submit(fetch_live_prices, syms)
-            try:
-                live = fut.result(timeout=10)
-            except Exception:
-                live = {}
+    market = get_market_data(syms)
+    live = market.get("prices", {}) if not market.get("stale") else {}
     for sym, p in pos.items():
         lp = live.get(sym)
         if lp and lp > 0:
@@ -803,6 +907,11 @@ def _tab_overview() -> html.Div:
 
     return html.Div([
         cb_banner,
+        html.Div(
+            f"Market data: Yahoo Finance · as of {market.get('fetched_at') or 'unavailable'}"
+            f" · {'STALE — cached portfolio prices excluded' if market.get('stale') else 'current provider snapshot'}",
+            style={"color": RED if market.get("stale") else DIM,
+                   "fontFamily": FONT, "fontSize": "10px", "marginBottom": "10px"}),
         kpis,
         html.Div(style={"display": "grid", "gridTemplateColumns": "2fr 1fr",
                         "gap": "14px", "marginBottom": "14px"}, children=[
@@ -828,21 +937,18 @@ def _tab_positions() -> html.Div:
                                         "padding": "30px", "textAlign": "center"}))
 
     syms = list(pos.keys())
-    live: dict = {}
-    if syms:
-        import concurrent.futures
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
-            fut = ex.submit(fetch_live_prices, syms)
-            try:
-                live = fut.result(timeout=10)
-            except Exception:
-                live = {}
+    market = get_market_data(syms)
+    live = market.get("prices", {}) if not market.get("stale") else {}
 
     rows = []
     for sym, p in pos.items():
         entry   = p.get("entry_price", 0)
-        curr    = live.get(sym, p.get("current_price", entry))
-        p["current_price"] = curr
+        is_live = sym in live
+        curr = live.get(sym)
+        if curr is None:
+            curr = p.get("current_price", entry)
+        if is_live:
+            p["current_price"] = curr
         shares  = p.get("shares", 0)
         cost    = p.get("cost", entry * shares)
         upnl    = (curr - entry) * shares
@@ -867,6 +973,8 @@ def _tab_positions() -> html.Div:
             "Trail %"   : f"{trail:.2f}%",
             "AI Score"  : f"{sig:.3f}",
             "Entry Date": p.get("entry_date", "")[:10],
+            "Price Status": "PROVIDER" if is_live else "STALE/FALLBACK",
+            "Price As Of": (market.get("fetched_at") or "—")[:19],
         })
 
     cond = [
@@ -879,7 +987,8 @@ def _tab_positions() -> html.Div:
         {"if": {"column_id": "Stop ₹"},
          "color": RED},
     ]
-    return _section("OPEN POSITIONS — LIVE PRICES", _dtable(rows, cond, page=10))
+    status = "PROVIDER SNAPSHOT" if not market.get("stale") else "STALE/FALLBACK VALUES"
+    return _section(f"OPEN POSITIONS — {status}", _dtable(rows, cond, page=10))
 
 
 # ╔══════════════════════════════════════════════════════════════╗
@@ -1196,9 +1305,9 @@ def _tab_sysconfig() -> html.Div:
     cb_cfg = [
         ("Status",          "TRIGGERED" if cb else "OK", RED if cb else GREEN),
         ("Reason",          circuit.get("trigger_reason") or "--", RED if cb else DIM),
-        ("Daily Limit",     "5%",  RED),
-        ("Weekly Limit",    "7%",  RED),
-        ("Total Limit",     "10%", RED),
+        ("Daily Limit",     f"{cfg.MAX_DAILY_LOSS*100:.0f}%",  RED),
+        ("Weekly Limit",    f"{cfg.MAX_WEEKLY_LOSS*100:.0f}%", RED),
+        ("Total Limit",     f"{cfg.MAX_DRAWDOWN*100:.0f}%", RED),
     ]
 
     # Scan state

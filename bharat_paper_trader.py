@@ -6,6 +6,10 @@ import json
 import os
 import logging
 from datetime import datetime
+from config.settings import (
+    MAX_OPEN_POSITIONS, MAX_POSITION_SIZE, STOP_LOSS_PCT,
+    TAKE_PROFIT_PCT, TRAILING_STOP_PCT,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +23,8 @@ class BharatPaperTrader:
 
     def __init__(self,
                  starting_capital=100000.0,
-                 max_position_pct=0.15,
-                 max_positions=5,
+                 max_position_pct=MAX_POSITION_SIZE,
+                 max_positions=MAX_OPEN_POSITIONS,
                  log_file='logs/bharat_trades.json',
                  trade_tracker=None):
 
@@ -34,6 +38,14 @@ class BharatPaperTrader:
         self.trade_tracker = trade_tracker   # optional TradeTracker instance
 
     def get_position_size(self, price, signal_strength=1.0):
+        if not isinstance(price, (int, float)) or price <= 0:
+            return 0
+        if not isinstance(signal_strength, (int, float)):
+            return 0
+        # Scanner confidence is a percentage; sizing needs a 0..1 multiplier.
+        if signal_strength > 1:
+            signal_strength /= 100.0
+        signal_strength = min(1.0, max(0.0, float(signal_strength)))
         max_inr = self.capital * self.max_position_pct
         adjusted = max_inr * signal_strength
         shares = int(adjusted / price)
@@ -66,7 +78,7 @@ class BharatPaperTrader:
             atr_stop_pct = (2 * atr) / price
             stop_loss_pct = max(0.02, min(0.08, atr_stop_pct))
         else:
-            stop_loss_pct = 0.04
+            stop_loss_pct = STOP_LOSS_PCT
 
         self.positions[symbol] = {
             'shares'        : shares,
@@ -87,6 +99,8 @@ class BharatPaperTrader:
             'cost': cost,
             'date': datetime.now().isoformat(),
             'reason': reason,
+            'signal': signal,
+            'stop_loss_pct': stop_loss_pct,
         }
         self.trade_history.append(trade)
 
@@ -144,9 +158,9 @@ class BharatPaperTrader:
         return True
 
     def update_position(self, symbol, current_price,
-                        stop_loss=0.04,
-                        take_profit=0.08,
-                        trailing_stop=0.04):
+                        stop_loss=STOP_LOSS_PCT,
+                        take_profit=TAKE_PROFIT_PCT,
+                        trailing_stop=TRAILING_STOP_PCT):
 
         if symbol not in self.positions:
             return
@@ -237,7 +251,7 @@ class BharatPaperTrader:
             'trade_history': self.trade_history,
             'saved_at': datetime.now().isoformat(),
         }
-        os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
+        os.makedirs(os.path.dirname(self.log_file) or '.', exist_ok=True)
         # Atomic write: temp file then rename to prevent truncation on crash
         tmp_file = self.log_file + '.tmp'
         with open(tmp_file, 'w') as f:
@@ -250,13 +264,16 @@ class BharatPaperTrader:
             print("   No saved state found, starting fresh")
             return
 
-        with open(self.log_file, 'r') as f:
-            state = json.load(f)
-
-        self.capital = state['capital']
-        self.starting_capital = state['starting_capital']
-        self.positions = state['positions']
-        self.trade_history = state['trade_history']
+        try:
+            with open(self.log_file, 'r') as f:
+                state = json.load(f)
+            self.capital = float(state['capital'])
+            self.starting_capital = float(state['starting_capital'])
+            self.positions = dict(state.get('positions', {}))
+            self.trade_history = list(state.get('trade_history', []))
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
+            logger.error("Ignoring invalid paper-trading state %s: %s", self.log_file, exc)
+            return
 
         print(f"   State loaded: Rs{self.capital:,.2f} cash")
         print(f"   Open positions: {len(self.positions)}")

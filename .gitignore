@@ -1,4 +1,9 @@
 venv/
+.audit-venv/
+.pip-cache/
+.pytest-tmp/
+.audit-cache/
+.runtime-smoke/
 env/
 __pycache__/
 *.pyc
@@ -10,6 +15,7 @@ backtest_output.txt
 # ── Secrets & credentials (NEVER commit these) ────────────────
 .env
 .env.*
+!.env.example
 config/secrets.env
 zerodha.txt
 phase9_zerodha.txt
@@ -38,4 +44,4 @@ data/raw/
 .vscode/
 .idea/
 .DS_Store
-Thumbs.db
+Thumbs.db

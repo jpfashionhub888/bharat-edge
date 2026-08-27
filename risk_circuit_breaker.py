@@ -7,15 +7,16 @@ import json
 import os
 import logging
 from datetime import datetime, timedelta
+from config.settings import MAX_DAILY_LOSS, MAX_DRAWDOWN, MAX_WEEKLY_LOSS
 
 logger = logging.getLogger(__name__)
 
 CIRCUIT_BREAKER_FILE = 'logs/circuit_breaker.json'
 
 # Risk thresholds
-DAILY_LOSS_LIMIT     = 0.05   # Stop if down 5% in one day
-TOTAL_LOSS_LIMIT     = 0.10   # Cash mode if down 10% total
-WEEKLY_LOSS_LIMIT    = 0.07   # Warning if down 7% this week
+DAILY_LOSS_LIMIT     = MAX_DAILY_LOSS
+TOTAL_LOSS_LIMIT     = MAX_DRAWDOWN
+WEEKLY_LOSS_LIMIT    = MAX_WEEKLY_LOSS
 
 
 class RiskCircuitBreaker:
@@ -49,8 +50,10 @@ class RiskCircuitBreaker:
     def _save_state(self):
         """Save circuit breaker state."""
         os.makedirs('logs', exist_ok=True)
-        with open(CIRCUIT_BREAKER_FILE, 'w') as f:
+        tmp_file = CIRCUIT_BREAKER_FILE + '.tmp'
+        with open(tmp_file, 'w') as f:
             json.dump(self.state, f, indent=2)
+        os.replace(tmp_file, CIRCUIT_BREAKER_FILE)
 
     def check(self, current_value, starting_capital, telegram=None):
         """
@@ -99,7 +102,8 @@ class RiskCircuitBreaker:
 
         daily_loss   = (current_value - daily_start) / daily_start if daily_start > 0 else 0
         weekly_loss  = (current_value - weekly_start) / weekly_start if weekly_start > 0 else 0
-        total_loss   = (current_value - starting_capital) / starting_capital
+        total_loss   = ((current_value - starting_capital) / starting_capital
+                        if starting_capital > 0 else 0)
 
         print(f"\n   Risk Check:")
         print(f"   Daily P&L:   {daily_loss:+.2%}")

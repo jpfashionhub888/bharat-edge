@@ -234,7 +234,11 @@ class TradeTracker:
         """Load trade data from file, or create fresh structure."""
         try:
             with open(self.trades_file) as f:
-                return json.load(f)
+                data = json.load(f)
+            if not isinstance(data, dict) or not isinstance(data.get('trades'), list):
+                raise ValueError('invalid trade tracker schema')
+            data['summary'] = self._summary_for(data['trades'])
+            return data
         except FileNotFoundError:
             return {
                 'trades'  : [],
@@ -252,16 +256,28 @@ class TradeTracker:
             }
         except Exception as e:
             logger.warning('Could not load trade tracker file: %s', e)
-            return {'trades': [], 'summary': {}}
+            return {'trades': [], 'summary': self._summary_for([])}
 
     def _save(self) -> None:
         """Persist trade data to JSON file. Call inside lock."""
         try:
             os.makedirs(os.path.dirname(self.trades_file) or '.', exist_ok=True)
-            with open(self.trades_file, 'w') as f:
+            tmp_file = self.trades_file + '.tmp'
+            with open(tmp_file, 'w') as f:
                 json.dump(self._data, f, indent=2)
+            os.replace(tmp_file, self.trades_file)
         except Exception as e:
             logger.warning('Could not save trade tracker file: %s', e)
+
+    def _summary_for(self, trades: list) -> dict:
+        """Compute a valid summary while loading or recovering state."""
+        old_data = getattr(self, '_data', None)
+        self._data = {'trades': trades}
+        try:
+            return self._compute_summary()
+        finally:
+            if old_data is not None:
+                self._data = old_data
 
 
 # ── Convenience function (used by command_listener + watchdog) ─
