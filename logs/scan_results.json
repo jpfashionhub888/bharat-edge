@@ -1,13 +1,13 @@
 {
-  "scan_time": "2026-09-02T08:10:23.479470",
+  "scan_time": "2026-09-02T12:05:47.893961",
   "market_regime": {
-    "regime": "CAUTION",
+    "regime": "BULL",
     "can_trade": true,
-    "nifty_return_1m": -0.030085690461500048,
-    "nifty_return_3m": 0.02212985059032494,
-    "vix": 11.569999694824219,
-    "reason": "Cautious: NIFTY -3.0%, VIX=11.6",
-    "recommendation": "REDUCED TRADING"
+    "nifty_return_1m": -0.028456388640994812,
+    "nifty_return_3m": 0.02126267195161275,
+    "vix": 11.592499732971191,
+    "reason": "Bull market: NIFTY -2.8%, VIX=11.6",
+    "recommendation": "TRADE NORMALLY"
   },
   "data_quality": {
     "price_source": "Yahoo Finance",
