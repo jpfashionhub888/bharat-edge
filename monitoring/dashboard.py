@@ -27,6 +27,8 @@ STARTING_CAP  = 100_000.0
 REFRESH_S     = 60          # dashboard refresh interval (seconds)
 HEARTBEAT_S   = 300         # Telegram alert if scan silent > 5 min
 MARKET_TTL_S  = 45          # share one market request across callbacks
+SCAN_GRACE_S  = 3600        # scheduled scan may run for up to 45 minutes
+SCAN_TIMES_UTC = ((3, 50), (7, 0), (9, 45))
 
 _MARKET_LOCK = threading.Lock()
 _MARKET_CACHE: dict[str, Any] = {
@@ -288,6 +290,39 @@ def _scan_age(scan_time_str: str | None) -> str:
         return "unknown"
 
 
+def _scan_is_overdue(last_success: str | None, now: datetime | None = None) -> bool:
+    """Return true only after a weekday scan deadline plus its grace period."""
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None:
+        current = current.replace(tzinfo=timezone.utc)
+    current = current.astimezone(timezone.utc)
+
+    latest_due = None
+    for days_back in range(8):
+        day = (current - timedelta(days=days_back)).date()
+        if day.weekday() >= 5:
+            continue
+        for hour, minute in SCAN_TIMES_UTC:
+            scheduled = datetime(
+                day.year, day.month, day.day, hour, minute, tzinfo=timezone.utc)
+            if scheduled + timedelta(seconds=SCAN_GRACE_S) <= current:
+                latest_due = max(latest_due, scheduled) if latest_due else scheduled
+        if latest_due is not None:
+            break
+
+    if latest_due is None:
+        return False
+    if not last_success:
+        return True
+    try:
+        success = datetime.fromisoformat(last_success)
+        if success.tzinfo is None:
+            success = success.replace(tzinfo=timezone.utc)
+        return success.astimezone(timezone.utc) < latest_due
+    except (TypeError, ValueError):
+        return True
+
+
 def _inr(v: float, cr: bool = False) -> str:
     """Format as Indian ₹ with optional lakh/crore suffix."""
     if cr and abs(v) >= 1e7:
@@ -547,12 +582,14 @@ def create_app(telegram=None) -> Dash:
     def healthz():
         """Fast local health probe with no external network dependency."""
         scan_status = load_scan_status()
+        overdue = _scan_is_overdue(scan_status.get("last_success_at"))
         return {
             "status": "ok",
             "service": "bharatedge-dashboard",
             "time_utc": datetime.now(timezone.utc).isoformat(),
             "last_scan_status": scan_status.get("status", "UNKNOWN"),
             "last_scan_success": scan_status.get("last_success_at"),
+            "scan_overdue": overdue,
         }, 200
 
     # ── Google Font + global CSS ──────────────────────────────
@@ -729,10 +766,13 @@ def create_app(telegram=None) -> Dash:
             entries_blocked = bool(quality.get("new_entries_blocked", False))
             context_status = quality.get("market_context", {}).get("status", "UNKNOWN")
             run_status = scan_status.get("status", "UNKNOWN")
+            scan_overdue = _scan_is_overdue(scan_status.get("last_success_at"))
             if run_status == "FAILED":
                 quality_label, quality_color = "SCAN FAILED", RED
             elif run_status == "RUNNING":
                 quality_label, quality_color = "SCANNING", YELLOW
+            elif scan_overdue:
+                quality_label, quality_color = "SCAN OVERDUE", RED
             elif entries_blocked:
                 quality_label, quality_color = "ENTRY BLOCKED", RED
             elif context_status == "DEGRADED" or coverage < 1:

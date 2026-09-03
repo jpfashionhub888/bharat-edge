@@ -214,6 +214,25 @@ def test_scan_lifecycle_records_failure(tmp_path, monkeypatch):
     assert "provider offline" in status["error"]
 
 
+def test_scan_overdue_respects_schedule_and_grace_period():
+    from monitoring.dashboard import _scan_is_overdue
+
+    # Friday's 09:45 UTC scan is not overdue until its one-hour grace expires.
+    before_deadline = datetime(2026, 9, 4, 10, 30, tzinfo=timezone.utc)
+    assert not _scan_is_overdue("2026-09-04T07:05:00+00:00", before_deadline)
+
+    after_deadline = datetime(2026, 9, 4, 10, 50, tzinfo=timezone.utc)
+    assert _scan_is_overdue("2026-09-04T07:05:00+00:00", after_deadline)
+    assert not _scan_is_overdue("2026-09-04T09:50:00+00:00", after_deadline)
+
+
+def test_scan_overdue_does_not_expect_weekend_runs():
+    from monitoring.dashboard import _scan_is_overdue
+
+    saturday = datetime(2026, 9, 5, 12, 0, tzinfo=timezone.utc)
+    assert not _scan_is_overdue("2026-09-04T09:50:00+00:00", saturday)
+
+
 def test_market_regime_fails_closed_without_nifty(monkeypatch):
     from bharat_market_regime import BharatMarketRegimeFilter
 
