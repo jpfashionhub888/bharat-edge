@@ -1,10 +1,10 @@
 {
-  "scan_time": "2026-09-03T12:05:08.616972",
+  "scan_time": "2026-09-03T13:57:23.553356",
   "market_regime": {
     "regime": "CAUTION",
     "can_trade": true,
-    "nifty_return_1m": -0.030506064449994968,
-    "nifty_return_3m": 0.0216868456796573,
+    "nifty_return_1m": -0.030952702599853874,
+    "nifty_return_3m": 0.032454664998053884,
     "vix": 11.337499618530273,
     "reason": "Cautious: NIFTY -3.1%, VIX=11.3",
     "recommendation": "REDUCED TRADING"
