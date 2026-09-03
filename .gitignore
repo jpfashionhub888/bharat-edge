@@ -33,6 +33,7 @@ logs/bharat_trades.json
 logs/closed_trades.json
 logs/*.log
 logs/*.txt
+logs/.yfinance-cache/
 # Allow scan signals and circuit breaker (written by Actions)
 !logs/scan_results.json
 !logs/circuit_breaker.json

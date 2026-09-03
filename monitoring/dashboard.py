@@ -8,6 +8,7 @@ import json, os, traceback, threading, time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import plotly.graph_objects as go
 import plotly.express as px
@@ -250,7 +251,7 @@ def fetch_nifty_vix() -> tuple[float | None, float | None]:
 # ╚══════════════════════════════════════════════════════════════╝
 
 def _ist_now() -> datetime:
-    return datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
+    return datetime.now(ZoneInfo("Asia/Kolkata"))
 
 
 def _is_market_open() -> bool:
@@ -265,8 +266,9 @@ def _scan_age(scan_time_str: str | None) -> str:
     if not scan_time_str:
         return "never"
     try:
-        ts  = datetime.fromisoformat(scan_time_str)
-        ago = (datetime.now() - ts).total_seconds()
+        ts = datetime.fromisoformat(scan_time_str)
+        now = datetime.now(ts.tzinfo) if ts.tzinfo else datetime.now()
+        ago = max(0, (now - ts).total_seconds())
         if ago < 60:
             return f"{int(ago)}s ago"
         if ago < 3600:
@@ -468,6 +470,8 @@ def _upcoming_earnings() -> list[dict]:
         try:
             import concurrent.futures
             import yfinance as yf
+            from config.yfinance_runtime import configure_yfinance
+            configure_yfinance(yf)
             watch = [s for s in STOCK_WATCHLIST if ".NS" in s][:20]
 
             def fetch_one(sym):
@@ -674,6 +678,7 @@ def create_app(telegram=None) -> Dash:
             ist     = _ist_now()
             mkt_open = _is_market_open()
             regime  = scan.get("market_regime", {})
+            quality = scan.get("data_quality", {})
             market  = get_market_data(list(port.get("positions", {}).keys()))
 
             # Market dot
@@ -706,6 +711,15 @@ def create_app(telegram=None) -> Dash:
             cb_text      = "CB: TRIGGERED" if cb_triggered else "CB: OK"
 
             scan_age = _scan_age(scan.get("scan_time"))
+            coverage = float(quality.get("price_coverage", 0) or 0)
+            entries_blocked = bool(quality.get("new_entries_blocked", False))
+            context_status = quality.get("market_context", {}).get("status", "UNKNOWN")
+            if entries_blocked:
+                quality_label, quality_color = "ENTRY BLOCKED", RED
+            elif context_status == "DEGRADED" or coverage < 1:
+                quality_label, quality_color = "DEGRADED", YELLOW
+            else:
+                quality_label, quality_color = "VALID", GREEN
 
             items = [
                 (dot, mkt_label, dot_color),
@@ -736,6 +750,11 @@ def create_app(telegram=None) -> Dash:
                 html.Span(cb_text, style={"color": cb_color, "fontWeight": "700", "marginRight": "20px"}),
                 html.Span("LAST SCAN: ", style={"color": DIM}),
                 html.Span(scan_age, style={"color": TEXT}),
+                html.Span("  SCAN QUALITY: ", style={"color": DIM, "marginLeft": "20px"}),
+                html.Span(
+                    quality_label,
+                    title=f"Coverage {coverage:.0%} · Context {context_status}",
+                    style={"color": quality_color, "fontWeight": "700"}),
                 html.Span("  DATA: ", style={"color": DIM, "marginLeft": "20px"}),
                 html.Span(
                     "STALE" if market.get("stale") else "LIVE/CLOSE",
@@ -1254,6 +1273,7 @@ def _tab_sysconfig() -> html.Div:
     circuit = load_circuit()
     port    = load_portfolio()
     scan    = load_scan()
+    quality = scan.get("data_quality", {})
 
     def _row(k, v, vc=TEXT):
         return html.Tr([
@@ -1326,6 +1346,11 @@ def _tab_sysconfig() -> html.Div:
         ("Regime",          scan.get("market_regime",{}).get("regime","--"), TEXT),
         ("VIX",             f"{scan.get('market_regime',{}).get('vix',0):.1f}", YELLOW),
         ("Can Trade",       scan.get("market_regime",{}).get("can_trade","--"), TEXT),
+        ("Price Coverage",  f"{float(quality.get('price_coverage', 0) or 0):.0%}", TEXT),
+        ("Context Quality", quality.get("market_context", {}).get("status", "UNKNOWN"),
+         YELLOW if quality.get("market_context", {}).get("status") == "DEGRADED" else TEXT),
+        ("Entries Blocked", quality.get("new_entries_blocked", "--"),
+         RED if quality.get("new_entries_blocked") else TEXT),
     ]
 
     return html.Div([

@@ -54,11 +54,29 @@ dashboard generates successfully, and the project's own health audit passes
 
 - Python byte-compilation: pass (entire source tree)
 - Critical static checks (`E9`, `F63`, `F7`, `F82`): pass
-- Regression tests: 18 passed on a clean Python 3.14 environment
+- Regression tests: 26 passed on a clean Python 3.14 environment
 - Dependency consistency (`pip check`): pass
 - Known-vulnerability audit (`pip-audit`): no known vulnerabilities in core
 - GitHub Actions workflow YAML validation: pass
 - Dashboard `/healthz` smoke test: pass
+
+## September 2026 data-integrity upgrade
+
+- Critical Nifty/VIX feed failures and observations older than four days now
+  block new entries instead of substituting plausible normal-market values.
+- Removed invented FII/DII crore flows, GIFT Nifty gaps, and news-volume values;
+  unavailable optional inputs are neutral and explicitly marked degraded.
+- New entries are blocked when valid stock-history coverage falls below 80%.
+- Missing fresh prices can no longer trigger false stop-loss or trailing-stop
+  exits; existing positions remain unchanged until a fresh quote arrives.
+- Corrected IST timestamps to carry the real `+05:30` timezone offset.
+- Added visible dashboard scan-quality, coverage, and entry-block status.
+- Moved the opening scan from 09:10 to 09:20 IST, after NSE opens.
+- Added deterministic writable yfinance caching for Windows and VPS execution.
+- The `CAUTION` regime now actually halves position sizing while retaining the
+  original model confidence for auditability.
+- Live read-only verification confirmed current Nifty/VIX provenance and a
+  0.29-second first market fetch with microsecond-level cached refreshes.
 - Application health audit: 13/13 passed
 - Dashboard smoke test: pass (10,523-byte HTML output)
 - Telegram identity/read-only connection check: pass

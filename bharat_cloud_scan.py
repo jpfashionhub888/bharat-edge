@@ -7,6 +7,7 @@ import sys
 import warnings
 import logging
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from bharat_market_regime import BharatMarketRegimeFilter
 from risk_circuit_breaker import RiskCircuitBreaker
 from critic_agent import CriticAgent
@@ -141,6 +142,8 @@ def run_bharat_scan():
     print(f"\n   Fetching data for {len(all_stocks)} NSE stocks...")
 
     import yfinance as yf
+    from config.yfinance_runtime import configure_yfinance
+    configure_yfinance(yf)
     import pandas as pd
     import numpy as np
 
@@ -163,6 +166,13 @@ def run_bharat_scan():
             print(f"   [{i}/{len(all_stocks)}] {symbol} - Failed: {e}")
 
     print(f"\n   Fetched {len(stock_data)}/{len(all_stocks)} stocks")
+    price_coverage = len(stock_data) / len(all_stocks) if all_stocks else 0.0
+    if price_coverage < 0.80:
+        new_entries_blocked = True
+        print(
+            f"   DATA SAFETY: only {price_coverage:.1%} price coverage; "
+            "blocking new entries (minimum 80%)."
+        )
 
     # ==========================================
     # PHASE 2: SECTOR ROTATION
@@ -277,18 +287,35 @@ def run_bharat_scan():
                 vix_value=17.0, vix_change=0.0,
                 fii_net=0.0, dii_net=0.0,
                 sgx_gap=0.0, news_sentiment=0.0, news_volume=0,
+                _defaults_used=True,
+                _data_quality={"status": "UNAVAILABLE"},
             )
             try:
                 from phase6_market_data import get_live_market_context
                 live_market, _ = get_live_market_context()
                 print("   Live market context loaded for scan.")
             except Exception as _e:
-                print(f"   Live context failed ({_e}), using defaults.")
+                new_entries_blocked = True
+                live_market["_data_quality"] = {
+                    "status": "UNAVAILABLE",
+                    "critical_sources_available": False,
+                    "reasons": [str(_e)],
+                }
+                print(f"   Live context failed ({_e}); blocking new entries.")
+
+            if live_market.get("_defaults_used"):
+                new_entries_blocked = True
+                print("   Market context is degraded; blocking new entries.")
+
+            model_market = {
+                key: value for key, value in live_market.items()
+                if not key.startswith("_")
+            }
 
             scan_df = run_full_scan(
                 ensemble=ensemble,
                 verbose=False,
-                **live_market,
+                **model_market,
             )
 
             if scan_df is not None and not scan_df.empty:
@@ -388,7 +415,10 @@ def run_bharat_scan():
             opened = trader.open_position(
                 symbol, price,
                 data['confidence'],
-                reason=data['sector']
+                reason=data['sector'],
+                position_multiplier=float(
+                    market_regime.get('position_multiplier', 1.0)
+                ),
             )
             if opened:
                 telegram.alert_buy_signal(
@@ -406,6 +436,9 @@ def run_bharat_scan():
 
     if trader.positions:
         print("\n   Fetching current prices for open positions...")
+        fresh_position_prices = {
+            symbol for symbol in trader.positions if symbol in current_prices
+        }
         for symbol in list(trader.positions.keys()):
             try:
                 ticker = yf.Ticker(symbol)
@@ -415,6 +448,7 @@ def run_bharat_scan():
                     if not close_series.empty:
                         price = float(close_series.iloc[-1])
                         current_prices[symbol] = price
+                        fresh_position_prices.add(symbol)
                         print(f"   {symbol}: Rs{price:.2f}")
                     else:
                         current_prices[symbol] = trader.positions[symbol].get(
@@ -432,6 +466,9 @@ def run_bharat_scan():
 
         print("\n   Checking stop loss / take profit...")
         for symbol in list(trader.positions.keys()):
+            if symbol not in fresh_position_prices:
+                print(f"   {symbol}: fresh price unavailable; risk update skipped")
+                continue
             if symbol in current_prices:
                 pos = trader.positions.get(symbol, {})
                 entry = pos.get('entry_price', 0)
@@ -542,12 +579,15 @@ def run_bharat_scan():
     try:
         import json as _json
         _scan_out = {
-            'scan_time'    : datetime.now().isoformat(),
+            'scan_time'    : datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
             'market_regime': market_regime,
             'data_quality'  : {
                 'price_source': 'Yahoo Finance',
+                'price_coverage': round(locals().get('price_coverage', 0.0), 4),
                 'signal_count': len(stock_signals),
                 'defaults_used': bool(locals().get('live_market', {}).get('_defaults_used', False)),
+                'market_context': locals().get('live_market', {}).get('_data_quality', {}),
+                'new_entries_blocked': bool(new_entries_blocked),
             },
             'signals'      : [
                 {

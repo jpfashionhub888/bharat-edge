@@ -5,13 +5,41 @@
 import warnings
 warnings.filterwarnings("ignore")
 
+import math
 import requests
 import pandas as pd
 import numpy as np
 import yfinance as yf
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from config.yfinance_runtime import configure_yfinance
 
-print("✅ phase6_market_data.py loaded")
+configure_yfinance(yf)
+
+
+class MarketDataUnavailable(RuntimeError):
+    """Raised when critical market context cannot be authenticated."""
+
+
+def _as_of(df) -> str | None:
+    if df is None or df.empty:
+        return None
+    value = df.index[-1]
+    return value.isoformat() if hasattr(value, "isoformat") else str(value)
+
+
+def _is_recent(as_of: str | None, max_age_days: int = 4) -> bool:
+    if not as_of:
+        return False
+    try:
+        observed = pd.Timestamp(as_of)
+        now = pd.Timestamp.now(tz="UTC")
+        if observed.tzinfo is None:
+            observed = observed.tz_localize("UTC")
+        else:
+            observed = observed.tz_convert("UTC")
+        return timedelta(days=0) <= now - observed <= timedelta(days=max_age_days)
+    except (TypeError, ValueError):
+        return False
 
 
 # ============================================================
@@ -23,17 +51,19 @@ def fetch_india_vix() -> dict:
     try:
         ticker = yf.Ticker("^INDIAVIX")
         df     = ticker.history(period="2d")
+        close = df["Close"].dropna() if "Close" in df else []
 
-        if len(df) >= 2:
-            current  = float(df["Close"].iloc[-1])
-            previous = float(df["Close"].iloc[-2])
+        if len(close) >= 2:
+            current  = float(close.iloc[-1])
+            previous = float(close.iloc[-2])
+            if not math.isfinite(current) or not math.isfinite(previous) or previous <= 0:
+                raise MarketDataUnavailable("India VIX returned invalid values")
             chg_pct  = (current - previous) / previous * 100 if previous else 0.0
         elif len(df) == 1:
             current = float(df["Close"].iloc[-1])
             chg_pct = 0.0
         else:
-            current = 17.0
-            chg_pct = 0.0
+            raise MarketDataUnavailable("India VIX returned fewer than two valid observations")
 
         if current < 15:
             regime = "LOW_RISK"
@@ -48,13 +78,19 @@ def fetch_india_vix() -> dict:
             "value"     : round(float(current), 2),
             "change_pct": round(float(chg_pct), 2),
             "regime"    : regime,
+            "available" : True,
+            "source"    : "Yahoo Finance (^INDIAVIX)",
+            "as_of"     : _as_of(df),
         }
 
     except Exception as e:
         return {
-            "value"     : 17.0,
-            "change_pct": 0.0,
-            "regime"    : "CAUTIOUS",
+            "value"     : None,
+            "change_pct": None,
+            "regime"    : "UNKNOWN",
+            "available" : False,
+            "source"    : "Yahoo Finance (^INDIAVIX)",
+            "as_of"     : None,
             "error"     : str(e),
         }
 
@@ -69,12 +105,17 @@ def fetch_nifty_trend() -> dict:
         ticker = yf.Ticker("^NSEI")
         df     = ticker.history(period="1y")
 
+        if len(df) < 200 or df["Close"].dropna().shape[0] < 200:
+            raise MarketDataUnavailable("Nifty returned fewer than 200 valid observations")
+
         df["dma50"]  = df["Close"].rolling(50).mean()
         df["dma200"] = df["Close"].rolling(200).mean()
 
         price  = float(df["Close"].iloc[-1])
         dma50  = float(df["dma50"].iloc[-1])
         dma200 = float(df["dma200"].iloc[-1])
+        if not all(math.isfinite(value) and value > 0 for value in (price, dma50, dma200)):
+            raise MarketDataUnavailable("Nifty returned invalid price or moving averages")
 
         if price > dma50 > dma200:
             regime = "STRONG_BULL"
@@ -90,6 +131,9 @@ def fetch_nifty_trend() -> dict:
             "dma50" : round(dma50, 2),
             "dma200": round(dma200, 2),
             "regime": regime,
+            "available": True,
+            "source": "Yahoo Finance (^NSEI)",
+            "as_of": _as_of(df),
         }
 
     except Exception as e:
@@ -98,6 +142,9 @@ def fetch_nifty_trend() -> dict:
             "dma50" : 0.0,
             "dma200": 0.0,
             "regime": "UNKNOWN",
+            "available": False,
+            "source": "Yahoo Finance (^NSEI)",
+            "as_of": None,
             "error" : str(e),
         }
 
@@ -123,12 +170,18 @@ def fetch_fii_dii_proxy() -> dict:
         return {
             "proxy_volume": int(vol_today),
             "direction"   : direction,
+            "available"   : len(df) >= 2,
+            "is_proxy"    : True,
+            "source"      : "Yahoo Finance NIFTYBEES volume proxy",
         }
 
     except Exception as e:
         return {
             "proxy_volume": 0,
             "direction"   : "UNKNOWN",
+            "available"   : False,
+            "is_proxy"    : True,
+            "source"      : "Yahoo Finance NIFTYBEES volume proxy",
             "error"       : str(e),
         }
 
@@ -153,12 +206,18 @@ def fetch_sgx_nifty_proxy() -> dict:
         return {
             "gap_pct"  : round(gap_pct, 2),
             "direction": "POSITIVE" if gap_pct > 0 else "NEGATIVE",
+            "available": len(df) >= 2,
+            "is_proxy" : True,
+            "source"   : "Nifty prior-session change (not GIFT Nifty)",
         }
 
     except Exception as e:
         return {
             "gap_pct"  : 0.0,
             "direction": "UNKNOWN",
+            "available": False,
+            "is_proxy" : True,
+            "source"   : "Nifty prior-session change (not GIFT Nifty)",
             "error"    : str(e),
         }
 
@@ -170,7 +229,7 @@ def fetch_sgx_nifty_proxy() -> dict:
 def get_market_snapshot() -> dict:
     """Return complete live market snapshot."""
     return {
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "vix"      : fetch_india_vix(),
         "nifty"    : fetch_nifty_trend(),
         "fii_dii"  : fetch_fii_dii_proxy(),
@@ -198,33 +257,47 @@ def get_live_market_context() -> tuple:
     fii_data   = snapshot["fii_dii"]
     sgx_data   = snapshot["sgx"]
 
-    # FII direction → estimated crores
-    fii_direction = fii_data.get("direction", "UNKNOWN")
-    if fii_direction == "INFLOW":
-        fii_estimate = +500.0
-    elif fii_direction == "OUTFLOW":
-        fii_estimate = -300.0
-    else:
-        fii_estimate = 0.0
+    critical_errors = []
+    if not vix_data.get("available"):
+        critical_errors.append(f"VIX unavailable: {vix_data.get('error', 'no valid observations')}")
+    elif not _is_recent(vix_data.get("as_of")):
+        critical_errors.append("VIX observation is stale")
+    if not nifty_data.get("available"):
+        critical_errors.append(f"Nifty unavailable: {nifty_data.get('error', 'no valid observations')}")
+    elif not _is_recent(nifty_data.get("as_of")):
+        critical_errors.append("Nifty observation is stale")
+    if critical_errors:
+        raise MarketDataUnavailable("; ".join(critical_errors))
 
-    # Sentiment based on Nifty regime
+    # Volume direction is not an authenticated rupee FII/DII flow. Keep the
+    # numerical feature neutral instead of inventing crore values.
+    fii_direction = fii_data.get("direction", "UNKNOWN")
+    degraded_reasons = ["FII/DII value unavailable; volume proxy excluded"]
+    if sgx_data.get("is_proxy"):
+        degraded_reasons.append("GIFT Nifty unavailable; prior-session proxy excluded")
+    degraded_reasons.append("Authenticated news sentiment unavailable; neutral value used")
+
+    # Nifty trend is not news sentiment. Keep this optional feature neutral
+    # until an authenticated news-sentiment pipeline is available.
     nifty_regime   = nifty_data.get("regime", "SIDEWAYS")
-    news_sentiment = (
-        0.2  if nifty_regime == "STRONG_BULL" else
-        0.1  if nifty_regime == "BULL"        else
-       -0.1  if nifty_regime == "STRONG_BEAR" else
-        0.0
-    )
+    news_sentiment = 0.0
 
     # Build context dict
     context = dict(
-        vix_value      = float(vix_data.get("value", 17.0)),
-        vix_change     = float(vix_data.get("change_pct", 0.0)),
-        fii_net        = float(fii_estimate),
+        vix_value      = float(vix_data["value"]),
+        vix_change     = float(vix_data["change_pct"]),
+        fii_net        = 0.0,
         dii_net        = 0.0,
-        sgx_gap        = float(sgx_data.get("gap_pct", 0.0)),
+        sgx_gap        = 0.0,
         news_sentiment = float(news_sentiment),
-        news_volume    = 30,
+        news_volume    = 0,
+        _defaults_used = False,
+        _data_quality  = {
+            "status": "DEGRADED",
+            "critical_sources_available": True,
+            "reasons": degraded_reasons,
+            "snapshot_time": snapshot["timestamp"],
+        },
     )
 
     # Print summary
@@ -232,10 +305,9 @@ def get_live_market_context() -> tuple:
           f"({vix_data.get('regime','?')})")
     print(f"  ✅ Nifty    : {nifty_data.get('price',0):,.2f} "
           f"({nifty_regime})")
-    print(f"  ✅ FII Est  : Rs {context['fii_net']:+,.0f} Cr "
-          f"({fii_direction})")
-    print(f"  ✅ SGX Gap  : {context['sgx_gap']:+.2f}%")
-    print(f"  ✅ Sentiment: {context['news_sentiment']:+.1f}")
+    print(f"  ⚠️ FII/DII : authenticated value unavailable ({fii_direction} proxy ignored)")
+    print("  ⚠️ GIFT Nifty: unavailable (prior-session proxy ignored)")
+    print("  ⚠️ News sentiment: authenticated feed unavailable (neutral)")
 
     return context, snapshot
 

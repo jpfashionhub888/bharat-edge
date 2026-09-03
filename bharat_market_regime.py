@@ -7,8 +7,10 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import logging
+from config.yfinance_runtime import configure_yfinance
 
 logger = logging.getLogger(__name__)
+configure_yfinance(yf)
 
 
 class BharatMarketRegimeFilter:
@@ -43,31 +45,47 @@ class BharatMarketRegimeFilter:
             vix = yf.Ticker(self.vix_symbol)
             df  = vix.history(period='5d')
             if df.empty:
-                return 15
+                return None
             close = df['Close'].dropna()
-            return float(close.iloc[-1])
-        except Exception:
-            return 15
+            return float(close.iloc[-1]) if not close.empty else None
+        except Exception as exc:
+            logger.warning("India VIX data error: %s", exc)
+            return None
 
     def analyze(self):
         print("\n   Analyzing Indian market regime...")
 
         result = {
-            'regime'         : 'BULL',
-            'can_trade'      : True,
+            'regime'         : 'UNKNOWN',
+            'can_trade'      : False,
             'nifty_return_1m': 0.0,
             'nifty_return_3m': 0.0,
-            'vix'            : 15.0,
-            'reason'         : 'Normal market conditions',
-            'recommendation' : 'TRADE NORMALLY',
+            'vix'            : None,
+            'reason'         : 'Market data has not been validated',
+            'recommendation' : 'NO NEW TRADES',
+            'data_status'    : 'UNAVAILABLE',
+            'position_multiplier': 0.0,
         }
 
         df = self.get_nifty_data()
         if df is None:
-            print("   Could not fetch Nifty data. Allowing trades.")
+            result['reason'] = 'Nifty data unavailable; blocking new trades'
+            print("   Could not fetch Nifty data. Blocking new trades.")
             return result
 
         close = df['close'].dropna()
+
+        try:
+            latest = pd.Timestamp(close.index[-1])
+            if latest.tzinfo is not None:
+                latest = latest.tz_convert(None)
+            age_days = (pd.Timestamp.now().normalize() - latest.normalize()).days
+        except (IndexError, TypeError, ValueError):
+            age_days = 999
+        if age_days < 0 or age_days > 4:
+            result['reason'] = f'Nifty data is stale ({age_days} days old); blocking new trades'
+            print(f"   Nifty data is stale ({age_days} days). Blocking new trades.")
+            return result
 
         if len(close) >= 21:
             ret_1m = (close.iloc[-1] - close.iloc[-21]) / close.iloc[-21]
@@ -82,7 +100,12 @@ class BharatMarketRegimeFilter:
             ret_3m = 0.0
 
         vix = self.get_india_vix()
+        if vix is None:
+            result['reason'] = 'India VIX unavailable; blocking new trades'
+            print("   Could not fetch India VIX. Blocking new trades.")
+            return result
         result['vix'] = vix
+        result['data_status'] = 'LIVE'
 
         if ret_1m <= self.bear_threshold and vix >= self.vix_high:
             result['regime']        = 'BEAR'
@@ -91,6 +114,7 @@ class BharatMarketRegimeFilter:
                 f"Bear market: NIFTY {ret_1m:.1%}, VIX={vix:.1f}"
             )
             result['recommendation']= 'CASH MODE - No new buys'
+            result['position_multiplier'] = 0.0
 
         elif ret_1m <= self.bear_threshold:
             result['regime']        = 'BEAR'
@@ -99,6 +123,7 @@ class BharatMarketRegimeFilter:
                 f"Market correction: NIFTY {ret_1m:.1%}"
             )
             result['recommendation']= 'CASH MODE - No new buys'
+            result['position_multiplier'] = 0.0
 
         elif vix >= self.vix_extreme:
             result['regime']        = 'CRASH'
@@ -107,6 +132,7 @@ class BharatMarketRegimeFilter:
                 f"Extreme fear: VIX={vix:.1f}"
             )
             result['recommendation']= 'CASH MODE - Extreme fear'
+            result['position_multiplier'] = 0.0
 
         elif ret_1m <= self.recovery_threshold or vix >= self.vix_high:
             result['regime']        = 'CAUTION'
@@ -115,6 +141,7 @@ class BharatMarketRegimeFilter:
                 f"Cautious: NIFTY {ret_1m:.1%}, VIX={vix:.1f}"
             )
             result['recommendation']= 'REDUCED TRADING'
+            result['position_multiplier'] = 0.5
 
         else:
             result['regime']        = 'BULL'
@@ -123,6 +150,7 @@ class BharatMarketRegimeFilter:
                 f"Bull market: NIFTY {ret_1m:.1%}, VIX={vix:.1f}"
             )
             result['recommendation']= 'TRADE NORMALLY'
+            result['position_multiplier'] = 1.0
 
         print(f"   Market Regime:    {result['regime']}")
         print(f"   NIFTY 1-Month:    {ret_1m:+.2%}")

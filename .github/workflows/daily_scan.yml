@@ -2,7 +2,7 @@ name: Bharat Edge Daily Scan
 
 on:
   schedule:
-    - cron: '40 3 * * 1-5'   # 9:10 AM IST  (market open)
+    - cron: '50 3 * * 1-5'   # 9:20 AM IST  (after market open)
     - cron: '0 7 * * 1-5'    # 12:30 PM IST (midday check)
     - cron: '45 9 * * 1-5'   # 3:15 PM IST  (market close)
   workflow_dispatch:

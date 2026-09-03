@@ -15,6 +15,8 @@ def fetch_live_prices(symbols: list) -> dict:
         return prices
     try:
         import yfinance as yf
+        from config.yfinance_runtime import configure_yfinance
+        configure_yfinance(yf)
         tickers = yf.Tickers(' '.join(symbols))
         for sym in symbols:
             try:

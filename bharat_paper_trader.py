@@ -70,10 +70,14 @@ class BharatPaperTrader:
         shares = int(adjusted / price)
         return max(shares, 0)
 
-    def open_position(self, symbol, price, signal, reason='signal', atr=None):
+    def open_position(self, symbol, price, signal, reason='signal', atr=None,
+                      position_multiplier=1.0):
         if not isinstance(symbol, str) or not symbol.strip():
             return False
         if not self._positive_number(price) or not self._finite_number(signal):
+            return False
+        if (not self._finite_number(position_multiplier)
+                or not 0 <= position_multiplier <= 1):
             return False
         if atr is not None and not self._positive_number(atr):
             atr = None
@@ -85,7 +89,7 @@ class BharatPaperTrader:
             logger.info(f"Already in {symbol}, skipping")
             return False
 
-        shares = self.get_position_size(price, signal)
+        shares = self.get_position_size(price, signal * position_multiplier)
         if shares == 0:
             return False
 
@@ -115,6 +119,7 @@ class BharatPaperTrader:
             'reason'        : reason,
             'stop_loss_pct' : stop_loss_pct,
             'atr'           : atr or 0,
+            'position_multiplier': position_multiplier,
         }
         trade = {
             'action': 'BUY',
@@ -126,6 +131,7 @@ class BharatPaperTrader:
             'reason': reason,
             'signal': signal,
             'stop_loss_pct': stop_loss_pct,
+            'position_multiplier': position_multiplier,
         }
         self.trade_history.append(trade)
 
@@ -187,8 +193,8 @@ class BharatPaperTrader:
                         take_profit=TAKE_PROFIT_PCT,
                         trailing_stop=TRAILING_STOP_PCT):
 
-        if symbol not in self.positions:
-            return
+        if symbol not in self.positions or not self._positive_number(current_price):
+            return False
 
         pos = self.positions[symbol]
         entry = pos['entry_price']
@@ -211,16 +217,18 @@ class BharatPaperTrader:
             self.close_position(
                 symbol, current_price, 'stop_loss'
             )
-            return
+            return True
 
         if pnl_pct >= take_profit:
             self.close_position(symbol, current_price, 'take_profit')
-            return
+            return True
 
         drop = (pos['highest_price'] - current_price) / pos['highest_price']
         if drop >= trailing_stop:
             self.close_position(symbol, current_price, 'trailing_stop')
-            return
+            return True
+
+        return False
 
     def get_portfolio_value(self, current_prices):
         position_value = 0.0
