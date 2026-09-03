@@ -41,7 +41,8 @@ def upload_to_github(file_path, github_path):
         }
 
         # Check if file exists (to get SHA for update)
-        resp = requests.get(url, headers=headers)
+        resp = requests.get(url, headers=headers, timeout=20)
+        resp.raise_for_status() if resp.status_code != 404 else None
         sha  = resp.json().get("sha") if resp.status_code == 200 else None
 
         # Upload
@@ -52,7 +53,7 @@ def upload_to_github(file_path, github_path):
         if sha:
             payload["sha"] = sha
 
-        resp = requests.put(url, headers=headers, json=payload)
+        resp = requests.put(url, headers=headers, json=payload, timeout=30)
 
         if resp.status_code in [200, 201]:
             print(f"  ✅ Uploaded: {github_path}")

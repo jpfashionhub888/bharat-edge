@@ -529,6 +529,15 @@ def create_app(telegram=None) -> Dash:
         suppress_callback_exceptions=True,
     )
 
+    @app.server.get("/healthz")
+    def healthz():
+        """Fast local health probe with no external network dependency."""
+        return {
+            "status": "ok",
+            "service": "bharatedge-dashboard",
+            "time_utc": datetime.now(timezone.utc).isoformat(),
+        }, 200
+
     # ── Google Font + global CSS ──────────────────────────────
     app.index_string = (
         "<!DOCTYPE html><html><head>{%metas%}<title>{%title%}</title>"

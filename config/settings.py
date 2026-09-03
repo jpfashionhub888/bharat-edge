@@ -1,16 +1,19 @@
 # config/settings.py
 
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv('config/secrets.env')
+ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT / '.env')
+load_dotenv(ROOT / 'config' / 'secrets.env')
 
 # ============================================================
 # SYSTEM SETTINGS
 # ============================================================
 
 SYSTEM_NAME = "BharatEdge"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 MODE = "paper"
 
 # ============================================================
@@ -73,11 +76,11 @@ STOCK_WATCHLIST = [
 # API CREDENTIALS
 # ============================================================
 
-ZERODHA_API_KEY = os.getenv('ZERODHA_API_KEY', '')
-ZERODHA_API_SECRET = os.getenv('ZERODHA_API_SECRET', '')
-ZERODHA_ACCESS_TOKEN = os.getenv('ZERODHA_ACCESS_TOKEN', '')
+ZERODHA_API_KEY = os.getenv('KITE_API_KEY', os.getenv('ZERODHA_API_KEY', ''))
+ZERODHA_API_SECRET = os.getenv('KITE_API_SECRET', os.getenv('ZERODHA_API_SECRET', ''))
+ZERODHA_ACCESS_TOKEN = os.getenv('KITE_ACCESS_TOKEN', os.getenv('ZERODHA_ACCESS_TOKEN', ''))
 
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN', '')
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', os.getenv('TELEGRAM_TOKEN', ''))
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', '')
 
 # ============================================================

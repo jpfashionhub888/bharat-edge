@@ -6,6 +6,7 @@
 import json
 import os
 import logging
+import math
 from datetime import datetime, timedelta
 from config.settings import MAX_DAILY_LOSS, MAX_DRAWDOWN, MAX_WEEKLY_LOSS
 
@@ -60,6 +61,17 @@ class RiskCircuitBreaker:
         Check if circuit breaker should trigger.
         Returns True if trading should STOP.
         """
+        if (isinstance(current_value, bool)
+                or not isinstance(current_value, (int, float))
+                or not math.isfinite(current_value)
+                or current_value < 0
+                or isinstance(starting_capital, bool)
+                or not isinstance(starting_capital, (int, float))
+                or not math.isfinite(starting_capital)
+                or starting_capital <= 0):
+            self._trigger("Invalid portfolio valuation; trading stopped fail-safe", telegram)
+            return True
+
         now = datetime.now()
 
         # Initialize daily tracking
@@ -90,11 +102,12 @@ class RiskCircuitBreaker:
                 if (now - trigger_dt).total_seconds() > 86400:
                     print("   Auto-resetting after 24 hours...")
                     self.reset()
-                    return False
+                    # Continue through all loss checks. A time-based reset must
+                    # never reopen trading while the loss condition persists.
+                else:
+                    return True
             except Exception:
-                pass
-
-            return True
+                return True
 
         # Calculate losses
         daily_start  = self.state.get('daily_start_val', current_value)
@@ -122,16 +135,12 @@ class RiskCircuitBreaker:
             self._trigger(reason, telegram)
             return True
 
-        # Warning for weekly loss
+        # Weekly losses are a hard limit, consistent with the configured risk
+        # threshold and the daily/total protections.
         if weekly_loss <= -WEEKLY_LOSS_LIMIT:
-            print(f"   ⚠️ WARNING: Weekly loss {weekly_loss:.2%} approaching limit!")
-            if telegram:
-                telegram.send_message(
-                    f"⚠️ ALPHAEDGE WARNING\n"
-                    f"Weekly loss: {weekly_loss:.2%}\n"
-                    f"Approaching circuit breaker limit!\n"
-                    f"Monitoring closely..."
-                )
+            reason = f"Weekly loss limit hit: {weekly_loss:.2%} (limit: -{WEEKLY_LOSS_LIMIT:.0%})"
+            self._trigger(reason, telegram)
+            return True
 
         print(f"   ✅ Risk check passed - Trading allowed")
         return False

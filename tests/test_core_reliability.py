@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -24,6 +25,12 @@ def test_percentage_confidence_respects_position_limit(tmp_path):
 
 @pytest.mark.parametrize("price,strength", [(0, 1), (-1, 1), (100, -2), (100, "BUY")])
 def test_invalid_position_inputs_cannot_open_trade(tmp_path, price, strength):
+    trader = BharatPaperTrader(log_file=str(tmp_path / "state.json"))
+    assert not trader.open_position("TEST.NS", price, strength)
+
+
+@pytest.mark.parametrize("price,strength", [(float("nan"), 1), (100, float("nan")), (float("inf"), 1)])
+def test_non_finite_position_inputs_cannot_open_trade(tmp_path, price, strength):
     trader = BharatPaperTrader(log_file=str(tmp_path / "state.json"))
     assert not trader.open_position("TEST.NS", price, strength)
 
@@ -56,6 +63,58 @@ def test_circuit_breaker_blocks_total_loss_and_writes_valid_state(tmp_path, monk
     saved = json.loads(state_file.read_text(encoding="utf-8"))
     assert saved["triggered"] is True
     assert "Total loss limit" in saved["trigger_reason"]
+
+
+def test_circuit_breaker_fails_closed_for_invalid_valuation(tmp_path, monkeypatch):
+    state_file = tmp_path / "circuit.json"
+    monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))
+    breaker = risk_circuit_breaker.RiskCircuitBreaker()
+
+    assert breaker.check(float("nan"), 100_000)
+    assert breaker.is_triggered()
+
+
+def test_expired_breaker_rechecks_persistent_loss(tmp_path, monkeypatch):
+    state_file = tmp_path / "circuit.json"
+    monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))
+    breaker = risk_circuit_breaker.RiskCircuitBreaker()
+    breaker.state.update({
+        "triggered": True,
+        "trigger_reason": "prior loss",
+        "trigger_date": (datetime.now() - timedelta(days=2)).isoformat(),
+        "daily_start": datetime.now().strftime("%Y-%m-%d"),
+        "daily_start_val": 100_000,
+        "weekly_start": (datetime.now() - timedelta(days=datetime.now().weekday())).strftime("%Y-%m-%d"),
+        "weekly_start_val": 100_000,
+    })
+
+    assert breaker.check(89_000, 100_000)
+    assert breaker.is_triggered()
+
+
+def test_weekly_loss_limit_stops_trading(tmp_path, monkeypatch):
+    state_file = tmp_path / "circuit.json"
+    monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))
+    breaker = risk_circuit_breaker.RiskCircuitBreaker()
+    now = datetime.now()
+    breaker.state.update({
+        "weekly_start": (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d"),
+        "weekly_start_val": 100_000,
+        "daily_start": now.strftime("%Y-%m-%d"),
+        "daily_start_val": 93_000,
+    })
+
+    assert breaker.check(92_900, 100_000)
+    assert "Weekly loss limit" in breaker.state["trigger_reason"]
+
+
+def test_dashboard_health_endpoint():
+    from monitoring.dashboard import create_app
+
+    client = create_app().server.test_client()
+    response = client.get("/healthz")
+    assert response.status_code == 200
+    assert response.get_json()["status"] == "ok"
 
 
 def test_runtime_risk_limits_match_displayed_configuration():

@@ -1,18 +1,21 @@
-yfinance
-pandas
-numpy
-scikit-learn
-xgboost
-lightgbm
-requests
-beautifulsoup4
-ta
-plotly
-dash
-dash-bootstrap-components
-transformers
-feedparser
-groq
-catboost
-python-dotenv
-kiteconnect
+yfinance>=0.2.54,<2
+pandas>=2.2,<4
+numpy>=1.26,<3
+scikit-learn>=1.4,<2
+xgboost>=2,<4
+lightgbm>=4,<5
+requests>=2.31,<3
+beautifulsoup4>=4.12,<5
+ta==0.11.0
+plotly>=5.20,<8
+dash>=2.16,<5
+dash-bootstrap-components>=1.5,<3
+transformers>=4.40,<6
+feedparser>=6,<7
+groq>=0.9,<2
+catboost>=1.2,<2
+python-dotenv>=1,<2
+
+# Zerodha live-broker support is intentionally not installed in the core/paper
+# environment. kiteconnect 5.2.1 pins vulnerable autobahn 19.11.2
+# (PYSEC-2020-25). Keep BharatEdge in paper mode until upstream removes that pin.

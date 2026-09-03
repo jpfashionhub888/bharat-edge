@@ -5,6 +5,7 @@
 import json
 import os
 import logging
+import math
 from datetime import datetime
 from config.settings import (
     MAX_OPEN_POSITIONS, MAX_POSITION_SIZE, STOP_LOSS_PCT,
@@ -28,19 +29,37 @@ class BharatPaperTrader:
                  log_file='logs/bharat_trades.json',
                  trade_tracker=None):
 
-        self.starting_capital = starting_capital
-        self.capital = starting_capital
-        self.max_position_pct = max_position_pct
+        if not self._positive_number(starting_capital):
+            raise ValueError("starting_capital must be a positive finite number")
+        if (not self._positive_number(max_position_pct)
+                or float(max_position_pct) > 1):
+            raise ValueError("max_position_pct must be in the range (0, 1]")
+        if isinstance(max_positions, bool) or not isinstance(max_positions, int) or max_positions < 1:
+            raise ValueError("max_positions must be a positive integer")
+
+        self.starting_capital = float(starting_capital)
+        self.capital = float(starting_capital)
+        self.max_position_pct = float(max_position_pct)
         self.max_positions = max_positions
         self.log_file = log_file
         self.positions = {}
         self.trade_history = []
         self.trade_tracker = trade_tracker   # optional TradeTracker instance
 
+    @staticmethod
+    def _finite_number(value):
+        return (not isinstance(value, bool)
+                and isinstance(value, (int, float))
+                and math.isfinite(value))
+
+    @classmethod
+    def _positive_number(cls, value):
+        return cls._finite_number(value) and value > 0
+
     def get_position_size(self, price, signal_strength=1.0):
-        if not isinstance(price, (int, float)) or price <= 0:
+        if not self._positive_number(price):
             return 0
-        if not isinstance(signal_strength, (int, float)):
+        if not self._finite_number(signal_strength):
             return 0
         # Scanner confidence is a percentage; sizing needs a 0..1 multiplier.
         if signal_strength > 1:
@@ -52,6 +71,12 @@ class BharatPaperTrader:
         return max(shares, 0)
 
     def open_position(self, symbol, price, signal, reason='signal', atr=None):
+        if not isinstance(symbol, str) or not symbol.strip():
+            return False
+        if not self._positive_number(price) or not self._finite_number(signal):
+            return False
+        if atr is not None and not self._positive_number(atr):
+            atr = None
         if len(self.positions) >= self.max_positions:
             logger.info("Max positions reached, skipping")
             return False
@@ -108,7 +133,7 @@ class BharatPaperTrader:
         return True
 
     def close_position(self, symbol, price, reason='signal'):
-        if symbol not in self.positions:
+        if symbol not in self.positions or not self._positive_number(price):
             return False
 
         pos = self.positions[symbol]
@@ -201,6 +226,8 @@ class BharatPaperTrader:
         position_value = 0.0
         for symbol, pos in self.positions.items():
             price = current_prices.get(symbol, pos['entry_price'])
+            if not self._positive_number(price):
+                price = pos['entry_price']
             position_value += pos['shares'] * price
         return self.capital + position_value
 
@@ -267,10 +294,19 @@ class BharatPaperTrader:
         try:
             with open(self.log_file, 'r') as f:
                 state = json.load(f)
-            self.capital = float(state['capital'])
-            self.starting_capital = float(state['starting_capital'])
-            self.positions = dict(state.get('positions', {}))
-            self.trade_history = list(state.get('trade_history', []))
+            capital = float(state['capital'])
+            starting_capital = float(state['starting_capital'])
+            positions = state.get('positions', {})
+            trade_history = state.get('trade_history', [])
+            if (not self._finite_number(capital) or capital < 0
+                    or not self._positive_number(starting_capital)
+                    or not isinstance(positions, dict)
+                    or not isinstance(trade_history, list)):
+                raise ValueError("paper-trading state failed validation")
+            self.capital = capital
+            self.starting_capital = starting_capital
+            self.positions = positions
+            self.trade_history = trade_history
         except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
             logger.error("Ignoring invalid paper-trading state %s: %s", self.log_file, exc)
             return

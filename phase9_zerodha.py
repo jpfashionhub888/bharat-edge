@@ -5,18 +5,26 @@
 import os
 import sys
 import time
-import pyotp
 import requests
 import hashlib
 from datetime import datetime
-from kiteconnect import KiteConnect
+from pathlib import Path
+
+try:
+    import pyotp
+except ImportError:
+    pyotp = None
+
+try:
+    from kiteconnect import KiteConnect
+except ImportError:
+    KiteConnect = None
 
 # Load .env
 try:
     from dotenv import load_dotenv
-    load_dotenv()
-    print("✅ .env loaded")
-except:
+    load_dotenv(Path(__file__).resolve().parent / ".env")
+except ImportError:
     pass
 
 # ============================================================
@@ -32,15 +40,15 @@ TOTP_SECRET = os.environ.get('KITE_TOTP_SECRET', '')
 # Token storage file
 TOKEN_FILE  = "kite_token.txt"
 
-print("✅ phase9_zerodha.py loaded")
-
-
 # ============================================================
 # SECTION 1: TOTP
 # ============================================================
 
 def get_totp() -> str:
     """Generate current TOTP code."""
+    if pyotp is None:
+        print("  ❌ pyotp is not installed; live broker login is unavailable")
+        return ""
     try:
         totp = pyotp.TOTP(TOTP_SECRET)
         code = totp.now()
@@ -146,6 +154,11 @@ def auto_login() -> KiteConnect:
     print("\n" + "="*50)
     print("  BHARAT EDGE - ZERODHA LOGIN")
     print("="*50)
+
+    if KiteConnect is None:
+        print("  ❌ Kite Connect is unavailable in the secure paper-mode environment.")
+        print("  Live broker support is disabled until its vulnerable dependency is fixed upstream.")
+        return None
 
     # Validate credentials
     if not all([API_KEY, API_SECRET,

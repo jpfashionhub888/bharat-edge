@@ -6,6 +6,9 @@ venv/
 .runtime-smoke/
 env/
 __pycache__/
+.pytest_cache/
+.pytest-tmp*/
+.ruff_cache/
 *.pyc
 *.pyo
 *.csv
@@ -37,6 +40,7 @@ logs/*.txt
 
 # ── Model/data artifacts ──────────────────────────────────────
 saved_models/*.pkl
+models/*_cache_info.json
 data/raw/
 *.h5
 

@@ -7,6 +7,10 @@ on:
     - cron: '45 9 * * 1-5'   # 3:15 PM IST  (market close)
   workflow_dispatch:
 
+concurrency:
+  group: bharatedge-daily-scan
+  cancel-in-progress: false
+
 jobs:
   daily-scan:
     name: BharatEdge Scan + Audit
@@ -28,13 +32,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: pip
 
       - name: 📦 Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install yfinance pandas numpy scikit-learn
-          pip install xgboost lightgbm requests python-dotenv
+          pip install -r requirements.txt pytest
+
+      - name: ✅ Run reliability tests
+        run: python -m pytest -q --basetemp="${RUNNER_TEMP}/bharatedge-tests"
 
       - name: 🔎 Run BharatEdge Scan
         env:
@@ -51,24 +57,20 @@ jobs:
           python bharat_cloud_scan.py
 
       - name: 🩺 Run Audit
-        if: always()
+        continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
           GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python audit_bharat.py || echo "Audit completed with warnings"
+        run: python audit_bharat.py
 
       - name: 📊 Generate Dashboard
-        if: always()
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          python generate_dashboard.py || echo "Dashboard generation skipped"
+        run: python generate_dashboard.py
 
       - name: 💾 Commit scan signals + dashboard
-        if: always()
         run: |
           git config --global user.email "bharatedge-bot@github.com"
           git config --global user.name "BharatEdge Bot"
@@ -77,11 +79,9 @@ jobs:
           # NOT committed here — portfolio state is managed locally only.
           # Committing it from Actions would reset the portfolio on every run.
           git add -f logs/scan_results.json     || true
-          git add -f logs/bot_control.json      || true
-          git add -f logs/circuit_breaker.json  || true
           git add -f docs/index.html            || true
           git diff --staged --quiet || git commit -m "Auto: scan signals $(date -u '+%Y-%m-%d %H:%M UTC')"
-          git push origin main || true
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
