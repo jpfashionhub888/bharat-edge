@@ -45,6 +45,7 @@ class BharatPaperTrader:
         self.positions = {}
         self.trade_history = []
         self.trade_tracker = trade_tracker   # optional TradeTracker instance
+        self.state_healthy = True
 
     @staticmethod
     def _finite_number(value):
@@ -55,6 +56,21 @@ class BharatPaperTrader:
     @classmethod
     def _positive_number(cls, value):
         return cls._finite_number(value) and value > 0
+
+    @classmethod
+    def _valid_positions(cls, positions):
+        if not isinstance(positions, dict):
+            return False
+        for symbol, position in positions.items():
+            if not isinstance(symbol, str) or not symbol.strip() or not isinstance(position, dict):
+                return False
+            shares = position.get('shares')
+            if isinstance(shares, bool) or not isinstance(shares, int) or shares <= 0:
+                return False
+            for key in ('entry_price', 'highest_price', 'cost'):
+                if not cls._positive_number(position.get(key)):
+                    return False
+        return True
 
     def get_position_size(self, price, signal_strength=1.0):
         if not self._positive_number(price):
@@ -72,6 +88,9 @@ class BharatPaperTrader:
 
     def open_position(self, symbol, price, signal, reason='signal', atr=None,
                       position_multiplier=1.0):
+        if not self.state_healthy:
+            logger.error("New position blocked because portfolio state is unhealthy")
+            return False
         if not isinstance(symbol, str) or not symbol.strip():
             return False
         if not self._positive_number(price) or not self._finite_number(signal):
@@ -291,12 +310,15 @@ class BharatPaperTrader:
         tmp_file = self.log_file + '.tmp'
         with open(tmp_file, 'w') as f:
             json.dump(state, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
         os.replace(tmp_file, self.log_file)
         print(f"   State saved to {self.log_file}")
 
     def load_state(self):
         if not os.path.exists(self.log_file):
             print("   No saved state found, starting fresh")
+            self.state_healthy = True
             return
 
         try:
@@ -308,15 +330,20 @@ class BharatPaperTrader:
             trade_history = state.get('trade_history', [])
             if (not self._finite_number(capital) or capital < 0
                     or not self._positive_number(starting_capital)
-                    or not isinstance(positions, dict)
+                    or not self._valid_positions(positions)
                     or not isinstance(trade_history, list)):
                 raise ValueError("paper-trading state failed validation")
             self.capital = capital
             self.starting_capital = starting_capital
             self.positions = positions
             self.trade_history = trade_history
+            self.state_healthy = True
         except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
             logger.error("Ignoring invalid paper-trading state %s: %s", self.log_file, exc)
+            # Never interpret a damaged account file as a fresh empty account.
+            # Existing in-memory positions remain manageable, but new entries
+            # stay blocked until an operator repairs or removes the state file.
+            self.state_healthy = False
             return
 
         print(f"   State loaded: Rs{self.capital:,.2f} cash")

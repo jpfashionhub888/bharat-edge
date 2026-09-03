@@ -64,6 +64,31 @@ def test_corrupt_portfolio_state_fails_safe(tmp_path):
     trader.load_state()
     assert trader.capital == 123_456
     assert trader.positions == {}
+    assert trader.state_healthy is False
+    assert not trader.open_position("TEST.NS", 100, 1)
+
+
+def test_invalid_saved_position_blocks_new_trades(tmp_path):
+    state_file = tmp_path / "state.json"
+    state_file.write_text(json.dumps({
+        "capital": 90_000,
+        "starting_capital": 100_000,
+        "positions": {
+            "BROKEN.NS": {
+                "shares": 10,
+                "entry_price": 0,
+                "highest_price": 100,
+                "cost": 1_000,
+            },
+        },
+        "trade_history": [],
+    }), encoding="utf-8")
+    trader = BharatPaperTrader(log_file=str(state_file))
+
+    trader.load_state()
+
+    assert trader.state_healthy is False
+    assert not trader.open_position("TEST.NS", 100, 1)
 
 
 def test_closed_trade_is_persisted_and_reloaded(tmp_path):
