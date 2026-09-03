@@ -6,6 +6,8 @@ import os
 import sys
 import warnings
 import logging
+import json
+import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from bharat_market_regime import BharatMarketRegimeFilter
@@ -29,6 +31,23 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+SCAN_STATUS_FILE = 'logs/scan_status.json'
+
+
+def _write_scan_status(status, **details):
+    """Persist scan lifecycle independently from the last good result."""
+    os.makedirs(os.path.dirname(SCAN_STATUS_FILE) or '.', exist_ok=True)
+    payload = {
+        'status': status,
+        'updated_at': datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
+        **details,
+    }
+    tmp_file = SCAN_STATUS_FILE + '.tmp'
+    with open(tmp_file, 'w', encoding='utf-8') as handle:
+        json.dump(payload, handle, indent=2)
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(tmp_file, SCAN_STATUS_FILE)
 
 
 def is_market_day():
@@ -644,10 +663,30 @@ def main():
     if day == 'Sunday':
         print(f"Sunday - Market closed but running Weekly Review...")
 
+    started_at = datetime.now(ZoneInfo('Asia/Kolkata')).isoformat()
+    started_monotonic = time.monotonic()
+    _write_scan_status('RUNNING', started_at=started_at, error=None)
     try:
         run_bharat_scan()
+        finished_at = datetime.now(ZoneInfo('Asia/Kolkata')).isoformat()
+        _write_scan_status(
+            'SUCCESS',
+            started_at=started_at,
+            last_success_at=finished_at,
+            duration_seconds=round(time.monotonic() - started_monotonic, 2),
+            error=None,
+        )
         print("\nScan complete.")
     except Exception as e:
+        try:
+            _write_scan_status(
+                'FAILED',
+                started_at=started_at,
+                duration_seconds=round(time.monotonic() - started_monotonic, 2),
+                error=f'{type(e).__name__}: {e}'[:1000],
+            )
+        except Exception as status_error:
+            logger.error("Could not persist failed scan status: %s", status_error)
         logger.error(f"Scan failed: {e}")
         import traceback
         traceback.print_exc()

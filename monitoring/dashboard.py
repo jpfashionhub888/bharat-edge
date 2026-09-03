@@ -21,6 +21,7 @@ TRADES_FILE   = LOG / "bharat_trades.json"
 CLOSED_FILE   = LOG / "closed_trades.json"
 CIRCUIT_FILE  = LOG / "circuit_breaker.json"
 SCAN_FILE     = LOG / "scan_results.json"
+SCAN_STATUS_FILE = LOG / "scan_status.json"
 
 STARTING_CAP  = 100_000.0
 REFRESH_S     = 60          # dashboard refresh interval (seconds)
@@ -134,6 +135,15 @@ def load_scan() -> dict:
         "scan_time"    : None,
         "market_regime": {},
         "signals"      : [],
+    })
+
+
+def load_scan_status() -> dict:
+    return _safe_load(SCAN_STATUS_FILE, {
+        "status": "UNKNOWN",
+        "updated_at": None,
+        "last_success_at": None,
+        "error": None,
     })
 
 
@@ -536,10 +546,13 @@ def create_app(telegram=None) -> Dash:
     @app.server.get("/healthz")
     def healthz():
         """Fast local health probe with no external network dependency."""
+        scan_status = load_scan_status()
         return {
             "status": "ok",
             "service": "bharatedge-dashboard",
             "time_utc": datetime.now(timezone.utc).isoformat(),
+            "last_scan_status": scan_status.get("status", "UNKNOWN"),
+            "last_scan_success": scan_status.get("last_success_at"),
         }, 200
 
     # ── Google Font + global CSS ──────────────────────────────
@@ -674,6 +687,7 @@ def create_app(telegram=None) -> Dash:
         try:
             port    = load_portfolio()
             scan    = load_scan()
+            scan_status = load_scan_status()
             circuit = load_circuit()
             ist     = _ist_now()
             mkt_open = _is_market_open()
@@ -714,7 +728,12 @@ def create_app(telegram=None) -> Dash:
             coverage = float(quality.get("price_coverage", 0) or 0)
             entries_blocked = bool(quality.get("new_entries_blocked", False))
             context_status = quality.get("market_context", {}).get("status", "UNKNOWN")
-            if entries_blocked:
+            run_status = scan_status.get("status", "UNKNOWN")
+            if run_status == "FAILED":
+                quality_label, quality_color = "SCAN FAILED", RED
+            elif run_status == "RUNNING":
+                quality_label, quality_color = "SCANNING", YELLOW
+            elif entries_blocked:
                 quality_label, quality_color = "ENTRY BLOCKED", RED
             elif context_status == "DEGRADED" or coverage < 1:
                 quality_label, quality_color = "DEGRADED", YELLOW
@@ -753,7 +772,8 @@ def create_app(telegram=None) -> Dash:
                 html.Span("  SCAN QUALITY: ", style={"color": DIM, "marginLeft": "20px"}),
                 html.Span(
                     quality_label,
-                    title=f"Coverage {coverage:.0%} · Context {context_status}",
+                    title=(f"Coverage {coverage:.0%} · Context {context_status}"
+                           + (f" · {scan_status.get('error')}" if scan_status.get('error') else "")),
                     style={"color": quality_color, "fontWeight": "700"}),
                 html.Span("  DATA: ", style={"color": DIM, "marginLeft": "20px"}),
                 html.Span(

@@ -180,6 +180,40 @@ def test_dashboard_health_endpoint():
     assert _ist_now().utcoffset() == timedelta(hours=5, minutes=30)
 
 
+def test_scan_lifecycle_records_success(tmp_path, monkeypatch):
+    import bharat_cloud_scan
+
+    status_file = tmp_path / "scan_status.json"
+    monkeypatch.setattr(bharat_cloud_scan, "SCAN_STATUS_FILE", str(status_file))
+    monkeypatch.setattr(bharat_cloud_scan, "run_bharat_scan", lambda: None)
+
+    bharat_cloud_scan.main()
+
+    status = json.loads(status_file.read_text(encoding="utf-8"))
+    assert status["status"] == "SUCCESS"
+    assert status["last_success_at"]
+    assert status["duration_seconds"] >= 0
+
+
+def test_scan_lifecycle_records_failure(tmp_path, monkeypatch):
+    import bharat_cloud_scan
+
+    status_file = tmp_path / "scan_status.json"
+    monkeypatch.setattr(bharat_cloud_scan, "SCAN_STATUS_FILE", str(status_file))
+    monkeypatch.setattr(
+        bharat_cloud_scan,
+        "run_bharat_scan",
+        lambda: (_ for _ in ()).throw(RuntimeError("provider offline")),
+    )
+
+    with pytest.raises(SystemExit):
+        bharat_cloud_scan.main()
+
+    status = json.loads(status_file.read_text(encoding="utf-8"))
+    assert status["status"] == "FAILED"
+    assert "provider offline" in status["error"]
+
+
 def test_market_regime_fails_closed_without_nifty(monkeypatch):
     from bharat_market_regime import BharatMarketRegimeFilter
 
