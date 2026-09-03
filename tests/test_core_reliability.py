@@ -96,6 +96,21 @@ def test_circuit_breaker_fails_closed_for_invalid_valuation(tmp_path, monkeypatc
     assert breaker.is_triggered()
 
 
+@pytest.mark.parametrize(
+    "contents",
+    ["not-json", "[]", '{"triggered": "no"}', '{"triggered": false, "daily_start_val": "bad"}'],
+)
+def test_corrupt_circuit_breaker_state_fails_closed(tmp_path, monkeypatch, contents):
+    state_file = tmp_path / "circuit.json"
+    state_file.write_text(contents, encoding="utf-8")
+    monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))
+
+    breaker = risk_circuit_breaker.RiskCircuitBreaker()
+
+    assert breaker.is_triggered()
+    assert "manual review" in breaker.get_status()["reason"]
+
+
 def test_expired_breaker_rechecks_persistent_loss(tmp_path, monkeypatch):
     state_file = tmp_path / "circuit.json"
     monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))

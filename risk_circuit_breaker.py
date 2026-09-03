@@ -30,23 +30,58 @@ class RiskCircuitBreaker:
     def __init__(self):
         self.state = self._load_state()
 
+    @staticmethod
+    def _default_state():
+        return {
+            'triggered'       : False,
+            'trigger_reason'  : None,
+            'trigger_date'    : None,
+            'daily_start'     : None,
+            'daily_start_val' : None,
+            'weekly_start'    : None,
+            'weekly_start_val': None,
+        }
+
+    @classmethod
+    def _valid_state(cls, state):
+        """Reject malformed or non-finite persisted risk values."""
+        if not isinstance(state, dict):
+            return False
+        if not isinstance(state.get('triggered'), bool):
+            return False
+        for key in ('daily_start_val', 'weekly_start_val'):
+            value = state.get(key)
+            if value is not None and (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(value)
+                    or value < 0):
+                return False
+        return True
+
     def _load_state(self):
         """Load circuit breaker state."""
         if not os.path.exists(CIRCUIT_BREAKER_FILE):
-            return {
-                'triggered'      : False,
-                'trigger_reason' : None,
-                'trigger_date'   : None,
-                'daily_start'    : None,
-                'daily_start_val': None,
-                'weekly_start'   : None,
-                'weekly_start_val': None,
-            }
+            return self._default_state()
         try:
             with open(CIRCUIT_BREAKER_FILE, 'r') as f:
-                return json.load(f)
-        except Exception:
-            return {}
+                state = json.load(f)
+            if not self._valid_state(state):
+                raise ValueError('circuit-breaker state failed validation')
+            # Add fields introduced by newer releases without discarding state.
+            return {**self._default_state(), **state}
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            logger.error(
+                "Circuit-breaker state is unreadable; trading blocked fail-safe: %s",
+                exc,
+            )
+            state = self._default_state()
+            state.update({
+                'triggered': True,
+                'trigger_reason': 'Invalid circuit-breaker state; manual review required',
+                'trigger_date': datetime.now().isoformat(),
+            })
+            return state
 
     def _save_state(self):
         """Save circuit breaker state."""
@@ -54,6 +89,8 @@ class RiskCircuitBreaker:
         tmp_file = CIRCUIT_BREAKER_FILE + '.tmp'
         with open(tmp_file, 'w') as f:
             json.dump(self.state, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
         os.replace(tmp_file, CIRCUIT_BREAKER_FILE)
 
     def check(self, current_value, starting_capital, telegram=None):
