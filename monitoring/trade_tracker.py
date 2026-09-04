@@ -47,6 +47,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import os
 import threading
 from datetime import datetime, timezone
@@ -76,6 +77,7 @@ class TradeTracker:
         self.trades_file = trades_file
         self.telegram    = telegram
         self._lock       = threading.Lock()
+        self.healthy     = True
         self._data       = self._load()
 
     # ── Public API ────────────────────────────────────────────
@@ -107,6 +109,17 @@ class TradeTracker:
         -------
         dict with the recorded trade and updated summary
         """
+        numeric_values = (entry_price, exit_price, shares)
+        if (not isinstance(symbol, str) or not symbol.strip()
+                or not isinstance(reason, str) or not reason.strip()
+                or any(isinstance(value, bool)
+                       or not isinstance(value, (int, float))
+                       or not math.isfinite(value)
+                       or value <= 0 for value in numeric_values)):
+            raise ValueError('trade fields must contain valid positive finite values')
+        if not self.healthy:
+            raise RuntimeError('closed-trade history is unhealthy; persistence blocked')
+
         now_str   = datetime.now().isoformat()
         entry_ts  = entry_time or now_str
         exit_ts   = exit_time  or now_str
@@ -139,7 +152,14 @@ class TradeTracker:
             }
             self._data['trades'].append(trade)
             self._data['summary'] = self._compute_summary()
-            self._save()
+            try:
+                self._save()
+            except Exception:
+                # Do not report a trade as recorded when durable persistence
+                # failed, and keep in-memory statistics consistent.
+                self._data['trades'].pop()
+                self._data['summary'] = self._compute_summary()
+                raise
             total = self._data['summary']['total']
 
         logger.info(
@@ -255,19 +275,19 @@ class TradeTracker:
                 },
             }
         except Exception as e:
-            logger.warning('Could not load trade tracker file: %s', e)
+            self.healthy = False
+            logger.error('Closed-trade history is invalid; writes blocked: %s', e)
             return {'trades': [], 'summary': self._summary_for([])}
 
     def _save(self) -> None:
         """Persist trade data to JSON file. Call inside lock."""
-        try:
-            os.makedirs(os.path.dirname(self.trades_file) or '.', exist_ok=True)
-            tmp_file = self.trades_file + '.tmp'
-            with open(tmp_file, 'w') as f:
-                json.dump(self._data, f, indent=2)
-            os.replace(tmp_file, self.trades_file)
-        except Exception as e:
-            logger.warning('Could not save trade tracker file: %s', e)
+        os.makedirs(os.path.dirname(self.trades_file) or '.', exist_ok=True)
+        tmp_file = self.trades_file + '.tmp'
+        with open(tmp_file, 'w') as f:
+            json.dump(self._data, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_file, self.trades_file)
 
     def _summary_for(self, trades: list) -> dict:
         """Compute a valid summary while loading or recovering state."""

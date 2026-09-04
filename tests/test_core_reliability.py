@@ -101,6 +101,43 @@ def test_closed_trade_is_persisted_and_reloaded(tmp_path):
     assert reloaded.get_stats()["total_pnl"] == 20
 
 
+@pytest.mark.parametrize(
+    "entry,exit_price,shares",
+    [(0, 110, 2), (100, float("nan"), 2), (100, 110, 0), (100, 110, True)],
+)
+def test_invalid_closed_trade_is_rejected(tmp_path, entry, exit_price, shares):
+    tracker = TradeTracker(str(tmp_path / "closed.json"))
+    with pytest.raises(ValueError):
+        tracker.record_trade("TEST.NS", entry, exit_price, shares, "SIGNAL")
+    assert tracker.get_stats()["total"] == 0
+
+
+def test_closed_trade_write_failure_is_not_reported_as_success(tmp_path, monkeypatch):
+    tracker = TradeTracker(str(tmp_path / "closed.json"))
+    monkeypatch.setattr(
+        tracker,
+        "_save",
+        lambda: (_ for _ in ()).throw(OSError("disk full")),
+    )
+
+    with pytest.raises(OSError, match="disk full"):
+        tracker.record_trade("TEST.NS", 100, 110, 2, "TAKE PROFIT")
+
+    assert tracker.get_trades() == []
+    assert tracker.get_stats()["total"] == 0
+
+
+def test_corrupt_closed_trade_history_blocks_overwrite(tmp_path):
+    trades_file = tmp_path / "closed.json"
+    trades_file.write_text("not-json", encoding="utf-8")
+    tracker = TradeTracker(str(trades_file))
+
+    assert tracker.healthy is False
+    with pytest.raises(RuntimeError, match="unhealthy"):
+        tracker.record_trade("TEST.NS", 100, 110, 2, "TAKE PROFIT")
+    assert trades_file.read_text(encoding="utf-8") == "not-json"
+
+
 def test_circuit_breaker_blocks_total_loss_and_writes_valid_state(tmp_path, monkeypatch):
     state_file = tmp_path / "circuit.json"
     monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))
