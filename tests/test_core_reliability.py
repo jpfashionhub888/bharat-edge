@@ -248,6 +248,32 @@ def test_dashboard_health_endpoint():
     assert _ist_now().utcoffset() == timedelta(hours=5, minutes=30)
 
 
+def test_dashboard_marks_corrupt_state_instead_of_presenting_default_as_real(tmp_path):
+    from monitoring.dashboard import _safe_load
+
+    state_file = tmp_path / "portfolio.json"
+    state_file.write_text("not-json", encoding="utf-8")
+
+    loaded = _safe_load(state_file, {"capital": 100_000})
+
+    assert loaded["capital"] == 100_000
+    assert loaded["_storage_status"] == "INVALID"
+
+
+def test_dashboard_identifies_backup_recovery(tmp_path):
+    from monitoring.dashboard import _safe_load
+
+    state_file = tmp_path / "portfolio.json"
+    state_file.write_text("not-json", encoding="utf-8")
+    backup = state_file.with_suffix(".json.bak")
+    backup.write_text(json.dumps({"capital": 91_000}), encoding="utf-8")
+
+    loaded = _safe_load(state_file, {"capital": 100_000})
+
+    assert loaded["capital"] == 91_000
+    assert loaded["_storage_status"] == "BACKUP"
+
+
 def test_scan_lifecycle_records_success(tmp_path, monkeypatch):
     import bharat_cloud_scan
 

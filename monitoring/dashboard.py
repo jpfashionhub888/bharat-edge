@@ -91,12 +91,21 @@ SECTOR_COLORS = {
 def _safe_load(path: Path, default: Any) -> Any:
     """Load JSON with .bak fallback and corrupt-file recovery."""
     bak = path.with_suffix(path.suffix + ".bak")
-    for src in (path, bak):
+    found_file = False
+    for source_name, src in (("PRIMARY", path), ("BACKUP", bak)):
         if src.exists():
+            found_file = True
             try:
-                return json.loads(src.read_text(encoding="utf-8"))
+                loaded = json.loads(src.read_text(encoding="utf-8"))
+                if isinstance(loaded, dict):
+                    loaded["_storage_status"] = source_name
+                return loaded
             except Exception:
                 continue
+    if isinstance(default, dict):
+        recovered = dict(default)
+        recovered["_storage_status"] = "INVALID" if found_file else "MISSING"
+        return recovered
     return default
 
 
@@ -130,7 +139,14 @@ def load_closed_trades() -> dict:
 
 
 def load_circuit() -> dict:
-    return _safe_load(CIRCUIT_FILE, {"triggered": False, "trigger_reason": None})
+    state = _safe_load(
+        CIRCUIT_FILE, {"triggered": False, "trigger_reason": None})
+    if state.get("_storage_status") == "INVALID":
+        state.update({
+            "triggered": True,
+            "trigger_reason": "Circuit-breaker state is unreadable",
+        })
+    return state
 
 
 def load_scan() -> dict:
@@ -603,6 +619,8 @@ def create_app(telegram=None) -> Dash:
     def healthz():
         """Fast local health probe with no external network dependency."""
         scan_status = load_scan_status()
+        portfolio = load_portfolio()
+        circuit = load_circuit()
         overdue = _scan_is_overdue(scan_status.get("last_success_at"))
         stalled = _scan_run_stalled(scan_status)
         return {
@@ -613,6 +631,8 @@ def create_app(telegram=None) -> Dash:
             "last_scan_success": scan_status.get("last_success_at"),
             "scan_overdue": overdue,
             "scan_stalled": stalled,
+            "portfolio_storage": portfolio.get("_storage_status", "UNKNOWN"),
+            "circuit_storage": circuit.get("_storage_status", "UNKNOWN"),
         }, 200
 
     # ── Google Font + global CSS ──────────────────────────────
@@ -783,6 +803,7 @@ def create_app(telegram=None) -> Dash:
             cb_triggered = circuit.get("triggered", False)
             cb_color     = RED if cb_triggered else GREEN
             cb_text      = "CB: TRIGGERED" if cb_triggered else "CB: OK"
+            portfolio_storage = port.get("_storage_status", "UNKNOWN")
 
             scan_age = _scan_age(scan.get("scan_time"))
             coverage = float(quality.get("price_coverage", 0) or 0)
@@ -833,6 +854,10 @@ def create_app(telegram=None) -> Dash:
                 html.Span(f"{'+' if pnl >= 0 else ''}{_inr(pnl)}", style={
                     "color": pnl_col, "fontWeight": "700", "marginRight": "20px"}),
                 html.Span(cb_text, style={"color": cb_color, "fontWeight": "700", "marginRight": "20px"}),
+                html.Span(
+                    "PORTFOLIO DATA INVALID",
+                    style={"color": RED, "fontWeight": "700", "marginRight": "20px"},
+                ) if portfolio_storage == "INVALID" else html.Span(),
                 html.Span("LAST SCAN: ", style={"color": DIM}),
                 html.Span(scan_age, style={"color": TEXT}),
                 html.Span("  SCAN QUALITY: ", style={"color": DIM, "marginLeft": "20px"}),
