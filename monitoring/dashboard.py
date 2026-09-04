@@ -696,8 +696,10 @@ def create_app(telegram=None) -> Dash:
         circuit = load_circuit()
         overdue = _scan_is_overdue(scan_status.get("last_success_at"))
         stalled = _scan_run_stalled(scan_status)
+        storage_bad = any(value.get("_storage_status") in {"INVALID", "MISSING"}
+                          for value in (portfolio, circuit))
         return {
-            "status": "ok",
+            "status": "degraded" if overdue or stalled or storage_bad else "ok",
             "service": "bharatedge-dashboard",
             "time_utc": datetime.now(timezone.utc).isoformat(),
             "last_scan_status": scan_status.get("status", "UNKNOWN"),

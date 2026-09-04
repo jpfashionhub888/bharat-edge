@@ -244,7 +244,7 @@ def test_dashboard_health_endpoint():
     client = create_app().server.test_client()
     response = client.get("/healthz")
     assert response.status_code == 200
-    assert response.get_json()["status"] == "ok"
+    assert response.get_json()["status"] in {"ok", "degraded"}
     assert _ist_now().utcoffset() == timedelta(hours=5, minutes=30)
 
 
@@ -645,6 +645,28 @@ def test_sector_tab_uses_real_snapshot_when_no_stock_signals(monkeypatch):
     assert "BANKING" in rendered
     assert "Yahoo Finance sector proxies" in rendered
     assert "Run a scan to populate sector data" not in rendered
+
+
+def test_health_guard_scan_retry_is_bounded(tmp_path, monkeypatch):
+    import monitoring.health_guard as guard
+    now = datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc)
+    monkeypatch.setattr(guard, "STATE_FILE", tmp_path / "guard.json")
+    monkeypatch.setattr(guard, "_notify", lambda message: None)
+    monkeypatch.setattr(guard.shutil, "disk_usage", lambda path: type(
+        "Usage", (), {"total": 100, "free": 50})())
+    class Response:
+        def __enter__(self): return self
+        def __exit__(self, *args): return None
+        def read(self): return json.dumps({
+            "scan_overdue": True, "scan_stalled": False,
+            "portfolio_storage": "PRIMARY", "circuit_storage": "PRIMARY"}).encode()
+    monkeypatch.setattr(guard, "urlopen", lambda *args, **kwargs: Response())
+    calls = []
+    monkeypatch.setattr(guard, "_systemctl", lambda *args: (
+        calls.append(args) or type("Result", (), {"returncode": 3})()))
+    guard.run_guard(now)
+    guard.run_guard(now + timedelta(minutes=5))
+    assert calls.count(("start", "--no-block", "bharatedge-scan.service")) == 1
 
 
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
