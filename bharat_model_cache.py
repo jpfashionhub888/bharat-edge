@@ -25,8 +25,12 @@ def load_cache_info():
 
 def save_cache_info(info):
     os.makedirs('models', exist_ok=True)
-    with open(CACHE_INFO_FILE, 'w') as f:
+    tmp_file = CACHE_INFO_FILE + '.tmp'
+    with open(tmp_file, 'w') as f:
         json.dump(info, f, indent=2)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp_file, CACHE_INFO_FILE)
 
 
 def should_retrain():
@@ -37,9 +41,17 @@ def should_retrain():
         print("   No cache info found - need to train!")
         return True
 
-    last_trained = datetime.fromisoformat(info['last_trained'])
-    days_since   = (datetime.now() - last_trained).days
-    expiry_days  = info.get('retrain_days', RETRAIN_DAYS)
+    try:
+        last_trained = datetime.fromisoformat(info['last_trained'])
+        expiry_days = int(info.get('retrain_days', RETRAIN_DAYS))
+        if expiry_days < 1 or expiry_days > 365:
+            raise ValueError('retrain_days outside safe range')
+        days_since = (datetime.now() - last_trained).days
+        if days_since < -1:
+            raise ValueError('last_trained is unexpectedly in the future')
+    except (TypeError, ValueError, OverflowError) as exc:
+        logger.warning('Invalid model cache metadata; retraining required: %s', exc)
+        return True
 
     print(f"   Models trained: {last_trained.strftime('%Y-%m-%d')}")
     print(f"   Days since training: {days_since}")

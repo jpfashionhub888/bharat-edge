@@ -300,10 +300,12 @@ def run_bharat_scan():
         if should_retrain():
             print("\n   Retraining models (walk-forward)...")
             all_symbols = get_all_stocks()
-            train_full_ensemble(
+            trained = train_full_ensemble(
                 symbols = all_symbols,
                 period  = '6mo',  # Last 6 months only
             )
+            if not trained:
+                raise RuntimeError('Model retraining failed; cache was not advanced')
             mark_trained()
             print("   Models retrained and saved!")
 

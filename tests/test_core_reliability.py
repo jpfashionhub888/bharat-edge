@@ -354,6 +354,33 @@ def test_scan_workflow_retries_publish_without_force_push():
     assert "push -f" not in workflow
 
 
+@pytest.mark.parametrize("cache", [
+    {"last_trained": "not-a-date", "retrain_days": 30},
+    {"last_trained": datetime.now().isoformat(), "retrain_days": 0},
+    {"last_trained": datetime.now().isoformat(), "retrain_days": 9999},
+    {"last_trained": "2999-01-01T00:00:00", "retrain_days": 30},
+])
+def test_invalid_model_cache_metadata_requires_retraining(tmp_path, monkeypatch, cache):
+    import bharat_model_cache
+
+    cache_file = tmp_path / "cache.json"
+    cache_file.write_text(json.dumps(cache), encoding="utf-8")
+    monkeypatch.setattr(bharat_model_cache, "CACHE_INFO_FILE", str(cache_file))
+
+    assert bharat_model_cache.should_retrain() is True
+
+
+def test_model_cache_save_is_valid_json(tmp_path, monkeypatch):
+    import bharat_model_cache
+
+    cache_file = tmp_path / "cache.json"
+    monkeypatch.setattr(bharat_model_cache, "CACHE_INFO_FILE", str(cache_file))
+    bharat_model_cache.save_cache_info({"last_trained": "2026-09-04T00:00:00"})
+
+    assert json.loads(cache_file.read_text(encoding="utf-8"))["last_trained"]
+    assert not (tmp_path / "cache.json.tmp").exists()
+
+
 def test_market_regime_fails_closed_without_nifty(monkeypatch):
     from bharat_market_regime import BharatMarketRegimeFilter
 
