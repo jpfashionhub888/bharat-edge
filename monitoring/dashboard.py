@@ -44,9 +44,9 @@ _EARNINGS_CACHE: dict[str, Any] = {
 
 # ── Bloomberg terminal palette ────────────────────────────────
 BG      = "#0a0a0a"
-PANEL   = "#111111"
-PANEL2  = "#1a1a1a"
-BORDER  = "#2a2a2a"
+PANEL   = "#10151c"
+PANEL2  = "#151c25"
+BORDER  = "#273240"
 TEXT    = "#e8e8e8"
 DIM     = "#666666"
 MUTED   = "#444444"
@@ -400,9 +400,10 @@ def _panel(children, style=None):
     s = {
         "background"   : PANEL,
         "border"       : f"1px solid {BORDER}",
-        "borderRadius" : "4px",
+        "borderRadius" : "12px",
         "padding"      : "16px",
         "marginBottom" : "14px",
+        "boxShadow"    : "0 12px 30px rgba(0,0,0,.18)",
     }
     if style:
         s.update(style)
@@ -453,8 +454,9 @@ def _kpi(label: str, value: str, color: str = TEXT, sub: str = ""):
         "background"  : PANEL,
         "border"      : f"1px solid {BORDER}",
         "borderLeft"  : f"3px solid {color}",
-        "borderRadius": "4px",
+        "borderRadius": "10px",
         "padding"     : "12px 14px",
+        "boxShadow"   : "0 10px 24px rgba(0,0,0,.16)",
     })
 
 
@@ -577,6 +579,8 @@ def _upcoming_earnings() -> list[dict]:
                         "Earnings Date": date_val,
                         "EPS Est": cal.get("EPS Estimate", "—"),
                         "Revenue Est": cal.get("Revenue Estimate", "—"),
+                        "Source": "Yahoo Finance",
+                        "Fetched At": _ist_now().isoformat()[:19],
                     }
                 except Exception as exc:
                     errors.append(f"{sym}: {exc}")
@@ -611,6 +615,10 @@ def create_app(telegram=None) -> Dash:
     app = Dash(
         __name__,
         title="BharatEdge Terminal",
+        meta_tags=[{
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1, maximum-scale=1",
+        }],
         update_title=None,
         suppress_callback_exceptions=True,
     )
@@ -643,7 +651,16 @@ def create_app(telegram=None) -> Dash:
         "<link href='https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap' rel='stylesheet'>"
         "<style>"
         f"*{{margin:0;padding:0;box-sizing:border-box}}"
-        f"body{{background:{BG};color:{TEXT};font-family:{FONT}}}"
+        f"body{{background:radial-gradient(circle at 85% -10%,#1b3440 0,{BG} 38%);color:{TEXT};font-family:{FONT}}}"
+        "button{font-family:inherit;transition:.2s ease}button:hover{transform:translateY(-1px);filter:brightness(1.15)}"
+        ".be-tabs{overflow-x:auto;white-space:nowrap}.be-tabs .tab-container{display:flex!important;flex-wrap:nowrap!important;min-width:max-content}.be-tab{width:140px!important;min-width:140px!important;flex:0 0 140px!important}"
+        ".be-status{overflow-x:auto;white-space:nowrap}"
+        ".be-kpis{display:grid;grid-template-columns:repeat(7,minmax(145px,1fr));gap:12px}"
+        ".be-charts{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:14px}"
+        ".be-history-kpis{display:grid;grid-template-columns:repeat(6,minmax(145px,1fr));gap:10px}"
+        ".be-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}"
+        "@media(max-width:900px){.be-kpis,.be-history-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.be-charts,.be-two-col{grid-template-columns:1fr}.be-title-sub{display:none}}"
+        "@media(max-width:520px){.be-kpis,.be-history-kpis{grid-template-columns:1fr}.be-shell{padding-left:8px!important;padding-right:8px!important}.be-top{padding:10px!important}#topbar-right{display:none}.be-status{padding-left:10px!important}.be-tab{width:125px!important;min-width:125px!important;flex-basis:125px!important}}"
         "::-webkit-scrollbar{width:5px;height:5px}"
         f"::-webkit-scrollbar-track{{background:{BG}}}"
         f"::-webkit-scrollbar-thumb{{background:{BORDER};border-radius:2px}}"
@@ -655,7 +672,7 @@ def create_app(telegram=None) -> Dash:
     )
 
     # ── Top status bar ────────────────────────────────────────
-    status_bar = html.Div(id="status-bar", style={
+    status_bar = html.Div(id="status-bar", className="be-status", style={
         "background"  : PANEL2,
         "borderBottom": f"1px solid {BORDER}",
         "padding"     : "6px 20px",
@@ -693,7 +710,7 @@ def create_app(telegram=None) -> Dash:
         dcc.Interval(id="iv", interval=REFRESH_S * 1000, n_intervals=0),
 
         # Title bar
-        html.Div(style={
+        html.Div(className="be-top", style={
             "background"  : PANEL2,
             "borderBottom": f"2px solid {ORANGE}",
             "padding"     : "12px 20px",
@@ -706,34 +723,42 @@ def create_app(telegram=None) -> Dash:
                                            "fontSize": "18px", "letterSpacing": "3px"}),
                 html.Span("EDGE", style={"color": TEXT, "fontWeight": "400",
                                          "fontSize": "18px", "letterSpacing": "3px"}),
-                html.Span(" TERMINAL", style={"color": DIM, "fontSize": "11px",
+                html.Span(" TERMINAL", className="be-title-sub", style={"color": DIM, "fontSize": "11px",
                                               "letterSpacing": "4px", "marginLeft": "8px"}),
             ]),
-            html.Div(id="topbar-right", style={"fontSize": "11px", "color": DIM}),
+            html.Div([
+                html.Button("↻ REFRESH DATA", id="refresh-now", n_clicks=0, style={
+                    "background": ORANGE + "18", "color": ORANGE,
+                    "border": f"1px solid {ORANGE}66", "borderRadius": "8px",
+                    "padding": "8px 12px", "fontSize": "10px", "fontWeight": "700",
+                    "cursor": "pointer", "marginRight": "12px",
+                }),
+                html.Span(id="topbar-right", style={"fontSize": "11px", "color": DIM}),
+            ], style={"display": "flex", "alignItems": "center"}),
         ]),
 
         # Status bar
         status_bar,
 
         # Tabs
-        html.Div(style={"padding": "0 16px"}, children=[
-            dcc.Tabs(id="tabs", value="overview", style={
+        html.Div(className="be-shell", style={"padding": "0 16px"}, children=[
+            dcc.Tabs(id="tabs", className="be-tabs", value="overview", style={
                 "borderBottom": f"1px solid {BORDER}",
                 "fontFamily"  : FONT,
             }, children=[
-                dcc.Tab(label="01 OVERVIEW",  value="overview",
+                dcc.Tab(label="01 OVERVIEW", className="be-tab", value="overview",
                         style=TAB_STYLE, selected_style=TAB_SEL),
-                dcc.Tab(label="02 POSITIONS", value="positions",
+                dcc.Tab(label="02 POSITIONS", className="be-tab", value="positions",
                         style=TAB_STYLE, selected_style=TAB_SEL),
-                dcc.Tab(label="03 SIGNALS",   value="signals",
+                dcc.Tab(label="03 SIGNALS", className="be-tab", value="signals",
                         style=TAB_STYLE, selected_style=TAB_SEL),
-                dcc.Tab(label="04 SECTORS",   value="sectors",
+                dcc.Tab(label="04 SECTORS", className="be-tab", value="sectors",
                         style=TAB_STYLE, selected_style=TAB_SEL),
-                dcc.Tab(label="05 EARNINGS",  value="earnings",
+                dcc.Tab(label="05 EARNINGS", className="be-tab", value="earnings",
                         style=TAB_STYLE, selected_style=TAB_SEL),
-                dcc.Tab(label="06 HISTORY",   value="history",
+                dcc.Tab(label="06 HISTORY", className="be-tab", value="history",
                         style=TAB_STYLE, selected_style=TAB_SEL),
-                dcc.Tab(label="07 SYS CONFIG",value="sysconfig",
+                dcc.Tab(label="07 SYS CONFIG", className="be-tab", value="sysconfig",
                         style=TAB_STYLE, selected_style=TAB_SEL),
             ]),
             html.Div(id="tab-content",
@@ -762,8 +787,9 @@ def create_app(telegram=None) -> Dash:
         Output("status-bar",   "children"),
         Output("topbar-right", "children"),
         Input("iv", "n_intervals"),
+        Input("refresh-now", "n_clicks"),
     )
-    def update_status(_n):
+    def update_status(_n, _clicks):
         try:
             port    = load_portfolio()
             scan    = load_scan()
@@ -790,14 +816,13 @@ def create_app(telegram=None) -> Dash:
             pos      = port.get("positions", {})
             live_prices = (market.get("prices", {})
                            if not market.get("stale") else {})
-            pos_val = sum(
-                p["shares"] * live_prices.get(sym, p.get("current_price",
-                                                         p.get("entry_price", 0)))
-                for sym, p in pos.items()
-            )
-            total    = capital + pos_val
-            pnl      = total - start
-            pnl_col  = GREEN if pnl >= 0 else RED
+            valuation_available = not pos or all(sym in live_prices for sym in pos)
+            pos_val = (sum(p["shares"] * live_prices[sym]
+                           for sym, p in pos.items())
+                       if valuation_available else None)
+            total = capital + pos_val if pos_val is not None else None
+            pnl = total - start if total is not None else None
+            pnl_col = GREEN if pnl is not None and pnl >= 0 else RED
             regime_name = regime.get("regime", "UNKNOWN")
 
             cb_triggered = circuit.get("triggered", False)
@@ -849,9 +874,12 @@ def create_app(telegram=None) -> Dash:
                 html.Span(regime_name, style={"color": _regime_color(regime_name),
                           "fontWeight": "700", "marginRight": "20px"}),
                 html.Span("VALUE: ", style={"color": DIM}),
-                html.Span(_inr(total), style={"color": TEXT, "marginRight": "20px"}),
+                html.Span(_inr(total) if total is not None else "UNAVAILABLE",
+                          style={"color": TEXT if total is not None else RED,
+                                 "marginRight": "20px"}),
                 html.Span("P&L: ", style={"color": DIM}),
-                html.Span(f"{'+' if pnl >= 0 else ''}{_inr(pnl)}", style={
+                html.Span((f"{'+' if pnl >= 0 else ''}{_inr(pnl)}"
+                           if pnl is not None else "UNAVAILABLE"), style={
                     "color": pnl_col, "fontWeight": "700", "marginRight": "20px"}),
                 html.Span(cb_text, style={"color": cb_color, "fontWeight": "700", "marginRight": "20px"}),
                 html.Span(
@@ -889,8 +917,9 @@ def create_app(telegram=None) -> Dash:
         Output("tab-content", "children"),
         Input("tabs",         "value"),
         Input("iv",           "n_intervals"),
+        Input("refresh-now",  "n_clicks"),
     )
-    def render_tab(tab, _n):
+    def render_tab(tab, _n, _clicks):
         try:
             if tab == "overview":  return _tab_overview()
             if tab == "positions": return _tab_positions()
@@ -941,14 +970,13 @@ def _tab_overview() -> html.Div:
         if lp and lp > 0:
             p["current_price"] = lp
 
-    pos_val = sum(
-        p["shares"] * p.get("current_price", p.get("entry_price", 0))
-        for p in pos.values()
-    )
-    total    = capital + pos_val
-    pnl      = total - start
-    pnl_pct  = pnl / start * 100 if start else 0
-    pnl_col  = GREEN if pnl >= 0 else RED
+    valuation_available = not pos or all(sym in live for sym in pos)
+    pos_val = (sum(p["shares"] * live[sym] for sym, p in pos.items())
+               if valuation_available else None)
+    total = capital + pos_val if pos_val is not None else None
+    pnl = total - start if total is not None else None
+    pnl_pct = pnl / start * 100 if pnl is not None and start else None
+    pnl_col = GREEN if pnl is not None and pnl >= 0 else RED
 
     sells    = [t for t in history if t.get("action") == "SELL"]
     wins     = sum(1 for t in sells if t.get("pnl", 0) > 0)
@@ -964,18 +992,17 @@ def _tab_overview() -> html.Div:
     sg = lambda v: "+" if v >= 0 else ""
 
     # KPI row
-    kpis = html.Div(style={
-        "display": "grid",
-        "gridTemplateColumns": "repeat(7, 1fr)",
-        "gap": "10px",
+    kpis = html.Div(className="be-kpis", style={
         "marginBottom": "14px",
     }, children=[
-        _kpi("Total Value",   _inr(total),   ORANGE,
+        _kpi("Total Value",   _inr(total) if total is not None else "UNAVAILABLE",
+             ORANGE if total is not None else RED,
              f"Start: {_inr(start)}"),
         _kpi("Cash",          _inr(capital),  BLUE,
-             f"{capital/total*100:.1f}% of portfolio" if total else ""),
-        _kpi("Total P&L",     f"{sg(pnl)}{_inr(pnl)}", pnl_col,
-             f"{sg(pnl_pct)}{pnl_pct:.2f}%"),
+             (f"{capital/total*100:.1f}% of portfolio"
+              if total else "Valuation unavailable")),
+        _kpi("Total P&L", (f"{sg(pnl)}{_inr(pnl)}" if pnl is not None else "UNAVAILABLE"),
+             pnl_col, (f"{sg(pnl_pct)}{pnl_pct:.2f}%" if pnl_pct is not None else "Needs fresh quotes")),
         _kpi("Realized P&L",  f"{sg(realized)}{_inr(realized)}", pnl_col,
              f"{len(sells)} closed trades"),
         _kpi("Open Positions", str(len(pos)), YELLOW, "Max 5"),
@@ -993,8 +1020,9 @@ def _tab_overview() -> html.Div:
             running  += t.get("pnl", 0)
             eq_vals.append(running)
             eq_dates.append(t.get("date", "")[:10])
-    eq_vals.append(total)
-    eq_dates.append("Now")
+    if total is not None:
+        eq_vals.append(total)
+        eq_dates.append("Now")
 
     ec  = GREEN if eq_vals[-1] >= eq_vals[0] else RED
     fig = go.Figure(go.Scatter(
@@ -1009,20 +1037,19 @@ def _tab_overview() -> html.Div:
     fig.update_yaxes(tickprefix="₹", tickformat=",.0f")
 
     # Allocation donut
-    al_labels = ["Cash"] + syms
-    al_vals   = [round(capital, 2)] + [
-        round(p["shares"] * p.get("current_price", p.get("entry_price", 0)), 2)
-        for p in pos.values()
-    ]
+    al_labels = ["Cash"] + syms if valuation_available else []
+    al_vals = ([round(capital, 2)]
+               + [round(p["shares"] * live[sym], 2) for sym, p in pos.items()]
+               if valuation_available else [])
     pie_colors = [BLUE, ORANGE, GREEN, YELLOW, CYAN, PURPLE, RED, ORANGE2]
 
-    pie = go.Figure(go.Pie(
+    pie = (go.Figure(go.Pie(
         labels=al_labels, values=al_vals, hole=0.6,
         marker=dict(colors=pie_colors[:len(al_labels)],
                     line=dict(color=BG, width=2)),
         textfont=dict(color=TEXT, size=11, family=FONT),
         hovertemplate="%{label}<br>₹%{value:,.0f}<br>%{percent}<extra></extra>",
-    ))
+    )) if valuation_available else _empty_fig("Fresh quotes required", 280))
     pie.update_layout(
         paper_bgcolor=PANEL, plot_bgcolor=PANEL,
         margin=dict(l=10, r=10, t=30, b=10), height=280,
@@ -1052,8 +1079,7 @@ def _tab_overview() -> html.Div:
             style={"color": RED if market.get("stale") else DIM,
                    "fontFamily": FONT, "fontSize": "10px", "marginBottom": "10px"}),
         kpis,
-        html.Div(style={"display": "grid", "gridTemplateColumns": "2fr 1fr",
-                        "gap": "14px", "marginBottom": "14px"}, children=[
+        html.Div(className="be-charts", style={"marginBottom": "14px"}, children=[
             _section("PORTFOLIO EQUITY CURVE (₹)",
                      dcc.Graph(figure=fig, config={"displayModeBar": False})),
             _section("CAPITAL ALLOCATION",
@@ -1084,18 +1110,18 @@ def _tab_positions() -> html.Div:
         entry   = p.get("entry_price", 0)
         is_live = sym in live
         curr = live.get(sym)
-        if curr is None:
-            curr = p.get("current_price", entry)
         if is_live:
             p["current_price"] = curr
         shares  = p.get("shares", 0)
         cost    = p.get("cost", entry * shares)
-        upnl    = (curr - entry) * shares
-        upct    = (curr - entry) / entry * 100 if entry else 0
+        upnl = (curr - entry) * shares if is_live else None
+        upct = ((curr - entry) / entry * 100
+                if is_live and entry else None)
         sl_pct  = p.get("stop_loss_pct", 0.04)
         sl_px   = entry * (1 - sl_pct)
-        highest = p.get("highest_price", curr)
-        trail   = (highest - curr) / highest * 100 if highest else 0
+        highest = p.get("highest_price")
+        trail = ((highest - curr) / highest * 100
+                 if is_live and highest else None)
         sig     = p.get("signal", 0)
         sector  = p.get("reason", "—")
 
@@ -1104,16 +1130,19 @@ def _tab_positions() -> html.Div:
             "Sector"    : sector,
             "Shares"    : shares,
             "Entry ₹"   : f"{entry:,.2f}",
-            "Current ₹" : f"{curr:,.2f}",
+            "Current ₹" : f"{curr:,.2f}" if is_live else "UNAVAILABLE",
             "Cost ₹"    : f"{cost:,.2f}",
-            "Unreal P&L": f"{'+' if upnl >= 0 else ''}{upnl:,.2f}",
-            "Chg %"     : f"{'+' if upct >= 0 else ''}{upct:.2f}%",
+            "Unreal P&L": (f"{'+' if upnl >= 0 else ''}{upnl:,.2f}"
+                           if upnl is not None else "UNAVAILABLE"),
+            "Chg %"     : (f"{'+' if upct >= 0 else ''}{upct:.2f}%"
+                           if upct is not None else "UNAVAILABLE"),
             "Stop ₹"    : f"{sl_px:,.2f}",
-            "Trail %"   : f"{trail:.2f}%",
+            "Trail %"   : f"{trail:.2f}%" if trail is not None else "UNAVAILABLE",
             "AI Score"  : f"{sig:.3f}",
             "Entry Date": p.get("entry_date", "")[:10],
-            "Price Status": "PROVIDER" if is_live else "STALE/FALLBACK",
-            "Price As Of": (market.get("fetched_at") or "—")[:19],
+            "Price Status": "PROVIDER" if is_live else "UNAVAILABLE",
+            "Price As Of": ((market.get("fetched_at") or "—")[:19]
+                            if is_live else "—"),
         })
 
     cond = [
@@ -1126,7 +1155,7 @@ def _tab_positions() -> html.Div:
         {"if": {"column_id": "Stop ₹"},
          "color": RED},
     ]
-    status = "PROVIDER SNAPSHOT" if not market.get("stale") else "STALE/FALLBACK VALUES"
+    status = "PROVIDER SNAPSHOT" if not market.get("stale") else "LIVE VALUES UNAVAILABLE"
     return _section(f"OPEN POSITIONS — {status}", _dtable(rows, cond, page=10))
 
 
@@ -1172,11 +1201,15 @@ def _tab_signals() -> html.Div:
     rows = []
     for s in sorted(signals, key=lambda x: x.get("confidence", 0), reverse=True):
         sig = s.get("signal", "HOLD")
+        price = s.get("price")
+        price_valid = isinstance(price, (int, float)) and price > 0
         rows.append({
             "Symbol"       : s.get("symbol", "").replace(".NS", ""),
             "Signal"       : sig,
             "AI Score"     : f"{s.get('confidence', 0):.3f}",
-            "Price ₹"      : f"{s.get('price', 0):,.2f}",
+            "Price ₹"      : f"{price:,.2f}" if price_valid else "UNAVAILABLE",
+            "Price Source" : s.get("price_source", "UNAVAILABLE") if price_valid else "UNAVAILABLE",
+            "Price As Of"  : (s.get("price_as_of") or "—")[:19] if price_valid else "—",
             "Sector"       : s.get("sector", "—"),
             "Sector Status": s.get("sector_status", "NEUTRAL"),
             "Regime"       : regime.get("regime", "—"),
@@ -1323,9 +1356,8 @@ def _tab_history() -> html.Div:
     pnl_col  = GREEN if tot_pnl >= 0 else RED
     wr_col   = GREEN if wr >= 50 else RED
 
-    kpis = html.Div(style={
-        "display": "grid", "gridTemplateColumns": "repeat(6,1fr)",
-        "gap": "10px", "marginBottom": "14px",
+    kpis = html.Div(className="be-history-kpis", style={
+        "marginBottom": "14px",
     }, children=[
         _kpi("Total Trades", str(wins + losses), ORANGE),
         _kpi("Win Rate",     f"{wr:.0f}%",        wr_col, f"{wins}W  {losses}L"),
@@ -1465,8 +1497,7 @@ def _tab_sysconfig() -> html.Div:
     ]
 
     return html.Div([
-        html.Div(style={"display": "grid", "gridTemplateColumns": "1fr 1fr",
-                        "gap": "14px"}, children=[
+        html.Div(className="be-two-col", children=[
             _section("MARKET & STRATEGY SETTINGS", _table(market_cfg)),
             html.Div([
                 _section("PORTFOLIO STATE",    _table(port_cfg)),

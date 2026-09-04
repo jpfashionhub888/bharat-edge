@@ -274,6 +274,86 @@ def test_dashboard_identifies_backup_recovery(tmp_path):
     assert loaded["_storage_status"] == "BACKUP"
 
 
+def test_dashboard_refresh_control_and_all_tabs_are_wired(monkeypatch):
+    import monitoring.dashboard as dashboard
+
+    monkeypatch.setattr(dashboard, "get_market_data", lambda symbols=None: {
+        "prices": {}, "nifty": None, "vix": None, "fetched_at": None,
+        "error": "offline", "stale": True,
+    })
+    monkeypatch.setattr(dashboard, "_upcoming_earnings", lambda: [])
+    app = dashboard.create_app()
+
+    def component_ids(component):
+        found = set()
+        component_id = getattr(component, "id", None)
+        if component_id:
+            found.add(component_id)
+        children = getattr(component, "children", None)
+        if children is None:
+            return found
+        if not isinstance(children, (list, tuple)):
+            children = [children]
+        for child in children:
+            if hasattr(child, "children") or getattr(child, "id", None):
+                found.update(component_ids(child))
+        return found
+
+    ids = component_ids(app.layout)
+    assert {"refresh-now", "tabs", "status-bar", "tab-content"} <= ids
+    callback_inputs = str(app.callback_map)
+    assert "refresh-now" in callback_inputs
+    assert "width=device-width" in str(app.config.meta_tags)
+
+
+def test_every_dashboard_tab_renders_without_external_data(monkeypatch):
+    import monitoring.dashboard as dashboard
+
+    monkeypatch.setattr(dashboard, "get_market_data", lambda symbols=None: {
+        "prices": {}, "nifty": None, "vix": None, "fetched_at": None,
+        "error": "offline", "stale": True,
+    })
+    monkeypatch.setattr(dashboard, "_upcoming_earnings", lambda: [])
+
+    renderers = (
+        dashboard._tab_overview,
+        dashboard._tab_positions,
+        dashboard._tab_signals,
+        dashboard._tab_sectors,
+        dashboard._tab_earnings,
+        dashboard._tab_history,
+        dashboard._tab_sysconfig,
+    )
+    for renderer in renderers:
+        rendered = renderer()
+        assert getattr(rendered, "children", None) is not None
+
+
+def test_dashboard_does_not_calculate_unrealized_values_from_stale_prices(monkeypatch):
+    import monitoring.dashboard as dashboard
+
+    monkeypatch.setattr(dashboard, "load_portfolio", lambda: {
+        "capital": 90_000,
+        "starting_capital": 100_000,
+        "positions": {"TEST.NS": {
+            "shares": 10, "entry_price": 100, "current_price": 999,
+            "cost": 1_000, "highest_price": 999, "signal": 0.8,
+        }},
+        "trade_history": [],
+    })
+    monkeypatch.setattr(dashboard, "get_market_data", lambda symbols=None: {
+        "prices": {"TEST.NS": 999}, "nifty": None, "vix": None,
+        "fetched_at": "2026-09-01T10:00:00+05:30",
+        "error": "provider offline", "stale": True,
+    })
+
+    rendered = str(dashboard._tab_positions())
+
+    assert "UNAVAILABLE" in rendered
+    assert "STALE/FALLBACK" not in rendered
+    assert "+8,990.00" not in rendered
+
+
 def test_scan_lifecycle_records_success(tmp_path, monkeypatch):
     import bharat_cloud_scan
 
