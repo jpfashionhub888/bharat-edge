@@ -44,22 +44,23 @@ _EARNINGS_CACHE: dict[str, Any] = {
 }
 
 # ── Bloomberg terminal palette ────────────────────────────────
-BG      = "#0a0a0a"
-PANEL   = "#10151c"
-PANEL2  = "#151c25"
-BORDER  = "#273240"
-TEXT    = "#e8e8e8"
-DIM     = "#666666"
-MUTED   = "#444444"
-ORANGE  = "#f97316"
-ORANGE2 = "#fb923c"
-GREEN   = "#22c55e"
-RED     = "#ef4444"
-YELLOW  = "#eab308"
-BLUE    = "#3b82f6"
-PURPLE  = "#a855f7"
-CYAN    = "#06b6d4"
-FONT    = "IBM Plex Mono, Courier New, monospace"
+BG      = "#07111f"
+PANEL   = "#0e1a2b"
+PANEL2  = "#111f33"
+BORDER  = "#223550"
+TEXT    = "#f3f7fc"
+DIM     = "#8da2bd"
+MUTED   = "#60748f"
+ORANGE  = "#31c5f4"  # primary brand accent (legacy variable name)
+ORANGE2 = "#8b7cf6"
+GREEN   = "#37d39a"
+RED     = "#fb7185"
+YELLOW  = "#f6c453"
+BLUE    = "#60a5fa"
+PURPLE  = "#a78bfa"
+CYAN    = "#22d3ee"
+FONT    = "Inter, Manrope, Segoe UI, sans-serif"
+MONO    = "JetBrains Mono, IBM Plex Mono, Consolas, monospace"
 
 def _rgba(hex_color: str, alpha: float) -> str:
     """Convert '#rrggbb' + alpha float to 'rgba(r,g,b,a)' for Plotly."""
@@ -401,10 +402,10 @@ def _panel(children, style=None):
     s = {
         "background"   : PANEL,
         "border"       : f"1px solid {BORDER}",
-        "borderRadius" : "12px",
-        "padding"      : "16px",
-        "marginBottom" : "14px",
-        "boxShadow"    : "0 12px 30px rgba(0,0,0,.18)",
+        "borderRadius" : "16px",
+        "padding"      : "18px",
+        "marginBottom" : "16px",
+        "boxShadow"    : "0 18px 45px rgba(0,0,0,.22)",
     }
     if style:
         s.update(style)
@@ -417,7 +418,7 @@ def _section(title: str, children):
             "color"        : ORANGE,
             "fontSize"     : "11px",
             "fontWeight"   : "700",
-            "letterSpacing": "2px",
+            "letterSpacing": "1.2px",
             "textTransform": "uppercase",
             "marginBottom" : "12px",
             "paddingBottom": "8px",
@@ -440,9 +441,9 @@ def _kpi(label: str, value: str, color: str = TEXT, sub: str = ""):
         }),
         html.Div(value, style={
             "color"     : color,
-            "fontSize"  : "18px",
+            "fontSize"  : "21px",
             "fontWeight": "700",
-            "fontFamily": FONT,
+            "fontFamily": MONO,
             "lineHeight": "1",
         }),
         html.Div(sub, style={
@@ -455,9 +456,9 @@ def _kpi(label: str, value: str, color: str = TEXT, sub: str = ""):
         "background"  : PANEL,
         "border"      : f"1px solid {BORDER}",
         "borderLeft"  : f"3px solid {color}",
-        "borderRadius": "10px",
-        "padding"     : "12px 14px",
-        "boxShadow"   : "0 10px 24px rgba(0,0,0,.16)",
+        "borderRadius": "14px",
+        "padding"     : "15px 16px",
+        "boxShadow"   : "0 12px 28px rgba(0,0,0,.18)",
     })
 
 
@@ -712,23 +713,25 @@ def create_app(telegram=None) -> Dash:
         "<!DOCTYPE html><html><head>{%metas%}<title>{%title%}</title>"
         "{%favicon%}{%css%}"
         "<link rel='preconnect' href='https://fonts.googleapis.com'>"
-        "<link href='https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap' rel='stylesheet'>"
+        "<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap' rel='stylesheet'>"
         "<style>"
         f"*{{margin:0;padding:0;box-sizing:border-box}}"
-        f"body{{background:radial-gradient(circle at 85% -10%,#1b3440 0,{BG} 38%);color:{TEXT};font-family:{FONT}}}"
+        f"body{{background:radial-gradient(circle at 82% -8%,#163651 0,{BG} 38%);color:{TEXT};font-family:{FONT};letter-spacing:-.01em}}"
         "button{font-family:inherit;transition:.2s ease}button:hover{transform:translateY(-1px);filter:brightness(1.15)}"
-        ".be-tabs{overflow-x:auto;white-space:nowrap}.be-tabs .tab-container{display:flex!important;flex-wrap:nowrap!important;min-width:max-content}.be-tab{width:140px!important;min-width:140px!important;flex:0 0 140px!important}"
+        ".be-tabs{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;white-space:nowrap;height:58px!important}.be-tab{display:flex!important;align-items:center;justify-content:center;width:140px!important;min-width:140px!important;max-width:140px!important;height:42px!important;min-height:42px!important;flex:0 0 140px!important}"
         ".be-status{overflow-x:auto;white-space:nowrap}"
         ".be-kpis{display:grid;grid-template-columns:repeat(7,minmax(145px,1fr));gap:12px}"
         ".be-charts{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:14px}"
         ".be-history-kpis{display:grid;grid-template-columns:repeat(6,minmax(145px,1fr));gap:10px}"
         ".be-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}"
         "@media(max-width:900px){.be-kpis,.be-history-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.be-charts,.be-two-col{grid-template-columns:1fr}.be-title-sub{display:none}}"
+        "@media(max-width:800px){.be-kpis,.be-history-kpis{grid-template-columns:1fr}#topbar-right{display:none}.be-status{padding-left:10px!important}}"
         "@media(max-width:520px){.be-kpis,.be-history-kpis{grid-template-columns:1fr}.be-shell{padding-left:8px!important;padding-right:8px!important}.be-top{padding:10px!important}#topbar-right{display:none}.be-status{padding-left:10px!important}.be-tab{width:125px!important;min-width:125px!important;flex-basis:125px!important}}"
         "::-webkit-scrollbar{width:5px;height:5px}"
         f"::-webkit-scrollbar-track{{background:{BG}}}"
         f"::-webkit-scrollbar-thumb{{background:{BORDER};border-radius:2px}}"
-        f".tab--selected{{border-top:2px solid {ORANGE} !important;color:{ORANGE} !important}}"
+        f".tab--selected{{color:{TEXT}!important;background:#19334a!important;border-color:{ORANGE}55!important;box-shadow:inset 0 0 0 1px {ORANGE}33!important}}"
+        ".be-grid{border-radius:12px;overflow:hidden}"
         ".dash-table-container .row{margin:0}"
         "@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}"
         "</style></head><body>{%app_entry%}"
@@ -737,14 +740,14 @@ def create_app(telegram=None) -> Dash:
 
     # ── Top status bar ────────────────────────────────────────
     status_bar = html.Div(id="status-bar", className="be-status", style={
-        "background"  : PANEL2,
+        "background"  : "rgba(10,24,40,.94)",
         "borderBottom": f"1px solid {BORDER}",
         "padding"     : "6px 20px",
         "display"     : "flex",
         "alignItems"  : "center",
         "gap"         : "24px",
         "fontSize"    : "11px",
-        "fontFamily"  : FONT,
+        "fontFamily"  : MONO,
         "position"    : "sticky",
         "top"         : "0",
         "zIndex"      : "1000",
@@ -752,21 +755,22 @@ def create_app(telegram=None) -> Dash:
 
     # ── Tab styles ────────────────────────────────────────────
     TAB_STYLE = {
-        "background"  : PANEL2,
+        "background"  : "transparent",
         "color"       : DIM,
         "border"      : f"1px solid {BORDER}",
-        "borderBottom": "none",
-        "padding"     : "10px 18px",
+        "borderRadius": "10px",
+        "padding"     : "10px 16px",
+        "margin"      : "7px 4px",
         "fontFamily"  : FONT,
-        "fontSize"    : "11px",
-        "fontWeight"  : "700",
-        "letterSpacing": "1px",
+        "fontSize"    : "10px",
+        "fontWeight"  : "600",
+        "letterSpacing": ".7px",
     }
     TAB_SEL = {
         **TAB_STYLE,
         "color"      : ORANGE,
-        "borderTop"  : f"2px solid {ORANGE}",
-        "background" : PANEL,
+        "border"     : f"1px solid {ORANGE}66",
+        "background" : "#19334a",
     }
 
     # ── Main layout ───────────────────────────────────────────
@@ -775,24 +779,24 @@ def create_app(telegram=None) -> Dash:
 
         # Title bar
         html.Div(className="be-top", style={
-            "background"  : PANEL2,
-            "borderBottom": f"2px solid {ORANGE}",
-            "padding"     : "12px 20px",
+            "background"  : "rgba(8,20,34,.96)",
+            "borderBottom": f"1px solid {BORDER}",
+            "padding"     : "15px 20px",
             "display"     : "flex",
             "justifyContent": "space-between",
             "alignItems"  : "center",
         }, children=[
             html.Div([
                 html.Span("BHARAT", style={"color": ORANGE, "fontWeight": "700",
-                                           "fontSize": "18px", "letterSpacing": "3px"}),
-                html.Span("EDGE", style={"color": TEXT, "fontWeight": "400",
-                                         "fontSize": "18px", "letterSpacing": "3px"}),
+                                           "fontSize": "19px", "letterSpacing": "1px"}),
+                html.Span("EDGE", style={"color": TEXT, "fontWeight": "700",
+                                         "fontSize": "19px", "letterSpacing": "1px"}),
                 html.Span(" TERMINAL", className="be-title-sub", style={"color": DIM, "fontSize": "11px",
-                                              "letterSpacing": "4px", "marginLeft": "8px"}),
+                                              "letterSpacing": "2px", "marginLeft": "10px"}),
             ]),
             html.Div([
                 html.Button("↻ REFRESH DATA", id="refresh-now", n_clicks=0, style={
-                    "background": ORANGE + "18", "color": ORANGE,
+                    "background": "linear-gradient(135deg,#1d4058,#163047)", "color": TEXT,
                     "border": f"1px solid {ORANGE}66", "borderRadius": "8px",
                     "padding": "8px 12px", "fontSize": "10px", "fontWeight": "700",
                     "cursor": "pointer", "marginRight": "12px",
