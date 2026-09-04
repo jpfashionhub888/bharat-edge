@@ -214,6 +214,24 @@ def test_scan_lifecycle_records_failure(tmp_path, monkeypatch):
     assert "provider offline" in status["error"]
 
 
+def test_failed_scan_preserves_previous_success_time(tmp_path, monkeypatch):
+    import bharat_cloud_scan
+
+    status_file = tmp_path / "scan_status.json"
+    last_success = "2026-09-04T09:50:00+05:30"
+    status_file.write_text(json.dumps({
+        "status": "SUCCESS",
+        "last_success_at": last_success,
+    }), encoding="utf-8")
+    monkeypatch.setattr(bharat_cloud_scan, "SCAN_STATUS_FILE", str(status_file))
+
+    bharat_cloud_scan._write_scan_status("FAILED", error="offline")
+
+    status = json.loads(status_file.read_text(encoding="utf-8"))
+    assert status["status"] == "FAILED"
+    assert status["last_success_at"] == last_success
+
+
 def test_scan_overdue_respects_schedule_and_grace_period():
     from monitoring.dashboard import _scan_is_overdue
 
@@ -231,6 +249,24 @@ def test_scan_overdue_does_not_expect_weekend_runs():
 
     saturday = datetime(2026, 9, 5, 12, 0, tzinfo=timezone.utc)
     assert not _scan_is_overdue("2026-09-04T09:50:00+00:00", saturday)
+
+
+def test_stalled_scan_is_distinguished_from_active_scan():
+    from monitoring.dashboard import _scan_run_stalled
+
+    now = datetime(2026, 9, 4, 12, 0, tzinfo=timezone.utc)
+    assert not _scan_run_stalled({
+        "status": "RUNNING",
+        "started_at": "2026-09-04T11:30:00+00:00",
+    }, now)
+    assert _scan_run_stalled({
+        "status": "RUNNING",
+        "started_at": "2026-09-04T10:30:00+00:00",
+    }, now)
+    assert not _scan_run_stalled({
+        "status": "SUCCESS",
+        "started_at": "2026-09-04T10:30:00+00:00",
+    }, now)
 
 
 def test_market_regime_fails_closed_without_nifty(monkeypatch):

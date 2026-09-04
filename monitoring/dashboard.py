@@ -28,6 +28,7 @@ REFRESH_S     = 60          # dashboard refresh interval (seconds)
 HEARTBEAT_S   = 300         # Telegram alert if scan silent > 5 min
 MARKET_TTL_S  = 45          # share one market request across callbacks
 SCAN_GRACE_S  = 3600        # scheduled scan may run for up to 45 minutes
+SCAN_STALLED_S = 3600       # systemd terminates scans after 45 minutes
 SCAN_TIMES_UTC = ((3, 50), (7, 0), (9, 45))
 
 _MARKET_LOCK = threading.Lock()
@@ -323,6 +324,26 @@ def _scan_is_overdue(last_success: str | None, now: datetime | None = None) -> b
         return True
 
 
+def _scan_run_stalled(scan_status: dict, now: datetime | None = None) -> bool:
+    """Detect a RUNNING marker left behind by a killed or timed-out process."""
+    if scan_status.get("status") != "RUNNING":
+        return False
+    started_at = scan_status.get("started_at") or scan_status.get("updated_at")
+    if not started_at:
+        return True
+    try:
+        started = datetime.fromisoformat(started_at)
+        if started.tzinfo is None:
+            started = started.replace(tzinfo=timezone.utc)
+        current = now or datetime.now(timezone.utc)
+        if current.tzinfo is None:
+            current = current.replace(tzinfo=timezone.utc)
+        return (current.astimezone(timezone.utc)
+                - started.astimezone(timezone.utc)).total_seconds() > SCAN_STALLED_S
+    except (TypeError, ValueError):
+        return True
+
+
 def _inr(v: float, cr: bool = False) -> str:
     """Format as Indian ₹ with optional lakh/crore suffix."""
     if cr and abs(v) >= 1e7:
@@ -583,6 +604,7 @@ def create_app(telegram=None) -> Dash:
         """Fast local health probe with no external network dependency."""
         scan_status = load_scan_status()
         overdue = _scan_is_overdue(scan_status.get("last_success_at"))
+        stalled = _scan_run_stalled(scan_status)
         return {
             "status": "ok",
             "service": "bharatedge-dashboard",
@@ -590,6 +612,7 @@ def create_app(telegram=None) -> Dash:
             "last_scan_status": scan_status.get("status", "UNKNOWN"),
             "last_scan_success": scan_status.get("last_success_at"),
             "scan_overdue": overdue,
+            "scan_stalled": stalled,
         }, 200
 
     # ── Google Font + global CSS ──────────────────────────────
@@ -767,8 +790,11 @@ def create_app(telegram=None) -> Dash:
             context_status = quality.get("market_context", {}).get("status", "UNKNOWN")
             run_status = scan_status.get("status", "UNKNOWN")
             scan_overdue = _scan_is_overdue(scan_status.get("last_success_at"))
+            scan_stalled = _scan_run_stalled(scan_status)
             if run_status == "FAILED":
                 quality_label, quality_color = "SCAN FAILED", RED
+            elif scan_stalled:
+                quality_label, quality_color = "SCAN STALLED", RED
             elif run_status == "RUNNING":
                 quality_label, quality_color = "SCANNING", YELLOW
             elif scan_overdue:

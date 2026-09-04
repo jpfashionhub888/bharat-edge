@@ -37,9 +37,18 @@ SCAN_STATUS_FILE = 'logs/scan_status.json'
 def _write_scan_status(status, **details):
     """Persist scan lifecycle independently from the last good result."""
     os.makedirs(os.path.dirname(SCAN_STATUS_FILE) or '.', exist_ok=True)
+    previous = {}
+    try:
+        with open(SCAN_STATUS_FILE, 'r', encoding='utf-8') as handle:
+            loaded = json.load(handle)
+            if isinstance(loaded, dict):
+                previous = loaded
+    except (FileNotFoundError, OSError, ValueError, TypeError, json.JSONDecodeError):
+        pass
     payload = {
         'status': status,
         'updated_at': datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
+        'last_success_at': previous.get('last_success_at'),
         **details,
     }
     tmp_file = SCAN_STATUS_FILE + '.tmp'
