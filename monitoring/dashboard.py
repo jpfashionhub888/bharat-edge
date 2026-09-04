@@ -1309,8 +1309,25 @@ def _tab_signals() -> html.Div:
 def _tab_sectors() -> html.Div:
     scan    = load_scan()
     signals = scan.get("signals", [])
+    snapshot = scan.get("sectors", [])
 
-    # Aggregate signals by sector
+    if snapshot:
+        rows = [{
+            "Sector": item.get("sector", "UNKNOWN"),
+            "Status": item.get("status", "NEUTRAL"),
+            "Score": f"{float(item.get('score', 0)):.2f}",
+            "1W %": f"{float(item.get('momentum_1w', 0)):+.2f}%",
+            "1M %": f"{float(item.get('momentum_1m', 0)):+.2f}%",
+            "3M %": f"{float(item.get('momentum_3m', 0)):+.2f}%",
+            "RS vs Nifty": f"{float(item.get('relative_strength', 0)):+.2f}%",
+            "Trend": f"{float(item.get('trend_score', 0)):.1f}",
+            "Allocation": f"{float(item.get('allocation_multiplier', 0)):.2f}×",
+            "Source": item.get("source", "UNAVAILABLE"),
+        } for item in snapshot]
+    else:
+        rows = []
+
+    # Compatibility fallback for older scan files that predate sector snapshots.
     sector_data: dict[str, dict] = {}
     for s in signals:
         sec = s.get("sector", "UNKNOWN")
@@ -1322,28 +1339,29 @@ def _tab_sectors() -> html.Div:
         sector_data[sec]["scores"].append(s.get("confidence", 0))
 
     # Build summary rows
-    rows = []
-    for sec, d in sorted(sector_data.items()):
-        sigs  = d["signals"]
-        buys  = sum(1 for x in sigs if "BUY" in x)
-        sells = sum(1 for x in sigs if "SELL" in x or x == "AVOID")
-        avg   = sum(d["scores"]) / len(d["scores"]) if d["scores"] else 0
-        status = d["status"]
-        rows.append({
-            "Sector"   : sec,
-            "Status"   : status,
-            "Avg Score": f"{avg:.3f}",
-            "BUY Sigs" : buys,
-            "SELL Sigs": sells,
-            "Total"    : len(sigs),
-            "Outlook"  : ("BULLISH" if buys > sells else
-                          "BEARISH" if sells > buys else "NEUTRAL"),
-        })
+    if not rows:
+        for sec, d in sorted(sector_data.items()):
+            sigs = d["signals"]
+            buys = sum(1 for x in sigs if "BUY" in x)
+            sells = sum(1 for x in sigs if "SELL" in x or x == "AVOID")
+            avg = sum(d["scores"]) / len(d["scores"]) if d["scores"] else 0
+            status = d["status"]
+            rows.append({
+                "Sector": sec,
+                "Status": status,
+                "Score": f"{avg * 100:.2f}",
+                "BUY Sigs": buys,
+                "SELL Sigs": sells,
+                "Total": len(sigs),
+                "Outlook": ("BULLISH" if buys > sells else
+                            "BEARISH" if sells > buys else "NEUTRAL"),
+                "Source": "Derived from qualifying signals",
+            })
 
     # Bar chart of avg scores
     if rows:
         sectors = [r["Sector"] for r in rows]
-        scores  = [float(r["Avg Score"]) for r in rows]
+        scores  = [float(r["Score"]) for r in rows]
         colors  = [SECTOR_COLORS.get(s, ORANGE) for s in sectors]
 
         bar_fig = go.Figure(go.Bar(
@@ -1355,7 +1373,7 @@ def _tab_sectors() -> html.Div:
         ))
         bar_fig.update_layout(**_dark_fig(220))
         bar_fig.update_xaxes(tickfont=dict(size=10))
-        bar_fig.update_yaxes(range=[0, 1], tickformat=".2f")
+        bar_fig.update_yaxes(range=[0, 100], tickformat=".0f")
         chart = dcc.Graph(figure=bar_fig, config={"displayModeBar": False})
     else:
         chart = html.Div("Run a scan to populate sector data",
@@ -1370,6 +1388,11 @@ def _tab_sectors() -> html.Div:
     ]
 
     return html.Div([
+        html.Div(
+            f"Sector snapshot as of {scan.get('scan_time') or 'unavailable'} · "
+            "Values are computed from provider market data; unavailable data is not fabricated.",
+            style={"color": DIM, "fontSize": "11px", "marginBottom": "12px"},
+        ),
         _section("SECTOR MOMENTUM SCORES", chart),
         _section("SECTOR ROTATION TABLE", _dtable(rows, cond, page=15)),
     ])

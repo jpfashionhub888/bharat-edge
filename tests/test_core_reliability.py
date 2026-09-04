@@ -620,6 +620,33 @@ def test_dashboard_parses_both_yahoo_column_layouts():
     assert _latest_close(field_first, "TEST.NS") == 106.0
 
 
+def test_sector_tab_uses_real_snapshot_when_no_stock_signals(monkeypatch):
+    import monitoring.dashboard as dashboard
+
+    monkeypatch.setattr(dashboard, "load_scan", lambda: {
+        "scan_time": "2026-09-04T09:15:00+05:30",
+        "signals": [],
+        "sectors": [{
+            "sector": "BANKING",
+            "status": "OVERWEIGHT",
+            "score": 72.5,
+            "momentum_1w": 1.2,
+            "momentum_1m": 3.4,
+            "momentum_3m": 7.8,
+            "relative_strength": 2.1,
+            "trend_score": 80.0,
+            "volatility_score": 65.0,
+            "allocation_multiplier": 1.2,
+            "source": "Yahoo Finance sector proxies",
+        }],
+    })
+
+    rendered = str(dashboard._tab_sectors().to_plotly_json())
+    assert "BANKING" in rendered
+    assert "Yahoo Finance sector proxies" in rendered
+    assert "Run a scan to populate sector data" not in rendered
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd

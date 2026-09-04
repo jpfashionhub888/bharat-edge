@@ -210,6 +210,7 @@ def run_bharat_scan():
     print("="*60)
 
     sector_scores = {}
+    sector_snapshot = []
     try:
         from phase3_sector import run_sector_rotation
         rotation = run_sector_rotation(
@@ -220,6 +221,19 @@ def run_bharat_scan():
         if not rotation.empty:
             for _, row in rotation.iterrows():
                 sector_scores[row['sector']] = row['status']
+                sector_snapshot.append({
+                    'sector': str(row['sector']),
+                    'status': str(row['status']),
+                    'score': round(float(row['score']), 2),
+                    'momentum_1w': round(float(row['mom_1w']), 2),
+                    'momentum_1m': round(float(row['mom_1m']), 2),
+                    'momentum_3m': round(float(row['mom_3m']), 2),
+                    'relative_strength': round(float(row['rs_vs_nifty']), 2),
+                    'trend_score': round(float(row['trend_score']), 2),
+                    'volatility_score': round(float(row['vol_score']), 2),
+                    'allocation_multiplier': round(float(row['alloc_mult']), 2),
+                    'source': 'Yahoo Finance sector proxies',
+                })
                 status_emoji = (
                     "BUY" if row['status'] == 'OVERWEIGHT'
                     else "AVOID" if row['status'] == 'UNDERWEIGHT'
@@ -611,6 +625,7 @@ def run_bharat_scan():
         _scan_out = {
             'scan_time'    : datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
             'market_regime': market_regime,
+            'sectors'      : sector_snapshot,
             'data_quality'  : {
                 'price_source': 'Yahoo Finance',
                 'price_coverage': round(locals().get('price_coverage', 0.0), 4),
