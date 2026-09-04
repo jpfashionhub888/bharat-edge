@@ -36,6 +36,37 @@ def test_regime_multiplier_reduces_size_without_losing_signal(tmp_path):
     assert trader.positions["TEST.NS"]["position_multiplier"] == 0.5
 
 
+def test_position_mutations_are_persisted_immediately(tmp_path):
+    state_file = tmp_path / "state.json"
+    trader = BharatPaperTrader(log_file=str(state_file))
+
+    assert trader.open_position("TEST.NS", 100, 1)
+    saved = json.loads(state_file.read_text(encoding="utf-8"))
+    assert "TEST.NS" in saved["positions"]
+
+    assert trader.close_position("TEST.NS", 110, "take_profit")
+    saved = json.loads(state_file.read_text(encoding="utf-8"))
+    assert "TEST.NS" not in saved["positions"]
+    assert saved["trade_history"][-1]["action"] == "SELL"
+
+
+def test_failed_position_persistence_rolls_back_memory(tmp_path, monkeypatch):
+    trader = BharatPaperTrader(log_file=str(tmp_path / "state.json"))
+    starting_capital = trader.capital
+    monkeypatch.setattr(
+        trader,
+        "save_state",
+        lambda: (_ for _ in ()).throw(OSError("disk full")),
+    )
+
+    with pytest.raises(OSError, match="disk full"):
+        trader.open_position("TEST.NS", 100, 1)
+
+    assert trader.capital == starting_capital
+    assert trader.positions == {}
+    assert trader.trade_history == []
+
+
 @pytest.mark.parametrize("price,strength", [(0, 1), (-1, 1), (100, -2), (100, "BUY")])
 def test_invalid_position_inputs_cannot_open_trade(tmp_path, price, strength):
     trader = BharatPaperTrader(log_file=str(tmp_path / "state.json"))

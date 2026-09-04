@@ -120,6 +120,7 @@ class BharatPaperTrader:
         if shares == 0:
             return False
 
+        previous_capital = self.capital
         self.capital -= cost
 
         if atr and atr > 0:
@@ -153,6 +154,14 @@ class BharatPaperTrader:
             'position_multiplier': position_multiplier,
         }
         self.trade_history.append(trade)
+
+        try:
+            self.save_state()
+        except Exception:
+            self.capital = previous_capital
+            self.positions.pop(symbol, None)
+            self.trade_history.pop()
+            raise
 
         print(f"   BUY {shares} {symbol} @ Rs{price:.2f} (Rs{cost:.2f})")
         return True
@@ -189,7 +198,16 @@ class BharatPaperTrader:
             f" PnL: Rs{pnl:+.2f} ({pnl_pct:+.1%}) [{direction}]"
         )
 
-        # ── Log to TradeTracker ───────────────────────────────────
+        del self.positions[symbol]
+        try:
+            self.save_state()
+        except Exception:
+            self.capital -= revenue
+            self.positions[symbol] = pos
+            self.trade_history.pop()
+            raise
+
+        # The primary portfolio close is durable before secondary analytics.
         if self.trade_tracker:
             try:
                 self.trade_tracker.record_trade(
@@ -199,12 +217,10 @@ class BharatPaperTrader:
                     shares      = shares,
                     reason      = reason.upper().replace('_', ' '),
                     entry_time  = pos.get('entry_date'),
-                    exit_time   = datetime.now().isoformat(),
+                    exit_time   = trade['date'],
                 )
             except Exception as e:
                 logger.warning('TradeTracker record failed: %s', e)
-
-        del self.positions[symbol]
         return True
 
     def update_position(self, symbol, current_price,
@@ -218,7 +234,8 @@ class BharatPaperTrader:
         pos = self.positions[symbol]
         entry = pos['entry_price']
 
-        if current_price > pos['highest_price']:
+        high_water_changed = current_price > pos['highest_price']
+        if high_water_changed:
             pos['highest_price'] = current_price
 
         pnl_pct = (current_price - entry) / entry
@@ -246,6 +263,9 @@ class BharatPaperTrader:
         if drop >= trailing_stop:
             self.close_position(symbol, current_price, 'trailing_stop')
             return True
+
+        if high_water_changed:
+            self.save_state()
 
         return False
 
