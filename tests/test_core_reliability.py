@@ -337,6 +337,17 @@ def test_stalled_scan_is_distinguished_from_active_scan():
     }, now)
 
 
+def test_scan_workflow_retries_publish_without_force_push():
+    from pathlib import Path
+
+    workflow = Path(".github/workflows/daily_scan.yml").read_text(encoding="utf-8")
+    assert "git fetch origin main" in workflow
+    assert "git rebase origin/main" in workflow
+    assert "for attempt in 1 2 3" in workflow
+    assert "push --force" not in workflow
+    assert "push -f" not in workflow
+
+
 def test_market_regime_fails_closed_without_nifty(monkeypatch):
     from bharat_market_regime import BharatMarketRegimeFilter
 

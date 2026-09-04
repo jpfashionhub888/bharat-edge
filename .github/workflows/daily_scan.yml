@@ -81,7 +81,20 @@ jobs:
           git add -f logs/scan_results.json     || true
           git add -f docs/index.html            || true
           git diff --staged --quiet || git commit -m "Auto: scan signals $(date -u '+%Y-%m-%d %H:%M UTC')"
-          git push origin main
+          # A maintainer or another run may update main while this scan is
+          # executing. Rebase and retry instead of failing or force-pushing.
+          pushed=false
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              pushed=true
+              break
+            fi
+            echo "Push raced with another update; retrying ($attempt/3)"
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
