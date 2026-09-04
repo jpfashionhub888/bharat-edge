@@ -4,7 +4,7 @@
 # INR currency · NSE market hours · 60s auto-refresh
 
 from __future__ import annotations
-import json, os, traceback, threading, time
+import json, os, re, traceback, threading, time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
@@ -12,7 +12,8 @@ from zoneinfo import ZoneInfo
 
 import plotly.graph_objects as go
 import plotly.express as px
-from dash import Dash, dcc, html, Input, Output, State, dash_table
+from dash import Dash, dcc, html, Input, Output, State
+import dash_ag_grid as dag
 
 # ── Paths (always resolved from repo root) ────────────────────
 ROOT          = Path(__file__).resolve().parent.parent
@@ -479,14 +480,77 @@ def _dtable(rows: list, cond: list = None, page: int = 15):
             "color": DIM, "fontFamily": FONT,
             "fontSize": "12px", "padding": "20px", "textAlign": "center",
         })
-    cols = [{"name": c, "id": c} for c in rows[0]]
-    return dash_table.DataTable(
-        data=rows, columns=cols,
-        page_size=page, sort_action="native",
-        style_table={"overflowX": "auto"},
-        style_cell=_CELL,
-        style_header=_HEADER,
-        style_data_conditional=[_ODD] + (cond or []),
+    row_conditions = []
+    column_styles = {}
+    for rule in cond or []:
+        selector = rule.get("if", {})
+        style = {key: value for key, value in rule.items() if key != "if"}
+        column_id = selector.get("column_id")
+        query = selector.get("filter_query")
+        if column_id and not query:
+            column_styles.setdefault(column_id, {}).update(style)
+            continue
+        if not query:
+            continue
+        contains = re.fullmatch(r"\{(.+?)\}\s+contains\s+'(.*)'", query)
+        equals = re.fullmatch(r"\{(.+?)\}\s*=\s*'?([^']*)'?", query)
+        if contains:
+            field, value = contains.groups()
+            expression = (
+                f"params.data && String(params.data[{json.dumps(field)}] || '')"
+                f".includes({json.dumps(value)})"
+            )
+        elif equals:
+            field, value = equals.groups()
+            expression = (
+                f"params.data && String(params.data[{json.dumps(field)}] || '')"
+                f" === {json.dumps(value)}"
+            )
+        else:
+            continue
+        row_conditions.append({"condition": expression, "style": style})
+
+    columns = []
+    for field in rows[0]:
+        definition = {
+            "field": field,
+            "headerName": field,
+            "minWidth": 110,
+            "flex": 1,
+        }
+        if field in column_styles:
+            definition["cellStyle"] = column_styles[field]
+        columns.append(definition)
+
+    grid_options = {
+        "theme": "themeQuartz",
+        "pagination": len(rows) > page,
+        "paginationPageSize": page,
+        "paginationPageSizeSelector": False,
+        "animateRows": False,
+        "suppressCellFocus": True,
+        "domLayout": "autoHeight",
+    }
+    return dag.AgGrid(
+        rowData=rows,
+        columnDefs=columns,
+        defaultColDef={"sortable": True, "filter": True, "resizable": True},
+        getRowStyle={"styleConditions": row_conditions} if row_conditions else None,
+        dashGridOptions=grid_options,
+        columnSize="responsiveSizeToFit",
+        className="be-grid",
+        style={
+            "width": "100%",
+            "--ag-background-color": PANEL,
+            "--ag-foreground-color": TEXT,
+            "--ag-header-background-color": PANEL2,
+            "--ag-header-foreground-color": ORANGE,
+            "--ag-border-color": BORDER,
+            "--ag-row-border-color": BORDER,
+            "--ag-odd-row-background-color": PANEL2,
+            "--ag-font-family": FONT,
+            "--ag-font-size": "11px",
+        },
     )
 
 

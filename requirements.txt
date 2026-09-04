@@ -9,6 +9,7 @@ beautifulsoup4>=4.12,<5
 ta==0.11.0
 plotly>=5.20,<8
 dash>=2.16,<5
+dash-ag-grid>=35.2,<36
 dash-bootstrap-components>=1.5,<3
 transformers>=4.40,<6
 feedparser>=6,<7

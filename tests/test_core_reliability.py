@@ -329,6 +329,18 @@ def test_every_dashboard_tab_renders_without_external_data(monkeypatch):
         assert getattr(rendered, "children", None) is not None
 
 
+def test_dashboard_tables_use_supported_sortable_grid():
+    import dash_ag_grid as dag
+    from monitoring.dashboard import _dtable
+
+    grid = _dtable([{"Symbol": "TEST", "Signal": "BUY"}], page=10)
+
+    assert isinstance(grid, dag.AgGrid)
+    assert grid.defaultColDef["sortable"] is True
+    assert grid.defaultColDef["filter"] is True
+    assert grid.dashGridOptions["paginationPageSize"] == 10
+
+
 def test_dashboard_does_not_calculate_unrealized_values_from_stale_prices(monkeypatch):
     import monitoring.dashboard as dashboard
 
