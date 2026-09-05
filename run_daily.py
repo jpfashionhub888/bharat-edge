@@ -202,13 +202,9 @@ def get_market_context() -> dict:
               f"SGX={context['sgx_gap']:+.2f}%")
         return context
     except Exception as e:
-        print(f"  ⚠️ Live context failed: {e}")
-        return dict(
-            vix_value=17.0, vix_change=0.0,
-            fii_net=0.0, dii_net=0.0,
-            sgx_gap=0.0, news_sentiment=0.0,
-            news_volume=0,
-        )
+        raise RuntimeError(
+            f"validated market context unavailable; scan withheld: {e}"
+        ) from e
 
 
 # ============================================================
@@ -384,7 +380,12 @@ if __name__ == "__main__":
         exit(1)
 
     # Step 3: Market context
-    market = get_market_context()
+    try:
+        market = get_market_context()
+    except RuntimeError as exc:
+        print(f"  ❌ {exc}")
+        send_msg(f"❌ <b>BHARAT EDGE SCAN WITHHELD</b>\n{exc}")
+        exit(1)
 
     # Step 4: Run scan
     scan_df = run_scan(ensemble, market)

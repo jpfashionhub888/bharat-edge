@@ -690,6 +690,17 @@ def test_cloud_scan_does_not_feed_fixed_vix_to_sector_rotation():
     assert "validated India VIX unavailable; sector rotation withheld" in source
 
 
+def test_alternate_production_runners_do_not_invent_market_context():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    daily = (root / "run_daily.py").read_text(encoding="utf-8")
+    retrain = (root / "retrain_and_upload.py").read_text(encoding="utf-8")
+    assert "vix_value=17.0" not in daily
+    assert "validated market context unavailable; scan withheld" in daily
+    for invented in ("vix_value   = 17.21", "fii_net     = 500", "sgx_gap     = 0.65"):
+        assert invented not in retrain
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd

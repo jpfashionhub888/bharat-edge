@@ -84,11 +84,6 @@ def retrain_and_upload():
         symbols     = SYMBOLS,
         period      = "2y",
         save_models = True,
-        vix_value   = 17.21,
-        vix_change  = -4.9,
-        fii_net     = 500,
-        dii_net     = 300,
-        sgx_gap     = 0.65,
     )
 
     if not ensemble:
