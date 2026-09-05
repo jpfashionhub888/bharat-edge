@@ -820,6 +820,18 @@ def test_legacy_dashboard_has_no_fabricated_fallback_context():
     assert "Legacy dashboard withheld" in source
 
 
+def test_runnable_demo_entrypoints_do_not_send_synthetic_market_scenarios():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    sector = (root / "phase3_sector.py").read_text(encoding="utf-8")
+    models = (root / "phase2_models.py").read_text(encoding="utf-8")
+    alerts = (root / "telegram_alerts.py").read_text(encoding="utf-8")
+    assert "vix_value      = 17.21" not in sector
+    assert "vix_value=17.21" not in models
+    assert "'fii_net'  : 1250.0" not in alerts
+    assert "No synthetic market alerts were sent" in alerts
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd

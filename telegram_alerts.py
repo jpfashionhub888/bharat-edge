@@ -288,44 +288,5 @@ if __name__ == "__main__":
     print(f"  Token  : {'✅ Found' if TOKEN   else '❌ Missing'}")
     print(f"  ChatID : {'✅ Found' if CHAT_ID else '❌ Missing'}")
 
-    # Test startup alert
-    print("\n  Testing startup alert...")
-    send_startup_alert()
-
-    # Test market context
-    print("\n  Testing market context alert...")
-    send_market_context_alert({
-        'vix_value': 16.5,
-        'fii_net'  : 1250.0,
-        'sgx_gap'  : 0.35,
-    })
-
-    # Test strong signals
-    print("\n  Testing strong signals alert...")
-    test_df = pd.DataFrame([{
-        "symbol"        : "RELIANCE.NS",
-        "signal"        : "STRONG_BUY",
-        "adj_confidence": 71.8,
-        "sector"        : "Energy",
-        "sector_status" : "OVERWEIGHT",
-        "up_votes"      : 4,
-    }, {
-        "symbol"        : "INFY.NS",
-        "signal"        : "STRONG_BUY",
-        "adj_confidence": 71.6,
-        "sector"        : "IT",
-        "sector_status" : "OVERWEIGHT",
-        "up_votes"      : 4,
-    }])
-    strong_count = send_strong_signals_alert(test_df)
-
-    # Test completion
-    print("\n  Testing completion alert...")
-    send_completion_alert(
-        signal_count  = 6,
-        strong_count  = strong_count,
-        duration_secs = 187,
-    )
-
-    print("\n  ✅ All alerts tested!")
-    print("  Check your Telegram for messages!")
+    print("\n  Configuration check only. No synthetic market alerts were sent.")
+    print("  Run the validated scanner to produce genuine notifications.")

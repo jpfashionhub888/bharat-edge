@@ -603,15 +603,9 @@ if __name__ == "__main__":
         "ICICIBANK.NS","WIPRO.NS","SBIN.NS","BAJFINANCE.NS",
     ]
 
-    MARKET = dict(
-        vix_value=17.21, vix_change=-4.9,
-        fii_net=500, dii_net=300,
-        sgx_gap=0.65, news_sentiment=0.3, news_volume=35,
-    )
-
     ensemble = train_full_ensemble(
         symbols=SYMBOLS, period="2y",
-        save_models=True, **MARKET,
+        save_models=True,
     )
 
     if not ensemble:
@@ -626,6 +620,13 @@ if __name__ == "__main__":
         bar = "█" * int(row['avg'] * 25)
         print(f"  {rank:>2}. {row['feature']:<25} "
               f"{row['avg']:.4f}  {bar}")
+
+    try:
+        from phase6_market_data import get_live_market_context
+        MARKET, _ = get_live_market_context()
+        MARKET = {k: v for k, v in MARKET.items() if not k.startswith('_')}
+    except Exception as exc:
+        raise SystemExit(f"Validated market context unavailable; prediction withheld: {exc}")
 
     signals = predict_portfolio(
         symbols  = ["TCS.NS","INFY.NS","RELIANCE.NS",

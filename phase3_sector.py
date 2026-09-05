@@ -523,11 +523,16 @@ if __name__ == "__main__":
     print("  BHARAT EDGE - SECTOR ROTATION TEST")
     print("🔄"*20)
 
-    # Run sector rotation
+    try:
+        from phase6_market_data import get_live_market_context
+        market_context, _ = get_live_market_context()
+    except Exception as exc:
+        raise SystemExit(f"Validated market context unavailable; rotation withheld: {exc}")
+
     rotation = run_sector_rotation(
-        vix_value      = 17.21,
-        fii_net        = 500,
-        news_sentiment = 0.3,
+        vix_value      = float(market_context['vix_value']),
+        fii_net        = None,
+        news_sentiment = 0.0,
         period         = "6mo",
         verbose        = True,
     )
