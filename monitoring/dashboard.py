@@ -1608,6 +1608,8 @@ def _tab_sysconfig() -> html.Div:
     scan_cfg = [
         ("Last Scan",       scan.get("scan_time", "Never")[:19] if scan.get("scan_time") else "Never", TEXT),
         ("Signals Found",   len(scan.get("signals", [])), ORANGE),
+        ("Universe Symbols", quality.get("universe_count", "UNAVAILABLE"), TEXT),
+        ("Price Histories", quality.get("price_history_count", "UNAVAILABLE"), TEXT),
         ("Regime",          scan.get("market_regime",{}).get("regime","--"), TEXT),
         ("VIX",             _fmt_metric(scan.get('market_regime',{}).get('vix'), ".1f"), YELLOW),
         ("Can Trade",       scan.get("market_regime",{}).get("can_trade","--"), TEXT),

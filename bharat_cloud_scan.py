@@ -57,6 +57,13 @@ def _write_scan_status(status, **details):
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(tmp_file, SCAN_STATUS_FILE)
+    try:
+        import shutil
+        backup_tmp = SCAN_STATUS_FILE + '.bak.tmp'
+        shutil.copy2(SCAN_STATUS_FILE, backup_tmp)
+        os.replace(backup_tmp, SCAN_STATUS_FILE + '.bak')
+    except OSError as exc:
+        logger.warning("Scan-status backup refresh failed: %s", exc)
 
 
 def is_market_day():
@@ -676,7 +683,8 @@ def run_bharat_scan():
     print("\n" + "="*60)
     print("BHARAT EDGE SCAN COMPLETE")
     print("="*60)
-    print(f"   Stocks scanned: {len(stock_signals)}")
+    print(f"   Price histories loaded: {len(stock_data)}/{len(all_stocks)}")
+    print(f"   Qualifying signals: {len(stock_signals)}")
     print(f"   Open positions: {len(trader.positions)}")
     print(f"   Portfolio: Rs{total_value:,.2f}")
     print(f"   Total PnL: Rs{total_pnl:+,.2f} ({total_pct:+.1%})")

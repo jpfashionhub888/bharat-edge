@@ -417,6 +417,7 @@ def test_scan_lifecycle_records_success(tmp_path, monkeypatch):
     assert status["status"] == "SUCCESS"
     assert status["last_success_at"]
     assert status["duration_seconds"] >= 0
+    assert status_file.with_suffix(".json.bak").exists()
 
 
 def test_scan_lifecycle_records_failure(tmp_path, monkeypatch):
