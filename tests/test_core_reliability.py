@@ -99,6 +99,22 @@ def test_corrupt_portfolio_state_fails_safe(tmp_path):
     assert not trader.open_position("TEST.NS", 100, 1)
 
 
+def test_corrupt_portfolio_primary_recovers_validated_latest_backup(tmp_path):
+    state_file = tmp_path / "state.json"
+    trader = BharatPaperTrader(log_file=str(state_file))
+    assert trader.open_position("TEST.NS", 100, 1)
+    expected = json.loads(state_file.read_text(encoding="utf-8"))
+    state_file.write_text("truncated", encoding="utf-8")
+
+    recovered = BharatPaperTrader(log_file=str(state_file))
+    recovered.load_state()
+
+    assert recovered.state_healthy is True
+    assert recovered.state_recovered_from_backup is True
+    assert recovered.positions == expected["positions"]
+    assert json.loads(state_file.read_text(encoding="utf-8")) == expected
+
+
 def test_invalid_saved_position_blocks_new_trades(tmp_path):
     state_file = tmp_path / "state.json"
     state_file.write_text(json.dumps({

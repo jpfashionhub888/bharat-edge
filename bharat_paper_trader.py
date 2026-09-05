@@ -6,6 +6,7 @@ import json
 import os
 import logging
 import math
+import shutil
 from datetime import datetime
 from config.settings import (
     MAX_OPEN_POSITIONS, MAX_POSITION_SIZE, STOP_LOSS_PCT,
@@ -46,6 +47,7 @@ class BharatPaperTrader:
         self.trade_history = []
         self.trade_tracker = trade_tracker   # optional TradeTracker instance
         self.state_healthy = True
+        self.state_recovered_from_backup = False
 
     @staticmethod
     def _finite_number(value):
@@ -333,38 +335,64 @@ class BharatPaperTrader:
             f.flush()
             os.fsync(f.fileno())
         os.replace(tmp_file, self.log_file)
+        # Keep a validated mirror of the latest committed state. Failure to
+        # refresh the mirror must not roll back an already durable trade.
+        try:
+            backup_tmp = self.log_file + '.bak.tmp'
+            shutil.copy2(self.log_file, backup_tmp)
+            os.replace(backup_tmp, self.log_file + '.bak')
+        except OSError as exc:
+            logger.warning("Portfolio backup refresh failed: %s", exc)
         print(f"   State saved to {self.log_file}")
 
     def load_state(self):
-        if not os.path.exists(self.log_file):
+        backup_file = self.log_file + '.bak'
+        if not os.path.exists(self.log_file) and not os.path.exists(backup_file):
             print("   No saved state found, starting fresh")
             self.state_healthy = True
             return
 
-        try:
-            with open(self.log_file, 'r') as f:
-                state = json.load(f)
-            capital = float(state['capital'])
-            starting_capital = float(state['starting_capital'])
-            positions = state.get('positions', {})
-            trade_history = state.get('trade_history', [])
-            if (not self._finite_number(capital) or capital < 0
-                    or not self._positive_number(starting_capital)
-                    or not self._valid_positions(positions)
-                    or not isinstance(trade_history, list)):
-                raise ValueError("paper-trading state failed validation")
-            self.capital = capital
-            self.starting_capital = starting_capital
-            self.positions = positions
-            self.trade_history = trade_history
-            self.state_healthy = True
-        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
+        errors = []
+        loaded = None
+        for source, candidate in (("PRIMARY", self.log_file), ("BACKUP", backup_file)):
+            try:
+                with open(candidate, 'r') as f:
+                    state = json.load(f)
+                capital = float(state['capital'])
+                starting_capital = float(state['starting_capital'])
+                positions = state.get('positions', {})
+                trade_history = state.get('trade_history', [])
+                if (not self._finite_number(capital) or capital < 0
+                        or not self._positive_number(starting_capital)
+                        or not self._valid_positions(positions)
+                        or not isinstance(trade_history, list)):
+                    raise ValueError("paper-trading state failed validation")
+                loaded = (source, state, capital, starting_capital, positions, trade_history)
+                break
+            except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
+                errors.append(f"{source}: {exc}")
+        if loaded is None:
+            exc = "; ".join(errors)
             logger.error("Ignoring invalid paper-trading state %s: %s", self.log_file, exc)
             # Never interpret a damaged account file as a fresh empty account.
             # Existing in-memory positions remain manageable, but new entries
             # stay blocked until an operator repairs or removes the state file.
             self.state_healthy = False
             return
+
+        source, state, capital, starting_capital, positions, trade_history = loaded
+        self.capital, self.starting_capital = capital, starting_capital
+        self.positions, self.trade_history = positions, trade_history
+        self.state_healthy = True
+        self.state_recovered_from_backup = source == "BACKUP"
+        if source == "BACKUP":
+            try:
+                restore_tmp = self.log_file + '.restore.tmp'
+                shutil.copy2(backup_file, restore_tmp)
+                os.replace(restore_tmp, self.log_file)
+                logger.warning("Recovered portfolio state from validated backup")
+            except OSError as exc:
+                logger.error("Backup was loaded but primary restore failed: %s", exc)
 
         print(f"   State loaded: Rs{self.capital:,.2f} cash")
         print(f"   Open positions: {len(self.positions)}")
