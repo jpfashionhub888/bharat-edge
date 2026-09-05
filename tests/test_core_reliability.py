@@ -683,7 +683,8 @@ def test_equity_history_records_only_real_bounded_snapshots(tmp_path):
 
 def test_cloud_scan_does_not_feed_fixed_vix_to_sector_rotation():
     from pathlib import Path
-    source = Path("bharat_cloud_scan.py").read_text(encoding="utf-8")
+    repo_root = Path(__file__).resolve().parents[1]
+    source = (repo_root / "bharat_cloud_scan.py").read_text(encoding="utf-8")
     assert "vix_value=17.0" not in source
     assert "fii_net=None" in source
     assert "validated India VIX unavailable; sector rotation withheld" in source
