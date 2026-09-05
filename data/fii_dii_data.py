@@ -74,20 +74,20 @@ class FIIDIIFetcher:
 
             latest = data[0] if data else {}
 
+            if latest.get('fiiNet') in (None, '') or latest.get('diiNet') in (None, ''):
+                raise ValueError('NSE response omitted FII/DII net values')
             fii_net = float(
-                str(latest.get('fiiNet', '0'))
+                str(latest.get('fiiNet'))
                 .replace(',', '')
                 .replace('(', '-')
                 .replace(')', '')
-                or 0
             )
 
             dii_net = float(
-                str(latest.get('diiNet', '0'))
+                str(latest.get('diiNet'))
                 .replace(',', '')
                 .replace('(', '-')
                 .replace(')', '')
-                or 0
             )
 
             result = {
@@ -99,6 +99,8 @@ class FIIDIIFetcher:
                 'combined_signal': self._combined(
                     fii_net, dii_net
                 ),
+                'available': True,
+                'source': 'NSE India fiidiiTradeReact',
             }
 
             self.data = result
@@ -134,16 +136,18 @@ class FIIDIIFetcher:
         """Return neutral default if fetch fails."""
 
         return {
-            'fii_net': 0.0,
-            'dii_net': 0.0,
-            'date': str(datetime.now().date()),
-            'fii_signal': 'NEUTRAL',
-            'dii_signal': 'NEUTRAL',
-            'combined_signal': 0.0,
+            'fii_net': None, 'dii_net': None, 'date': None,
+            'fii_signal': 'UNAVAILABLE', 'dii_signal': 'UNAVAILABLE',
+            'combined_signal': None, 'available': False,
+            'source': 'NSE India fiidiiTradeReact',
         }
 
     def _print_summary(self, data):
         """Print FII/DII summary."""
+
+        if not data.get('available'):
+            print("\n   FII/DII Flow: UNAVAILABLE")
+            return
 
         fii = data['fii_net']
         dii = data['dii_net']

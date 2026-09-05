@@ -162,23 +162,20 @@ def send_signal_alert(signals_df, market_ctx=None) -> None:
 
     # Build market context block
     if market_ctx:
-        vix = market_ctx.get('vix_value', 0)
-        fii = market_ctx.get('fii_net', 0)
-        sgx = market_ctx.get('sgx_gap', 0)
-        vix_label = (
-            "BULLISH"   if vix < 15 else
-            "CAUTIOUS"  if vix < 20 else
-            "DEFENSIVE" if vix < 25 else
-            "BEARISH"
-        )
-        fii_label = "BUYING" if fii >= 0 else "SELLING"
-        sgx_str   = f"+{sgx:.2f}%" if sgx >= 0 else f"{sgx:.2f}%"
-        market_block = (
-            f"<b>MARKET:</b>\n"
-            f"  VIX : {vix:.1f} ({vix_label})\n"
-            f"  FII : Rs {fii:+,.0f} Cr ({fii_label})\n"
-            f"  SGX : {sgx_str}\n\n"
-        )
+        vix = market_ctx.get('vix_value')
+        fii = market_ctx.get('fii_net') if market_ctx.get('fii_authenticated') else None
+        sgx = market_ctx.get('sgx_gap') if market_ctx.get('sgx_available') else None
+        if vix is None:
+            market_block = "<b>MARKET:</b> UNAVAILABLE\n\n"
+        else:
+            vix_label = (
+                "BULLISH" if vix < 15 else "CAUTIOUS" if vix < 20 else
+                "DEFENSIVE" if vix < 25 else "BEARISH")
+            fii_text = f"Rs {fii:+,.0f} Cr" if fii is not None else "UNAVAILABLE"
+            sgx_text = f"{sgx:+.2f}%" if sgx is not None else "UNAVAILABLE"
+            market_block = (
+                f"<b>MARKET:</b>\n  VIX : {vix:.1f} ({vix_label})\n"
+                f"  FII : {fii_text}\n  GIFT Nifty: {sgx_text}\n\n")
     else:
         market_block = ""
 
@@ -238,10 +235,12 @@ def send_morning_report() -> None:
     try:
         from phase3_sector import run_sector_rotation
 
+        from phase6_market_data import get_live_market_context
+        market_ctx, _ = get_live_market_context()
         rotation = run_sector_rotation(
-            vix_value = 17.21,
-            fii_net   = 500,
-            verbose   = False,
+            vix_value=float(market_ctx['vix_value']),
+            fii_net=None,
+            verbose=False,
         )
 
         if not rotation.empty:

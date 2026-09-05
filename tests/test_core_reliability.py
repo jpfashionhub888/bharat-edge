@@ -713,6 +713,23 @@ def test_earnings_tab_discloses_provider_coverage(monkeypatch):
     assert "No provider-verified upcoming earnings dates" in rendered
 
 
+def test_fii_fetch_failure_is_not_numeric_neutral():
+    from data.fii_dii_data import FIIDIIFetcher
+    unavailable = FIIDIIFetcher()._get_default()
+    assert unavailable["available"] is False
+    assert unavailable["fii_net"] is None
+    assert unavailable["dii_net"] is None
+    assert unavailable["fii_signal"] == "UNAVAILABLE"
+
+
+def test_telegram_morning_report_has_no_fixed_market_scenario():
+    from pathlib import Path
+    source = (Path(__file__).resolve().parents[1] / "phase6_telegram.py").read_text(encoding="utf-8")
+    assert "vix_value = 17.21" not in source
+    assert "fii_net   = 500" not in source
+    assert "fii_net=None" in source
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd
