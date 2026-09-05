@@ -7,6 +7,7 @@ import json
 import os
 import logging
 import math
+import shutil
 from datetime import datetime, timedelta
 from config.settings import MAX_DAILY_LOSS, MAX_DRAWDOWN, MAX_WEEKLY_LOSS
 
@@ -61,19 +62,28 @@ class RiskCircuitBreaker:
 
     def _load_state(self):
         """Load circuit breaker state."""
-        if not os.path.exists(CIRCUIT_BREAKER_FILE):
+        backup_file = CIRCUIT_BREAKER_FILE + '.bak'
+        if not os.path.exists(CIRCUIT_BREAKER_FILE) and not os.path.exists(backup_file):
             return self._default_state()
-        try:
-            with open(CIRCUIT_BREAKER_FILE, 'r') as f:
-                state = json.load(f)
-            if not self._valid_state(state):
-                raise ValueError('circuit-breaker state failed validation')
-            # Add fields introduced by newer releases without discarding state.
-            return {**self._default_state(), **state}
-        except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        errors = []
+        for source, candidate in (("PRIMARY", CIRCUIT_BREAKER_FILE), ("BACKUP", backup_file)):
+            try:
+                with open(candidate, 'r') as f:
+                    state = json.load(f)
+                if not self._valid_state(state):
+                    raise ValueError('circuit-breaker state failed validation')
+                if source == "BACKUP":
+                    restore_tmp = CIRCUIT_BREAKER_FILE + '.restore.tmp'
+                    shutil.copy2(backup_file, restore_tmp)
+                    os.replace(restore_tmp, CIRCUIT_BREAKER_FILE)
+                    logger.warning("Recovered circuit-breaker state from validated backup")
+                return {**self._default_state(), **state}
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+                errors.append(f"{source}: {exc}")
+        if errors:
             logger.error(
                 "Circuit-breaker state is unreadable; trading blocked fail-safe: %s",
-                exc,
+                "; ".join(errors),
             )
             state = self._default_state()
             state.update({
@@ -92,6 +102,12 @@ class RiskCircuitBreaker:
             f.flush()
             os.fsync(f.fileno())
         os.replace(tmp_file, CIRCUIT_BREAKER_FILE)
+        try:
+            backup_tmp = CIRCUIT_BREAKER_FILE + '.bak.tmp'
+            shutil.copy2(CIRCUIT_BREAKER_FILE, backup_tmp)
+            os.replace(backup_tmp, CIRCUIT_BREAKER_FILE + '.bak')
+        except OSError as exc:
+            logger.warning("Circuit-breaker backup refresh failed: %s", exc)
 
     def check(self, current_value, starting_capital, telegram=None):
         """

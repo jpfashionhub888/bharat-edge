@@ -49,6 +49,7 @@ import json
 import logging
 import math
 import os
+import shutil
 import threading
 from datetime import datetime, timezone
 
@@ -252,14 +253,8 @@ class TradeTracker:
 
     def _load(self) -> dict:
         """Load trade data from file, or create fresh structure."""
-        try:
-            with open(self.trades_file) as f:
-                data = json.load(f)
-            if not isinstance(data, dict) or not isinstance(data.get('trades'), list):
-                raise ValueError('invalid trade tracker schema')
-            data['summary'] = self._summary_for(data['trades'])
-            return data
-        except FileNotFoundError:
+        backup_file = self.trades_file + '.bak'
+        if not os.path.exists(self.trades_file) and not os.path.exists(backup_file):
             return {
                 'trades'  : [],
                 'summary' : {
@@ -274,10 +269,25 @@ class TradeTracker:
                     'last_updated'  : None,
                 },
             }
-        except Exception as e:
-            self.healthy = False
-            logger.error('Closed-trade history is invalid; writes blocked: %s', e)
-            return {'trades': [], 'summary': self._summary_for([])}
+        errors = []
+        for source, candidate in (("PRIMARY", self.trades_file), ("BACKUP", backup_file)):
+            try:
+                with open(candidate) as f:
+                    data = json.load(f)
+                if not isinstance(data, dict) or not isinstance(data.get('trades'), list):
+                    raise ValueError('invalid trade tracker schema')
+                data['summary'] = self._summary_for(data['trades'])
+                if source == "BACKUP":
+                    restore_tmp = self.trades_file + '.restore.tmp'
+                    shutil.copy2(backup_file, restore_tmp)
+                    os.replace(restore_tmp, self.trades_file)
+                    logger.warning("Recovered closed-trade history from validated backup")
+                return data
+            except Exception as exc:
+                errors.append(f"{source}: {exc}")
+        self.healthy = False
+        logger.error('Closed-trade history is invalid; writes blocked: %s', '; '.join(errors))
+        return {'trades': [], 'summary': self._summary_for([])}
 
     def _save(self) -> None:
         """Persist trade data to JSON file. Call inside lock."""
@@ -288,6 +298,12 @@ class TradeTracker:
             f.flush()
             os.fsync(f.fileno())
         os.replace(tmp_file, self.trades_file)
+        try:
+            backup_tmp = self.trades_file + '.bak.tmp'
+            shutil.copy2(self.trades_file, backup_tmp)
+            os.replace(backup_tmp, self.trades_file + '.bak')
+        except OSError as exc:
+            logger.warning("Closed-trade backup refresh failed: %s", exc)
 
     def _summary_for(self, trades: list) -> dict:
         """Compute a valid summary while loading or recovering state."""

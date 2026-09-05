@@ -185,6 +185,17 @@ def test_corrupt_closed_trade_history_blocks_overwrite(tmp_path):
     assert trades_file.read_text(encoding="utf-8") == "not-json"
 
 
+def test_closed_trade_history_recovers_validated_backup(tmp_path):
+    trades_file = tmp_path / "closed.json"
+    tracker = TradeTracker(str(trades_file))
+    tracker.record_trade("TEST.NS", 100, 110, 2, "TAKE PROFIT")
+    trades_file.write_text("truncated", encoding="utf-8")
+    recovered = TradeTracker(str(trades_file))
+    assert recovered.healthy is True
+    assert recovered.get_stats()["total"] == 1
+    assert json.loads(trades_file.read_text(encoding="utf-8"))["trades"][0]["symbol"] == "TEST.NS"
+
+
 def test_circuit_breaker_blocks_total_loss_and_writes_valid_state(tmp_path, monkeypatch):
     state_file = tmp_path / "circuit.json"
     monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))
@@ -203,6 +214,17 @@ def test_circuit_breaker_fails_closed_for_invalid_valuation(tmp_path, monkeypatc
 
     assert breaker.check(float("nan"), 100_000)
     assert breaker.is_triggered()
+
+
+def test_circuit_breaker_recovers_triggered_backup(tmp_path, monkeypatch):
+    state_file = tmp_path / "circuit.json"
+    monkeypatch.setattr(risk_circuit_breaker, "CIRCUIT_BREAKER_FILE", str(state_file))
+    breaker = risk_circuit_breaker.RiskCircuitBreaker()
+    breaker._trigger("test lockout")
+    state_file.write_text("truncated", encoding="utf-8")
+    recovered = risk_circuit_breaker.RiskCircuitBreaker()
+    assert recovered.is_triggered()
+    assert recovered.get_status()["reason"] == "test lockout"
 
 
 @pytest.mark.parametrize(
