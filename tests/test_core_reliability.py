@@ -701,6 +701,18 @@ def test_alternate_production_runners_do_not_invent_market_context():
         assert invented not in retrain
 
 
+def test_earnings_tab_discloses_provider_coverage(monkeypatch):
+    import monitoring.dashboard as dashboard
+    monkeypatch.setattr(dashboard, "_upcoming_earnings", lambda: [])
+    monkeypatch.setitem(dashboard._EARNINGS_CACHE, "requested", 20)
+    monkeypatch.setitem(dashboard._EARNINGS_CACHE, "verified", 0)
+    monkeypatch.setitem(dashboard._EARNINGS_CACHE, "error", "provider unavailable")
+    rendered = str(dashboard._tab_earnings().to_plotly_json())
+    assert "verified 0/20" in rendered
+    assert "provider unavailable" in rendered
+    assert "No provider-verified upcoming earnings dates" in rendered
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd

@@ -42,6 +42,7 @@ _MARKET_CACHE: dict[str, Any] = {
 _EARNINGS_LOCK = threading.Lock()
 _EARNINGS_CACHE: dict[str, Any] = {
     "expires": 0.0, "rows": [], "fetched_at": None, "error": None,
+    "requested": 0, "verified": 0,
 }
 
 # ── Bloomberg terminal palette ────────────────────────────────
@@ -628,6 +629,7 @@ def _upcoming_earnings() -> list[dict]:
             from config.yfinance_runtime import configure_yfinance
             configure_yfinance(yf)
             watch = [s for s in STOCK_WATCHLIST if ".NS" in s][:20]
+            requested = len(watch)
 
             def fetch_one(sym):
                 try:
@@ -645,6 +647,10 @@ def _upcoming_earnings() -> list[dict]:
                         return None
                     date_val = (str(date_val.date()) if hasattr(date_val, "date")
                                 else str(date_val)[:10])
+                    earnings_date = datetime.fromisoformat(date_val).date()
+                    today = _ist_now().date()
+                    if earnings_date < today or earnings_date > today + timedelta(days=180):
+                        return None
                     return {
                         "Symbol": sym.replace(".NS", ""),
                         "Earnings Date": date_val,
@@ -669,6 +675,8 @@ def _upcoming_earnings() -> list[dict]:
             "rows": rows,
             "fetched_at": _ist_now().isoformat(),
             "error": "; ".join(errors[:3]) or None,
+            "requested": locals().get("requested", 0),
+            "verified": len(rows),
         })
         return list(rows)
 
@@ -1409,7 +1417,7 @@ def _tab_earnings() -> html.Div:
     rows = _upcoming_earnings()
 
     if not rows:
-        rows = [{"Note": "Earnings calendar requires live internet. Run dashboard with network access."}]
+        rows = [{"Status": "No provider-verified upcoming earnings dates are currently available."}]
 
     now_date = _ist_now().strftime("%Y-%m-%d")
     cond = [
@@ -1418,9 +1426,13 @@ def _tab_earnings() -> html.Div:
         {"if": {"column_id": "Symbol"}, "color": ORANGE, "fontWeight": "700"},
     ]
     return _section("NSE EARNINGS CALENDAR", html.Div([
-        html.Div(f"Today: {now_date}  |  Showing upcoming results for tracked NSE stocks",
-                 style={"color": DIM, "fontSize": "11px", "fontFamily": FONT,
-                        "marginBottom": "12px"}),
+        html.Div(
+            f"Today: {now_date} · Yahoo Finance · verified "
+            f"{_EARNINGS_CACHE.get('verified', 0)}/{_EARNINGS_CACHE.get('requested', 0)} tracked symbols"
+            f" · fetched {_EARNINGS_CACHE.get('fetched_at') or 'not yet'}"
+            + (f" · provider errors: {_EARNINGS_CACHE.get('error')}" if _EARNINGS_CACHE.get('error') else ""),
+            style={"color": RED if _EARNINGS_CACHE.get("error") else DIM,
+                   "fontSize": "11px", "fontFamily": FONT, "marginBottom": "12px"}),
         _dtable(rows, cond, page=20),
     ]))
 
