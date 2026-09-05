@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 import json, os, re, traceback, threading, time
+import math
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
@@ -376,6 +377,14 @@ def _inr(v: float, cr: bool = False) -> str:
     if cr and abs(v) >= 1e5:
         return f"₹{v/1e5:.2f}L"
     return f"₹{v:,.2f}"
+
+def _fmt_metric(value: Any, spec: str, suffix: str = "") -> str:
+    """Format a genuine finite number; never turn missing data into zero."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return "UNAVAILABLE"
+    if not math.isfinite(float(value)):
+        return "UNAVAILABLE"
+    return f"{format(float(value), spec)}{suffix}"
 
 
 # ╔══════════════════════════════════════════════════════════════╗
@@ -1094,8 +1103,8 @@ def _tab_overview() -> html.Div:
              GREEN if realized >= 0 else RED,
              f"{len(sells)} closed trades"),
         _kpi("Open Positions", str(len(pos)), YELLOW, "Max 5"),
-        _kpi("Win Rate",      f"{wr:.0f}%",  wr_col, f"{wins}W  {losses}L"),
-        _kpi("Profit Factor", f"{pf:.2f}",   GREEN if pf >= 1 else RED,
+        _kpi("Win Rate",      f"{wr:.0f}%" if sells else "N/A",  wr_col, f"{wins}W  {losses}L"),
+        _kpi("Profit Factor", f"{pf:.2f}" if sells else "N/A",   GREEN if sells and pf >= 1 else RED,
              f"W:{_inr(avg_win)} / L:{_inr(avg_loss)}"),
     ])
 
@@ -1264,8 +1273,8 @@ def _tab_signals() -> html.Div:
                       style={"color": _regime_color(regime.get("regime", "")),
                              "fontWeight": "700", "fontSize": "11px"}),
             html.Span("  VIX: ", style={"color": DIM, "fontSize": "11px"}),
-            html.Span(f"{regime.get('vix', 0):.1f}",
-                      style={"color": YELLOW, "fontWeight": "700",
+            html.Span(_fmt_metric(regime.get('vix'), ".1f"),
+                      style={"color": YELLOW if regime.get('vix') is not None else RED, "fontWeight": "700",
                              "fontSize": "11px"}),
         ]),
     ])
@@ -1285,7 +1294,7 @@ def _tab_signals() -> html.Div:
         rows.append({
             "Symbol"       : s.get("symbol", "").replace(".NS", ""),
             "Signal"       : sig,
-            "AI Score"     : f"{s.get('confidence', 0):.3f}",
+            "AI Score"     : _fmt_metric(s.get("confidence"), ".3f"),
             "Price ₹"      : f"{price:,.2f}" if price_valid else "UNAVAILABLE",
             "Price Source" : s.get("price_source", "UNAVAILABLE") if price_valid else "UNAVAILABLE",
             "Price As Of"  : (s.get("price_as_of") or "—")[:19] if price_valid else "—",
@@ -1326,13 +1335,13 @@ def _tab_sectors() -> html.Div:
         rows = [{
             "Sector": item.get("sector", "UNKNOWN"),
             "Status": item.get("status", "NEUTRAL"),
-            "Score": f"{float(item.get('score', 0)):.2f}",
-            "1W %": f"{float(item.get('momentum_1w', 0)):+.2f}%",
-            "1M %": f"{float(item.get('momentum_1m', 0)):+.2f}%",
-            "3M %": f"{float(item.get('momentum_3m', 0)):+.2f}%",
-            "RS vs Nifty": f"{float(item.get('relative_strength', 0)):+.2f}%",
-            "Trend": f"{float(item.get('trend_score', 0)):.1f}",
-            "Allocation": f"{float(item.get('allocation_multiplier', 0)):.2f}×",
+            "Score": _fmt_metric(item.get("score"), ".2f"),
+            "1W %": _fmt_metric(item.get("momentum_1w"), "+.2f", "%"),
+            "1M %": _fmt_metric(item.get("momentum_1m"), "+.2f", "%"),
+            "3M %": _fmt_metric(item.get("momentum_3m"), "+.2f", "%"),
+            "RS vs Nifty": _fmt_metric(item.get("relative_strength"), "+.2f", "%"),
+            "Trend": _fmt_metric(item.get("trend_score"), ".1f"),
+            "Allocation": _fmt_metric(item.get("allocation_multiplier"), ".2f", "×"),
             "Source": item.get("source", "UNAVAILABLE"),
         } for item in snapshot]
     else:
@@ -1372,7 +1381,9 @@ def _tab_sectors() -> html.Div:
     # Bar chart of avg scores
     if rows:
         sectors = [r["Sector"] for r in rows]
-        scores  = [float(r["Score"]) for r in rows]
+        chart_rows = [r for r in rows if r.get("Score") != "UNAVAILABLE"]
+        sectors = [r["Sector"] for r in chart_rows]
+        scores  = [float(r["Score"]) for r in chart_rows]
         colors  = [SECTOR_COLORS.get(s, ORANGE) for s in sectors]
 
         bar_fig = go.Figure(go.Bar(
@@ -1466,9 +1477,9 @@ def _tab_history() -> html.Div:
         "marginBottom": "14px",
     }, children=[
         _kpi("Total Trades", str(wins + losses), ORANGE),
-        _kpi("Win Rate",     f"{wr:.0f}%",        wr_col, f"{wins}W  {losses}L"),
+        _kpi("Win Rate",     f"{wr:.0f}%" if wins + losses else "N/A", wr_col, f"{wins}W  {losses}L"),
         _kpi("Total P&L",    f"{_inr(tot_pnl)}",  pnl_col),
-        _kpi("Profit Factor",f"{pf:.2f}",          GREEN if pf >= 1 else RED),
+        _kpi("Profit Factor",f"{pf:.2f}" if wins + losses else "N/A", GREEN if wins + losses and pf >= 1 else RED),
         _kpi("Avg Win",      f"{_inr(avg_w)}",     GREEN),
         _kpi("Avg Loss",     f"{_inr(avg_l)}",     RED),
     ])
@@ -1593,7 +1604,7 @@ def _tab_sysconfig() -> html.Div:
         ("Last Scan",       scan.get("scan_time", "Never")[:19] if scan.get("scan_time") else "Never", TEXT),
         ("Signals Found",   len(scan.get("signals", [])), ORANGE),
         ("Regime",          scan.get("market_regime",{}).get("regime","--"), TEXT),
-        ("VIX",             f"{scan.get('market_regime',{}).get('vix',0):.1f}", YELLOW),
+        ("VIX",             _fmt_metric(scan.get('market_regime',{}).get('vix'), ".1f"), YELLOW),
         ("Can Trade",       scan.get("market_regime",{}).get("can_trade","--"), TEXT),
         ("Price Coverage",  f"{float(quality.get('price_coverage', 0) or 0):.0%}", TEXT),
         ("Context Quality", quality.get("market_context", {}).get("status", "UNKNOWN"),

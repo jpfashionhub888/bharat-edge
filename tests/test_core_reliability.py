@@ -730,6 +730,18 @@ def test_telegram_morning_report_has_no_fixed_market_scenario():
     assert "fii_net=None" in source
 
 
+def test_dashboard_missing_metrics_are_not_rendered_as_zero(monkeypatch):
+    import monitoring.dashboard as dashboard
+    assert dashboard._fmt_metric(None, ".1f") == "UNAVAILABLE"
+    assert dashboard._fmt_metric(float("nan"), ".1f") == "UNAVAILABLE"
+    assert dashboard._fmt_metric(0.0, ".1f") == "0.0"
+    monkeypatch.setattr(dashboard, "load_scan", lambda: {
+        "scan_time": None, "signals": [], "market_regime": {"vix": None}})
+    rendered = str(dashboard._tab_signals().to_plotly_json())
+    assert "UNAVAILABLE" in rendered
+    assert "VIX: 0.0" not in rendered
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd
