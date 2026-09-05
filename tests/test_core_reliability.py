@@ -780,6 +780,45 @@ def test_dashboard_missing_metrics_are_not_rendered_as_zero(monkeypatch):
     assert "VIX: 0.0" not in rendered
 
 
+def test_standalone_market_fetch_failures_are_explicitly_unavailable():
+    from data.india_vix import IndiaVIXFetcher
+    from data.sgx_nifty import SGXNiftyFetcher
+    vix = IndiaVIXFetcher()._get_default()
+    gift = SGXNiftyFetcher()._get_default()
+    assert vix["vix"] is None and vix["available"] is False
+    assert vix["multiplier"] == 0.0
+    assert gift["gap_pct"] is None and gift["available"] is False
+    assert gift["is_proxy"] is True
+
+
+def test_scan_result_persistence_failure_is_not_silent():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    source = (root / "bharat_cloud_scan.py").read_text(encoding="utf-8")
+    assert "raise RuntimeError(f\"could not persist scan results" in source
+    assert "scan_results.json.bak" in source
+    scanner = (root / "phase3_scanner.py").read_text(encoding="utf-8")
+    assert "Using default market context" not in scanner
+
+
+def test_health_endpoint_reports_scan_artifact_integrity(monkeypatch):
+    import monitoring.dashboard as dashboard
+    monkeypatch.setattr(dashboard, "load_scan", lambda: {
+        "_storage_status": "PRIMARY", "signals": [{"symbol": "TEST.NS"}],
+        "data_quality": {"universe_count": 11, "price_history_count": 10}})
+    payload = dashboard.create_app().server.test_client().get("/healthz").get_json()
+    assert payload["scan_storage"] == "PRIMARY"
+    assert payload["scan_signal_count"] == 1
+    assert payload["scan_universe_count"] == 11
+
+
+def test_legacy_dashboard_has_no_fabricated_fallback_context():
+    from pathlib import Path
+    source = (Path(__file__).resolve().parents[1] / "phase5_dashboard.py").read_text(encoding="utf-8")
+    assert "vix_value      = 17.21" not in source
+    assert "Legacy dashboard withheld" in source
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd

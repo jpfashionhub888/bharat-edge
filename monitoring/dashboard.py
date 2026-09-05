@@ -715,12 +715,13 @@ def create_app(telegram=None) -> Dash:
     def healthz():
         """Fast local health probe with no external network dependency."""
         scan_status = load_scan_status()
+        scan = load_scan()
         portfolio = load_portfolio()
         circuit = load_circuit()
         overdue = _scan_is_overdue(scan_status.get("last_success_at"))
         stalled = _scan_run_stalled(scan_status)
         storage_bad = any(value.get("_storage_status") in {"INVALID", "MISSING"}
-                          for value in (portfolio, circuit))
+                          for value in (portfolio, circuit, scan))
         return {
             "status": "degraded" if overdue or stalled or storage_bad else "ok",
             "service": "bharatedge-dashboard",
@@ -731,6 +732,10 @@ def create_app(telegram=None) -> Dash:
             "scan_stalled": stalled,
             "portfolio_storage": portfolio.get("_storage_status", "UNKNOWN"),
             "circuit_storage": circuit.get("_storage_status", "UNKNOWN"),
+            "scan_storage": scan.get("_storage_status", "UNKNOWN"),
+            "scan_signal_count": len(scan.get("signals", [])),
+            "scan_universe_count": scan.get("data_quality", {}).get("universe_count"),
+            "scan_price_history_count": scan.get("data_quality", {}).get("price_history_count"),
         }, 200
 
     # ── Google Font + global CSS ──────────────────────────────

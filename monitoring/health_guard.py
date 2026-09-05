@@ -64,7 +64,7 @@ def run_guard(now=None):
             _systemctl("start", "--no-block", "bharatedge-scan.service")
             actions.append("catch-up scan requested")
             previous["last_scan_retry_at"] = now.isoformat()
-    for name in ("portfolio_storage", "circuit_storage"):
+    for name in ("portfolio_storage", "circuit_storage", "scan_storage"):
         if health.get(name) in {"INVALID", "MISSING"}:
             issues.append(f"{name.replace('_', ' ')} is {health[name].lower()}")
     usage = shutil.disk_usage(ROOT)

@@ -99,17 +99,10 @@ try:
     print(f"  ✅ SGX   : {MARKET['sgx_gap']:+.2f}%")
     print(f"  ✅ FII   : {MARKET['fii_net']:+,.0f}")
 except Exception as e:
-    print(f"  ⚠️ Live context failed: {e}")
-    MARKET = dict(
-        vix_value      = 17.21,
-        vix_change     = -4.9,
-        fii_net        = 500,
-        dii_net        = 300,
-        sgx_gap        = 0.65,
-        news_sentiment = 0.3,
-        news_volume    = 35,
-    )
-    MARKET_SNAPSHOT = {}
+    raise RuntimeError(
+        "Legacy dashboard withheld because validated market context is unavailable; "
+        "use monitoring.dashboard via wsgi.py"
+    ) from e
 
 
 # ============================================================

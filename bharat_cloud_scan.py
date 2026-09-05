@@ -637,6 +637,8 @@ def run_bharat_scan():
                 'price_source': 'Yahoo Finance',
                 'price_coverage': round(locals().get('price_coverage', 0.0), 4),
                 'signal_count': len(stock_signals),
+                'universe_count': len(all_stocks),
+                'price_history_count': len(stock_data),
                 'defaults_used': bool(locals().get('live_market', {}).get('_defaults_used', False)),
                 'market_context': locals().get('live_market', {}).get('_data_quality', {}),
                 'new_entries_blocked': bool(new_entries_blocked),
@@ -660,10 +662,16 @@ def run_bharat_scan():
         _tmp = 'logs/scan_results.json.tmp'
         with open(_tmp, 'w') as _f:
             _json.dump(_scan_out, _f, indent=2)
+            _f.flush()
+            _os.fsync(_f.fileno())
         _os.replace(_tmp, 'logs/scan_results.json')
+        import shutil as _shutil
+        _backup_tmp = 'logs/scan_results.json.bak.tmp'
+        _shutil.copy2('logs/scan_results.json', _backup_tmp)
+        _os.replace(_backup_tmp, 'logs/scan_results.json.bak')
         print(f"   Scan results saved to logs/scan_results.json")
     except Exception as _e:
-        print(f"   Could not save scan results: {_e}")
+        raise RuntimeError(f"could not persist scan results: {_e}") from _e
 
     print("\n" + "="*60)
     print("BHARAT EDGE SCAN COMPLETE")

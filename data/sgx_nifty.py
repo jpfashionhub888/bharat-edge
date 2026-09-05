@@ -25,7 +25,11 @@ class SGXNiftyFetcher:
         self.data = None
 
     def fetch(self):
-        """Fetch SGX Nifty current value."""
+        """Return an explicitly labelled Nifty prior-session proxy.
+
+        Yahoo does not provide an authenticated GIFT Nifty quote here, so this
+        value must never be presented as a live SGX/GIFT pre-market signal.
+        """
 
         try:
             import yfinance as yf
@@ -53,11 +57,15 @@ class SGXNiftyFetcher:
             result = {
                 'nifty_prev_close': nifty_prev_close,
                 'nifty_last': nifty_last,
-                'gap_pct': gap_pct,
-                'signal': self._get_signal(gap_pct),
+                'gap_pct': None,
+                'proxy_gap_pct': gap_pct,
+                'signal': 'UNAVAILABLE',
                 'time': datetime.now().strftime(
                     '%H:%M IST'
                 ),
+                'available': False,
+                'is_proxy': True,
+                'source': 'Yahoo Finance (^NSEI prior-session proxy)',
             }
 
             self.data = result
@@ -86,15 +94,20 @@ class SGXNiftyFetcher:
         """Default neutral signal."""
 
         return {
-            'nifty_prev_close': 0.0,
-            'nifty_last': 0.0,
-            'gap_pct': 0.0,
-            'signal': 'NEUTRAL',
-            'time': datetime.now().strftime('%H:%M IST'),
+            'nifty_prev_close': None, 'nifty_last': None, 'gap_pct': None,
+            'proxy_gap_pct': None, 'signal': 'UNAVAILABLE',
+            'time': None, 'available': False, 'is_proxy': True,
+            'source': 'Yahoo Finance (^NSEI prior-session proxy)',
         }
 
     def _print_summary(self, data):
         """Print SGX Nifty summary."""
+
+        if not data.get('available'):
+            proxy = data.get('proxy_gap_pct')
+            detail = f"; Nifty prior-session proxy {proxy:+.2f}%" if proxy is not None else ""
+            print(f"\n   GIFT Nifty: UNAVAILABLE{detail}")
+            return
 
         gap = data['gap_pct']
         signal = data['signal']

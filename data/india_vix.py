@@ -8,6 +8,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from config.settings import VIX_LEVELS, VIX_MULTIPLIERS
 import logging
+import math
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,8 @@ class IndiaVIXFetcher:
 
             current = float(df['Close'].iloc[-1])
             prev = float(df['Close'].iloc[-2])
+            if not math.isfinite(current) or not math.isfinite(prev) or current <= 0 or prev <= 0:
+                raise ValueError("India VIX returned invalid observations")
             change = ((current - prev) / prev) * 100
 
             self.current_vix = current
@@ -53,6 +56,8 @@ class IndiaVIXFetcher:
                 'regime': self._get_regime(current),
                 'multiplier': self._get_multiplier(current),
                 'signal': self._get_signal(current),
+                'available': True,
+                'source': 'Yahoo Finance (^INDIAVIX)',
             }
 
             self._print_summary(result)
@@ -100,15 +105,17 @@ class IndiaVIXFetcher:
         """Default if VIX fetch fails."""
 
         return {
-            'vix': 16.0,
-            'vix_change': 0.0,
-            'regime': 'normal',
-            'multiplier': 1.0,
-            'signal': 'NORMAL',
+            'vix': None, 'vix_change': None, 'regime': 'unavailable',
+            'multiplier': 0.0, 'signal': 'UNAVAILABLE',
+            'available': False, 'source': 'Yahoo Finance (^INDIAVIX)',
         }
 
     def _print_summary(self, data):
         """Print VIX summary."""
+
+        if not data.get('available'):
+            print("\n   India VIX: UNAVAILABLE; position multiplier locked at 0")
+            return
 
         vix = data['vix']
         change = data['vix_change']

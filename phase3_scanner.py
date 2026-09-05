@@ -586,17 +586,7 @@ if __name__ == "__main__":
         MARKET, SNAPSHOT = get_live_market_context()
         print("  ✅ Live market context loaded!")
     except Exception as e:
-        print(f"  ⚠️ Live context failed: {e}")
-        print("  Using default market context...")
-        MARKET = dict(
-            vix_value      = 17.21,
-            vix_change     = -4.9,
-            fii_net        = 500,
-            dii_net        = 300,
-            sgx_gap        = 0.65,
-            news_sentiment = 0.3,
-            news_volume    = 35,
-        )
+        raise SystemExit(f"Validated live market context unavailable; scan withheld: {e}")
 
     # Run full scan
     scan_results = run_full_scan(
