@@ -202,6 +202,24 @@ def run_bharat_scan():
             "blocking new entries (minimum 80%)."
         )
 
+    live_market = dict(
+        vix_value=None, vix_change=None, fii_net=0.0, dii_net=0.0,
+        sgx_gap=0.0, news_sentiment=0.0, news_volume=0,
+        _defaults_used=True,
+        _data_quality={"status": "UNAVAILABLE", "critical_sources_available": False},
+    )
+    try:
+        from phase6_market_data import get_live_market_context
+        live_market, _ = get_live_market_context()
+        print("   Validated market context loaded.")
+    except Exception as exc:
+        new_entries_blocked = True
+        live_market["_data_quality"] = {
+            "status": "UNAVAILABLE", "critical_sources_available": False,
+            "reasons": [str(exc)],
+        }
+        print(f"   Market context failed ({exc}); blocking new entries.")
+
     # ==========================================
     # PHASE 2: SECTOR ROTATION
     # ==========================================
@@ -213,9 +231,11 @@ def run_bharat_scan():
     sector_snapshot = []
     try:
         from phase3_sector import run_sector_rotation
+        if live_market.get('vix_value') is None:
+            raise RuntimeError('validated India VIX unavailable; sector rotation withheld')
         rotation = run_sector_rotation(
-            vix_value=17.0,
-            fii_net=0,
+            vix_value=float(live_market['vix_value']),
+            fii_net=None,
             verbose=False
         )
         if not rotation.empty:
@@ -232,7 +252,7 @@ def run_bharat_scan():
                     'trend_score': round(float(row['trend_score']), 2),
                     'volatility_score': round(float(row['vol_score']), 2),
                     'allocation_multiplier': round(float(row['alloc_mult']), 2),
-                    'source': 'Yahoo Finance sector proxies',
+                    'source': 'Yahoo Finance sector proxies + India VIX',
                 })
                 status_emoji = (
                     "BUY" if row['status'] == 'OVERWEIGHT'
@@ -326,27 +346,6 @@ def run_bharat_scan():
         ensemble = load_all_models()
 
         if ensemble:
-            # Fetch live market context for accurate scan
-            live_market = dict(
-                vix_value=17.0, vix_change=0.0,
-                fii_net=0.0, dii_net=0.0,
-                sgx_gap=0.0, news_sentiment=0.0, news_volume=0,
-                _defaults_used=True,
-                _data_quality={"status": "UNAVAILABLE"},
-            )
-            try:
-                from phase6_market_data import get_live_market_context
-                live_market, _ = get_live_market_context()
-                print("   Live market context loaded for scan.")
-            except Exception as _e:
-                new_entries_blocked = True
-                live_market["_data_quality"] = {
-                    "status": "UNAVAILABLE",
-                    "critical_sources_available": False,
-                    "reasons": [str(_e)],
-                }
-                print(f"   Live context failed ({_e}); blocking new entries.")
-
             if live_market.get("_defaults_used"):
                 new_entries_blocked = True
                 print("   Market context is degraded; blocking new entries.")

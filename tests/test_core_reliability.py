@@ -681,6 +681,14 @@ def test_equity_history_records_only_real_bounded_snapshots(tmp_path):
         equity.record_snapshot(float("nan"), 0, 0, 0, path=path)
 
 
+def test_cloud_scan_does_not_feed_fixed_vix_to_sector_rotation():
+    from pathlib import Path
+    source = Path("bharat_cloud_scan.py").read_text(encoding="utf-8")
+    assert "vix_value=17.0" not in source
+    assert "fii_net=None" in source
+    assert "validated India VIX unavailable; sector rotation withheld" in source
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd

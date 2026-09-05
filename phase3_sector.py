@@ -319,8 +319,8 @@ def score_sector(
 # ============================================================
 
 def run_sector_rotation(
-    vix_value      : float = 15.0,
-    fii_net        : float = 0.0,
+    vix_value      : float,
+    fii_net        : float | None = None,
     news_sentiment : float = 0.0,
     period         : str   = "6mo",
     verbose        : bool  = True,
@@ -339,7 +339,8 @@ def run_sector_rotation(
         print(f"\n{'='*60}")
         print(f"  🔄 SECTOR ROTATION ENGINE")
         print(f"  VIX    : {vix_value:.1f}")
-        print(f"  FII    : Rs {fii_net:+,.0f} Cr")
+        fii_text = "UNAVAILABLE" if fii_net is None else f"Rs {fii_net:+,.0f} Cr"
+        print(f"  FII    : {fii_text}")
         print(f"  Period : {period}")
         print(f"{'='*60}")
 
@@ -396,7 +397,7 @@ def run_sector_rotation(
     scores_df['alloc_mult'] = mults
 
     # FII adjustment
-    if fii_net > 1000:
+    if fii_net is not None and fii_net > 1000:
         # Strong FII buying — boost financial sectors
         for idx, row in scores_df.iterrows():
             if row['sector'] in ['BANKING', 'NBFC']:
