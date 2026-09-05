@@ -591,6 +591,14 @@ def run_bharat_scan():
 
     total_pnl = total_value - trader.starting_capital
     total_pct = (total_pnl / trader.starting_capital) if trader.starting_capital > 0 else 0
+    realized_pnl = sum(
+        float(t.get('pnl', 0) or 0) for t in trader.trade_history
+        if t.get('action') == 'SELL'
+    )
+    unrealized_pnl = total_pnl - realized_pnl
+    from monitoring.equity_history import record_snapshot
+    record_snapshot(total_value, realized_pnl, unrealized_pnl,
+                    len(trader.positions), at=datetime.now(ZoneInfo('Asia/Kolkata')).isoformat())
 
     # Build positions with P&L for Telegram
     positions_with_pnl = {}
@@ -679,10 +687,10 @@ def run_bharat_scan():
 
     listener.stop()
 
-def main():
+def main(force=False):
     day = datetime.now().strftime('%A')
 
-    if day == 'Saturday':
+    if day == 'Saturday' and not force:
         print(f"Saturday - Indian market closed.")
         return
 

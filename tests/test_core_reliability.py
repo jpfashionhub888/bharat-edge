@@ -373,7 +373,7 @@ def test_scan_lifecycle_records_success(tmp_path, monkeypatch):
     monkeypatch.setattr(bharat_cloud_scan, "SCAN_STATUS_FILE", str(status_file))
     monkeypatch.setattr(bharat_cloud_scan, "run_bharat_scan", lambda: None)
 
-    bharat_cloud_scan.main()
+    bharat_cloud_scan.main(force=True)
 
     status = json.loads(status_file.read_text(encoding="utf-8"))
     assert status["status"] == "SUCCESS"
@@ -393,7 +393,7 @@ def test_scan_lifecycle_records_failure(tmp_path, monkeypatch):
     )
 
     with pytest.raises(SystemExit):
-        bharat_cloud_scan.main()
+        bharat_cloud_scan.main(force=True)
 
     status = json.loads(status_file.read_text(encoding="utf-8"))
     assert status["status"] == "FAILED"
@@ -667,6 +667,18 @@ def test_health_guard_scan_retry_is_bounded(tmp_path, monkeypatch):
     guard.run_guard(now)
     guard.run_guard(now + timedelta(minutes=5))
     assert calls.count(("start", "--no-block", "bharatedge-scan.service")) == 1
+
+
+def test_equity_history_records_only_real_bounded_snapshots(tmp_path):
+    import monitoring.equity_history as equity
+    path = tmp_path / "equity.json"
+    equity.record_snapshot(100100, 50, 50, 1, at="2026-09-05T10:00:00+05:30", path=path)
+    equity.record_snapshot(100250, 50, 200, 1, at="2026-09-05T12:00:00+05:30", path=path)
+    points = equity.load_history(path)
+    assert [p["total_value"] for p in points] == [100100.0, 100250.0]
+    assert points[-1]["realized_pnl"] + points[-1]["unrealized_pnl"] == 250
+    with pytest.raises(ValueError):
+        equity.record_snapshot(float("nan"), 0, 0, 0, path=path)
 
 
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):

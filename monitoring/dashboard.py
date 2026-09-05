@@ -23,6 +23,7 @@ CLOSED_FILE   = LOG / "closed_trades.json"
 CIRCUIT_FILE  = LOG / "circuit_breaker.json"
 SCAN_FILE     = LOG / "scan_results.json"
 SCAN_STATUS_FILE = LOG / "scan_status.json"
+EQUITY_FILE    = LOG / "equity_history.json"
 
 STARTING_CAP  = 100_000.0
 REFRESH_S     = 60          # dashboard refresh interval (seconds)
@@ -166,6 +167,11 @@ def load_scan_status() -> dict:
         "last_success_at": None,
         "error": None,
     })
+
+def load_equity_history() -> list[dict]:
+    value = _safe_load(EQUITY_FILE, {"points": []})
+    points = value.get("points", []) if isinstance(value, dict) else []
+    return points if isinstance(points, list) else []
 
 
 def _latest_close(data, symbol: str) -> float | None:
@@ -1054,6 +1060,7 @@ def _tab_overview() -> html.Div:
     wr       = wins / len(sells) * 100 if sells else 0
     wr_col   = GREEN if wr >= 50 else RED
     realized = sum(t.get("pnl", 0) for t in sells)
+    unrealized = pnl - realized if pnl is not None else None
 
     pf       = summary.get("profit_factor", 0)
     avg_win  = summary.get("avg_win", 0)
@@ -1072,8 +1079,11 @@ def _tab_overview() -> html.Div:
              (f"{capital/total*100:.1f}% of portfolio"
               if total else "Valuation unavailable")),
         _kpi("Total P&L", (f"{sg(pnl)}{_inr(pnl)}" if pnl is not None else "UNAVAILABLE"),
-             pnl_col, (f"{sg(pnl_pct)}{pnl_pct:.2f}%" if pnl_pct is not None else "Needs fresh quotes")),
-        _kpi("Realized P&L",  f"{sg(realized)}{_inr(realized)}", pnl_col,
+             pnl_col, ((f"Realized {sg(realized)}{_inr(realized)} · "
+                        f"Open {sg(unrealized)}{_inr(unrealized)}")
+                       if unrealized is not None else "Needs fresh quotes")),
+        _kpi("Realized P&L",  f"{sg(realized)}{_inr(realized)}",
+             GREEN if realized >= 0 else RED,
              f"{len(sells)} closed trades"),
         _kpi("Open Positions", str(len(pos)), YELLOW, "Max 5"),
         _kpi("Win Rate",      f"{wr:.0f}%",  wr_col, f"{wins}W  {losses}L"),
@@ -1082,29 +1092,20 @@ def _tab_overview() -> html.Div:
     ])
 
     # Equity curve
-    eq_vals  = [start]
-    eq_dates = ["Start"]
-    running  = start
-    for t in history:
-        if t.get("action") == "SELL":
-            running  += t.get("pnl", 0)
-            eq_vals.append(running)
-            eq_dates.append(t.get("date", "")[:10])
-    if total is not None:
-        eq_vals.append(total)
-        eq_dates.append("Now")
-
-    ec  = GREEN if eq_vals[-1] >= eq_vals[0] else RED
-    fig = go.Figure(go.Scatter(
-        x=eq_dates, y=eq_vals,
-        mode="lines+markers",
-        line=dict(color=ec, width=2),
-        fill="tozeroy", fillcolor=_rgba(ec, 0.094),
-        marker=dict(size=4, color=ec),
-        hovertemplate="%{x}<br>₹%{y:,.0f}<extra></extra>",
-    ))
-    fig.update_layout(**_dark_fig(280))
-    fig.update_yaxes(tickprefix="₹", tickformat=",.0f")
+    equity = [p for p in load_equity_history()
+              if p.get("timestamp") and isinstance(p.get("total_value"), (int, float))]
+    if len(equity) >= 2:
+        eq_vals = [p["total_value"] for p in equity]
+        eq_dates = [p["timestamp"] for p in equity]
+        ec = GREEN if eq_vals[-1] >= eq_vals[0] else RED
+        fig = go.Figure(go.Scatter(x=eq_dates, y=eq_vals, mode="lines+markers",
+            line=dict(color=ec, width=2), fill="tozeroy", fillcolor=_rgba(ec, 0.094),
+            marker=dict(size=4, color=ec),
+            hovertemplate="%{x}<br>₹%{y:,.0f}<extra></extra>"))
+        fig.update_layout(**_dark_fig(280))
+        fig.update_yaxes(tickprefix="₹", tickformat=",.0f")
+    else:
+        fig = _empty_fig("Equity history starts after two successful scans", 280)
 
     # Allocation donut
     al_labels = ["Cash"] + syms if valuation_available else []
