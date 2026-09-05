@@ -832,6 +832,35 @@ def test_runnable_demo_entrypoints_do_not_send_synthetic_market_scenarios():
     assert "No synthetic market alerts were sent" in alerts
 
 
+def test_accounting_invariant_detects_unexplained_balance_change():
+    from monitoring.integrity import accounting_error
+    valid = {"capital": 90000, "starting_capital": 100000,
+             "positions": {"TEST.NS": {"cost": 10000}}, "trade_history": []}
+    assert accounting_error(valid) is None
+    invalid = {**valid, "capital": 91000}
+    assert "differs" in accounting_error(invalid)
+
+
+def test_audit_journal_detects_tampering(tmp_path):
+    from monitoring.integrity import append_audit_record, verify_audit_journal
+    path = tmp_path / "journal.jsonl"
+    append_audit_record(path, "ONE", {"value": 1})
+    append_audit_record(path, "TWO", {"value": 2})
+    assert verify_audit_journal(path) == (True, "ok")
+    path.write_text(path.read_text(encoding="utf-8").replace('"value": 1', '"value": 9'), encoding="utf-8")
+    assert verify_audit_journal(path)[0] is False
+
+
+def test_model_provenance_hashes_exact_artifacts(tmp_path):
+    from monitoring.integrity import model_provenance
+    (tmp_path / "model.pkl").write_bytes(b"model-v1")
+    info = model_provenance(tmp_path)
+    assert info["status"] == "VERIFIED"
+    assert info["files"][0]["name"] == "model.pkl"
+    assert len(info["files"][0]["sha256"]) == 64
+    assert len(info["manifest_sha256"]) == 64
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd

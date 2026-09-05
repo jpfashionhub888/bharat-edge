@@ -329,6 +329,7 @@ def run_bharat_scan():
 
     stock_signals = {}
     current_prices = {}
+    model_info = {"status": "UNAVAILABLE", "files": []}
 
     try:
         from phase2_models import load_all_models
@@ -351,6 +352,8 @@ def run_bharat_scan():
             print("   Models retrained and saved!")
 
         ensemble = load_all_models()
+        from monitoring.integrity import model_provenance
+        model_info = model_provenance('models')
 
         if ensemble:
             if live_market.get("_defaults_used"):
@@ -649,6 +652,7 @@ def run_bharat_scan():
                 'defaults_used': bool(locals().get('live_market', {}).get('_defaults_used', False)),
                 'market_context': locals().get('live_market', {}).get('_data_quality', {}),
                 'new_entries_blocked': bool(new_entries_blocked),
+                'model_provenance': model_info,
             },
             'signals'      : [
                 {
@@ -660,6 +664,7 @@ def run_bharat_scan():
                     'price'        : round(d.get('price', 0), 2),
                     'price_source' : d.get('price_source', 'Unknown'),
                     'price_as_of'  : d.get('price_as_of'),
+                    'model_manifest': model_info.get('manifest_sha256'),
                 }
                 for sym, d in stock_signals.items()
             ],

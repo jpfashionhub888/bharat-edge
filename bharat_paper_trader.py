@@ -12,6 +12,7 @@ from config.settings import (
     MAX_OPEN_POSITIONS, MAX_POSITION_SIZE, STOP_LOSS_PCT,
     TAKE_PROFIT_PCT, TRAILING_STOP_PCT,
 )
+from monitoring.integrity import accounting_error, append_audit_record
 
 logger = logging.getLogger(__name__)
 
@@ -327,6 +328,10 @@ class BharatPaperTrader:
             'trade_history': self.trade_history,
             'saved_at': datetime.now().isoformat(),
         }
+        error = accounting_error(state)
+        if error:
+            self.state_healthy = False
+            raise ValueError(f"portfolio accounting invariant failed: {error}")
         os.makedirs(os.path.dirname(self.log_file) or '.', exist_ok=True)
         # Atomic write: temp file then rename to prevent truncation on crash
         tmp_file = self.log_file + '.tmp'
@@ -343,6 +348,13 @@ class BharatPaperTrader:
             os.replace(backup_tmp, self.log_file + '.bak')
         except OSError as exc:
             logger.warning("Portfolio backup refresh failed: %s", exc)
+        try:
+            append_audit_record(self.log_file + '.journal.jsonl', 'PORTFOLIO_COMMIT', {
+                'capital': round(self.capital, 2), 'positions': len(self.positions),
+                'trades': len(self.trade_history),
+            })
+        except Exception as exc:
+            logger.warning("Portfolio audit journal append failed: %s", exc)
         print(f"   State saved to {self.log_file}")
 
     def load_state(self):
@@ -367,6 +379,9 @@ class BharatPaperTrader:
                         or not self._valid_positions(positions)
                         or not isinstance(trade_history, list)):
                     raise ValueError("paper-trading state failed validation")
+                invariant = accounting_error(state)
+                if invariant:
+                    raise ValueError(f"portfolio accounting invariant failed: {invariant}")
                 loaded = (source, state, capital, starting_capital, positions, trade_history)
                 break
             except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:

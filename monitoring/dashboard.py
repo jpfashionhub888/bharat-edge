@@ -1303,6 +1303,7 @@ def _tab_signals() -> html.Div:
             "Price ₹"      : f"{price:,.2f}" if price_valid else "UNAVAILABLE",
             "Price Source" : s.get("price_source", "UNAVAILABLE") if price_valid else "UNAVAILABLE",
             "Price As Of"  : (s.get("price_as_of") or "—")[:19] if price_valid else "—",
+            "Model"        : (s.get("model_manifest") or "UNAVAILABLE")[:12],
             "Sector"       : s.get("sector", "—"),
             "Sector Status": s.get("sector_status", "NEUTRAL"),
             "Regime"       : regime.get("regime", "—"),
