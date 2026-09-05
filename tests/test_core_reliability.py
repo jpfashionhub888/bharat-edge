@@ -861,6 +861,15 @@ def test_model_provenance_hashes_exact_artifacts(tmp_path):
     assert len(info["manifest_sha256"]) == 64
 
 
+def test_linux_operations_scripts_are_committed_with_lf_policy():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    attributes = (root / ".gitattributes").read_text(encoding="utf-8")
+    assert "*.sh text eol=lf" in attributes
+    for script in (root / "ops").glob("*.sh"):
+        assert b"\r\n" not in script.read_bytes()
+
+
 def test_model_holdout_is_not_used_for_initial_fit(monkeypatch):
     import numpy as np
     import pandas as pd
